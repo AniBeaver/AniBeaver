@@ -16,7 +16,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun HomeScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(), activityKiller : () -> Unit = {}
 ) {
     Column (modifier = Modifier.padding(32.dp)) {
         Text("Welcome to AniBeaver", style = Typography.headlineLarge, modifier = Modifier.padding(bottom = 8.dp))
@@ -37,6 +37,12 @@ fun HomeScreen(
             navController.navigate(Screens.Settings.name)
         }) {
             Text("Go to Settings")
+        }
+
+        Button(onClick = {
+            activityKiller()
+        }) {
+            Text("Close")
         }
     }
 
