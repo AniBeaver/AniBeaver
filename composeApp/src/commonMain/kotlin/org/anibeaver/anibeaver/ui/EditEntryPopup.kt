@@ -1,13 +1,12 @@
 package org.anibeaver.anibeaver.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.ui.components.NumberPicker
@@ -35,86 +34,95 @@ fun EditEntryPopup(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = onDismiss) {
-                    Text("OK")
+                    Text("Confirm")
                 }
             },
-            title = { Text("Popup") },
+            title = { Text("Edit Entry") },
             text = {
                 Column {
-                    // Add image input rectangle at the top
-                    ImageInput(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
-                        onClick = { /* TODO: Handle image selection */ }
-                    )
-                    OutlinedTextField(
-                        value = animeName,
-                        onValueChange = { animeName = it },
-                        label = { Text("Anime Name") },
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = releaseYear,
-                        onValueChange = { newValue ->
-                            // Only allow digits
-                            if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                                releaseYear = newValue
-                            }
-                        },
-                        label = { Text("Release Year") },
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    OutlinedTextField(
-                        value = genre,
-                        onValueChange = { genre = it },
-                        label = { Text("Genre") },
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ImageInput(
+                            modifier = Modifier.size(96.dp).padding(end = 24.dp),
+                            onClick = { /* TODO: Handle image selection */ }
+                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("Rating", modifier = Modifier.padding(bottom = 4.dp))
+                            NumberPicker(
+                                value = rating,
+                                onValueChange = { rating = it }
+                            )
+                        }
+                    }
+                    // Grid layout for fields
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = animeName,
+                                onValueChange = { animeName = it },
+                                label = { Text("Anime Name") },
+                                modifier = Modifier.weight(1f)
+                            )
+                            OutlinedTextField(
+                                value = releaseYear,
+                                onValueChange = { newValue ->
+                                    // Only allow digits
+                                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                        releaseYear = newValue
+                                    }
+                                },
+                                label = { Text("Release Year") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        TagInput(
+                            value = genre,
+                            onValueChange = { genre = it },
+                            label = "Genre",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        TagInput(
+                            value = studioName,
+                            onValueChange = { studioName = it },
+                            label = "Studio",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        TagInput(
+                            value = tags,
+                            onValueChange = { tags = it },
+                            label = "Custom Tags",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            SimpleDropdown(
+                                options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
+                                selectedOption = status,
+                                onOptionSelected = { status = it },
+                                label = "Status",
+                                modifier = Modifier.weight(1f)
+                            )
+                            SimpleDropdown(
+                                options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
+                                selectedOption = releasingEvery,
+                                onOptionSelected = { releasingEvery = it },
+                                label = "Releasing Every",
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
                         label = { Text("Description") },
                         modifier = Modifier
-                            .padding(bottom = 8.dp)
+                            .fillMaxWidth()
+                            .padding(top = 8.dp, bottom = 8.dp)
                             .height(120.dp),
                         maxLines = 5
-                    )
-                    Text("Rating", modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
-                    NumberPicker(
-                        value = rating,
-                        onValueChange = { rating = it }
-                    )
-                    TagInput(
-                        value = tags,
-                        onValueChange = { tags = it },
-                        label = "Custom Tags",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    TagInput(
-                        value = genre,
-                        onValueChange = { genre = it },
-                        label = "Genre",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    TagInput(
-                        value = studioName,
-                        onValueChange = { studioName = it },
-                        label = "Studio",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    SimpleDropdown(
-                        options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
-                        selectedOption = status,
-                        onOptionSelected = { status = it },
-                        label = "Status",
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    SimpleDropdown(
-                        options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
-                        selectedOption = releasingEvery,
-                        onOptionSelected = { releasingEvery = it },
-                        label = "Releasing Every",
-                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
             }
