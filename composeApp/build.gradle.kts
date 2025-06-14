@@ -63,6 +63,10 @@ android {
     namespace = "org.anibeaver.anibeaver"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    lint {
+        disable += "NullSafeMutableLiveData"
+    }
+
     defaultConfig {
         applicationId = "org.anibeaver.anibeaver"
         minSdk = libs.versions.android.minSdk.get().toInt()

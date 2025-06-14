@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.Screens
@@ -15,6 +16,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AnimeScreen(
     navController: NavHostController = rememberNavController()
 ) {
+    var showPopup by remember { mutableStateOf(false) }
     Column{
         Text("Anime", style = Typography.headlineLarge)
 
@@ -23,5 +25,9 @@ fun AnimeScreen(
         }) {
             Text("Go to Home")
         }
+        Button(onClick = { showPopup = true }) {
+            Text("Open Popup")
+        }
+        EditEntryPopup(show = showPopup, onDismiss = { showPopup = false })
     }
 }
