@@ -5,6 +5,6 @@ import org.anibeaver.anibeaver.model.Entry
 object EditEntryController {
     fun handleEditEntry(entry: Entry) {
         println("[Controller] Entry: $entry")
-        // Add backend logic here (e.g., save, send to server, etc.)
+        //TODO: Update the correct entry here; Potentially even move this to entries controller
     }
 }
