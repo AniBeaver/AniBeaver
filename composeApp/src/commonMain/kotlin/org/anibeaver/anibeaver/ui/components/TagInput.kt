@@ -4,6 +4,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 
 @Composable
 fun TagInput(
@@ -16,7 +17,7 @@ fun TagInput(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = modifier
+        modifier = modifier,
+        singleLine = true
     )
 }
-

@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.Screens
+import org.anibeaver.anibeaver.controller.EditEntryController
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -28,6 +29,13 @@ fun AnimeScreen(
         Button(onClick = { showPopup = true }) {
             Text("Open Popup")
         }
-        EditEntryPopup(show = showPopup, onDismiss = { showPopup = false })
+        EditEntryPopup(
+            show = showPopup,
+            onDismiss = { showPopup = false },
+            onConfirm = { entryData ->
+                EditEntryController.handleEditEntry(entryData)
+                showPopup = false
+            }
+        )
     }
 }
