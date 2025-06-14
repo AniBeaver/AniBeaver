@@ -42,6 +42,25 @@ object EntriesController {
         }
     }
 
+    fun updateEntryById(id: Int, data: Entry) {
+        val idx = _entries.indexOfFirst { it.getId() == id }
+        if (idx != -1) {
+            _entries[idx] = Entry(
+                data.animeName,
+                data.releaseYear,
+                data.studioName,
+                data.genre,
+                data.description,
+                data.rating,
+                data.status,
+                data.releasingEvery,
+                data.tags,
+                id
+            )
+            debugPrintIds()
+        }
+    }
+
     fun removeEntryById(id: Int) {
         _entries.removeAll { it.getId() == id }
         debugPrintIds()

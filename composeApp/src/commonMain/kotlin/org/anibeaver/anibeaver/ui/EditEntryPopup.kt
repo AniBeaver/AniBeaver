@@ -22,17 +22,31 @@ import org.anibeaver.anibeaver.ui.components.ImageInput
 fun EditEntryPopup(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (Entry) -> Unit // Use Entry instead of EditEntryData
+    onConfirm: (Entry) -> Unit,
+    initialEntry: Entry? = null
 ) {
-    var animeName by remember { mutableStateOf("") }
-    var releaseYear by remember { mutableStateOf("") }
-    var studioName by remember { mutableStateOf("") }
-    var genre by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var rating by remember { mutableStateOf(0f) }
-    var status by remember { mutableStateOf("") }
-    var releasingEvery by remember { mutableStateOf("") }
-    var tags by remember { mutableStateOf("") }
+    var animeName by remember { mutableStateOf(initialEntry?.animeName ?: "") }
+    var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "") }
+    var studioName by remember { mutableStateOf(initialEntry?.studioName ?: "") }
+    var genre by remember { mutableStateOf(initialEntry?.genre ?: "") }
+    var description by remember { mutableStateOf(initialEntry?.description ?: "") }
+    var rating by remember { mutableStateOf(initialEntry?.rating ?: 0f) }
+    var status by remember { mutableStateOf(initialEntry?.status ?: "") }
+    var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
+    var tags by remember { mutableStateOf(initialEntry?.tags ?: "") }
+
+    // Reset fields when initialEntry changes (for editing)
+    LaunchedEffect(initialEntry) {
+        animeName = initialEntry?.animeName ?: ""
+        releaseYear = initialEntry?.releaseYear ?: ""
+        studioName = initialEntry?.studioName ?: ""
+        genre = initialEntry?.genre ?: ""
+        description = initialEntry?.description ?: ""
+        rating = initialEntry?.rating ?: 0f
+        status = initialEntry?.status ?: ""
+        releasingEvery = initialEntry?.releasingEvery ?: ""
+        tags = initialEntry?.tags ?: ""
+    }
 
     // FocusRequesters for tab navigation
     val focusManager = LocalFocusManager.current

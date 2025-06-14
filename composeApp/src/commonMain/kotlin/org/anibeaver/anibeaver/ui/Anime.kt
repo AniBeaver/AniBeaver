@@ -30,35 +30,46 @@ fun AnimeScreen(
     navController: NavHostController = rememberNavController()
 ) {
     var showPopup by remember { mutableStateOf(false) }
+    var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.model.Entry?>(null) }
     // Use CardsController.cards directly, do not create a local copy
     Column(Modifier.fillMaxSize()) {
         Text("Anime", style = Typography.headlineLarge)
         Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
-        Button(onClick = { showPopup = true }) { Text("Open Popup") }
         Button(onClick = {
-            val entry = org.anibeaver.anibeaver.controller.EntriesController.createEntry(
-                animeName = "Test Card",
-                releaseYear = "",
-                studioName = "",
-                genre = "Test Tag",
-                description = "",
-                rating = 0f,
-                status = "",
-                releasingEvery = "",
-                tags = ""
-            )
-            org.anibeaver.anibeaver.controller.EntriesController.addEntry(entry)
-            org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
-        }) { Text("Add Test Card") }
+            editingEntry = null
+            showPopup = true
+        }) { Text("New Entry") }
 
-        EditEntryPopup(
-            show = showPopup,
-            onDismiss = { showPopup = false },
-            onConfirm = {
-                EditEntryController.handleEditEntry(it)
-                showPopup = false
-            }
-        )
+        if (showPopup) {
+            EditEntryPopup(
+                show = showPopup,
+                onDismiss = { showPopup = false },
+                onConfirm = { entryData ->
+                    if (editingEntry == null) {
+                        val entry = org.anibeaver.anibeaver.controller.EntriesController.createEntry(
+                            animeName = entryData.animeName,
+                            releaseYear = entryData.releaseYear,
+                            studioName = entryData.studioName,
+                            genre = entryData.genre,
+                            description = entryData.description,
+                            rating = entryData.rating,
+                            status = entryData.status,
+                            releasingEvery = entryData.releasingEvery,
+                            tags = entryData.tags
+                        )
+                        org.anibeaver.anibeaver.controller.EntriesController.addEntry(entry)
+                    } else {
+                        org.anibeaver.anibeaver.controller.EntriesController.updateEntryById(
+                            editingEntry!!.getId(),
+                            entryData
+                        )
+                    }
+                    org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
+                    showPopup = false
+                },
+                initialEntry = editingEntry
+            )
+        }
         CardsController.cards.chunked(3).forEach { rowCards ->
             Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 rowCards.forEach { card ->
@@ -66,6 +77,13 @@ fun AnimeScreen(
                         id = card.id,
                         name = card.name,
                         labels = card.labels,
+                        onEdit = {
+                            val entry = org.anibeaver.anibeaver.controller.EntriesController.entries.find { it.getId() == card.id }
+                            if (entry != null) {
+                                editingEntry = entry
+                                showPopup = true
+                            }
+                        },
                         onDelete = {
                             org.anibeaver.anibeaver.controller.EntriesController.removeEntryById(card.id)
                             org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
