@@ -20,6 +20,7 @@ import org.anibeaver.anibeaver.ui.components.TagInput
 import org.anibeaver.anibeaver.ui.components.ImageInput
 import org.anibeaver.anibeaver.ui.components.YearPicker
 
+//TODO: tiny windows not supported still
 @Composable
 fun EditEntryPopup(
     show: Boolean,
@@ -28,11 +29,11 @@ fun EditEntryPopup(
     initialEntry: Entry? = null
 ) {
     var animeName by remember { mutableStateOf(initialEntry?.animeName ?: "") }
-    var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "") }
+    var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "2010") }
     var studioName by remember { mutableStateOf(initialEntry?.studioName ?: "") }
     var genre by remember { mutableStateOf(initialEntry?.genre ?: "") }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
-    var rating by remember { mutableStateOf(initialEntry?.rating ?: 0f) }
+    var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.0f) }
     var status by remember { mutableStateOf(initialEntry?.status ?: "") }
     var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
     var tags by remember { mutableStateOf(initialEntry?.tags ?: "") }
@@ -40,17 +41,17 @@ fun EditEntryPopup(
     // Reset fields when initialEntry changes (for editing)
     LaunchedEffect(initialEntry) {
         animeName = initialEntry?.animeName ?: ""
-        releaseYear = initialEntry?.releaseYear ?: ""
+        releaseYear = initialEntry?.releaseYear ?: "2010"
         studioName = initialEntry?.studioName ?: ""
         genre = initialEntry?.genre ?: ""
         description = initialEntry?.description ?: ""
-        rating = initialEntry?.rating ?: 0f
+        rating = initialEntry?.rating ?: 8.5f
         status = initialEntry?.status ?: ""
         releasingEvery = initialEntry?.releasingEvery ?: ""
         tags = initialEntry?.tags ?: ""
     }
 
-    // FocusRequesters for tab navigation
+    //for tab navigation
     val focusManager = LocalFocusManager.current
     val animeNameRequester = remember { FocusRequester() }
     val releaseYearRequester = remember { FocusRequester() }
@@ -68,7 +69,7 @@ fun EditEntryPopup(
                 Button(onClick = {
                     onConfirm(
                         Entry(
-                            id = 0, // id will be set by EntriesController
+                            id = 0, // id to be set by EntriesController
                             animeName = animeName,
                             releaseYear = releaseYear,
                             studioName = studioName,

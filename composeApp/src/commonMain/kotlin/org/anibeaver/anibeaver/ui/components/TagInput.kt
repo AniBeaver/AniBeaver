@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 
-//
+//TODO: turn this into proper tag-input with autocomplete (save those tags elsewhere?) and discord-role like 'x'-to-remove button
 @Composable
 fun TagInput(
     value: String,
