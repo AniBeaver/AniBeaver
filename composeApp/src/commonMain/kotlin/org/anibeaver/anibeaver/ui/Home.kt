@@ -1,5 +1,7 @@
 package org.anibeaver.anibeaver.ui
 
+import org.anibeaver.anibeaver.DataWrapper
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -16,35 +18,24 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun HomeScreen(
-    navController: NavHostController = rememberNavController(), activityKiller : () -> Unit = {}
+    navController: NavHostController = rememberNavController(),
+    dataWrapper: DataWrapper
 ) {
-    Column (modifier = Modifier.padding(32.dp)) {
-        Text("Welcome to AniBeaver", style = Typography.headlineLarge, modifier = Modifier.padding(bottom = 8.dp))
+    Column(modifier = Modifier.padding(32.dp)) {
+        Text(
+                "Welcome to AniBeaver",
+                style = Typography.headlineLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+        )
 
-        Button(onClick = {
-            navController.navigate(Screens.Anime.name)
-        }) {
-            Text("Go to Anime")
-        }
+        Button(onClick = { navController.navigate(Screens.Anime.name) }) { Text("Go to Anime") }
 
-        Button(onClick = {
-            navController.navigate(Screens.Manga.name)
-        }) {
-            Text("Go to Manga")
-        }
+        Button(onClick = { navController.navigate(Screens.Manga.name) }) { Text("Go to Manga") }
 
-        Button(onClick = {
-            navController.navigate(Screens.Settings.name)
-        }) {
-            Text("Go to Settings")
-        }
+        Button(onClick = { navController.navigate(Screens.Settings.name) }) {Text("Go to Settings")}
 
-        Button(onClick = {
-            activityKiller()
-        }) {
-            Text("Close")
-        }
+        Button(onClick = { navController.navigate(Screens.Test.name) }) {Text("Go to Test")}
+
+        Button(onClick = { dataWrapper.activityKiller() }) { Text("Close") }
     }
-
-
 }
