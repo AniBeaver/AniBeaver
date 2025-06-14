@@ -12,28 +12,17 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusOrder
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import org.anibeaver.anibeaver.model.Entry
 import org.anibeaver.anibeaver.ui.components.NumberPicker
 import org.anibeaver.anibeaver.ui.components.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.TagInput
 import org.anibeaver.anibeaver.ui.components.ImageInput
 
-data class EditEntryData(
-    val animeName: String,
-    val releaseYear: String,
-    val studioName: String,
-    val genre: String,
-    val description: String,
-    val rating: Float,
-    val status: String,
-    val releasingEvery: String,
-    val tags: String
-)
-
 @Composable
 fun EditEntryPopup(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (EditEntryData) -> Unit
+    onConfirm: (Entry) -> Unit // Use Entry instead of EditEntryData
 ) {
     var animeName by remember { mutableStateOf("") }
     var releaseYear by remember { mutableStateOf("") }
@@ -62,7 +51,8 @@ fun EditEntryPopup(
             confirmButton = {
                 Button(onClick = {
                     onConfirm(
-                        EditEntryData(
+                        Entry(
+                            id = 0, // id will be set by EntriesController
                             animeName = animeName,
                             releaseYear = releaseYear,
                             studioName = studioName,
