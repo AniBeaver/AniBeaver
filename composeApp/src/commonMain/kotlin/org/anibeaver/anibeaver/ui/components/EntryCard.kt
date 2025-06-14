@@ -46,10 +46,10 @@ fun EntryCard(
             }
             Spacer(Modifier.width(12.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
-                Button(onClick = onEdit, modifier = Modifier.height(28.dp)) {
+                Button(onClick = onEdit, modifier = Modifier.height(32.dp)) {
                     Text("Edit", fontSize = 12.sp)
                 }
-                Button(onClick = onDelete, modifier = Modifier.height(28.dp)) {
+                Button(onClick = onDelete, modifier = Modifier.height(32.dp)) {
                     Text("Delete", fontSize = 12.sp)
                 }
             }
