@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.controller.EntriesController
+import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -26,7 +26,7 @@ fun AnimeScreen(
     navController: NavHostController = rememberNavController()
 ) {
     var showPopup by remember { mutableStateOf(false) }
-    var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.model.Entry?>(null) }
+    var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.datastructures.Entry?>(null) }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
@@ -78,10 +78,19 @@ fun AnimeScreen(
                             )
                             EntriesController.addEntry(entry)
                         } else {
-                            EntriesController.updateEntryById(
-                                editingEntry!!.getId(),
-                                entryData
+                            val updatedEntry = org.anibeaver.anibeaver.datastructures.Entry(
+                                animeName = entryData.animeName,
+                                releaseYear = entryData.releaseYear,
+                                studioName = entryData.studioName,
+                                genre = entryData.genre,
+                                description = entryData.description,
+                                rating = entryData.rating,
+                                status = entryData.status,
+                                releasingEvery = entryData.releasingEvery,
+                                tags = entryData.tags,
+                                id = editingEntry!!.getId()
                             )
+                            EntriesController.updateEntry(updatedEntry)
                         }
                         showPopup = false
                     },

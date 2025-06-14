@@ -20,7 +20,7 @@ fun ImageInput(
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable { onClick() }
     ) {
-        // Placeholder for image or icon
+        // Placeholder for anime icon
     }
 }
 

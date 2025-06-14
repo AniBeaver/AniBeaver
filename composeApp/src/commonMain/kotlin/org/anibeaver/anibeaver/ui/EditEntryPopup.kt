@@ -9,14 +9,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import org.anibeaver.anibeaver.model.Entry
-import org.anibeaver.anibeaver.ui.components.NumberPicker
+import org.anibeaver.anibeaver.datastructures.Entry
+import org.anibeaver.anibeaver.ui.components.FloatPicker
 import org.anibeaver.anibeaver.ui.components.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.TagInput
 import org.anibeaver.anibeaver.ui.components.ImageInput
+import org.anibeaver.anibeaver.ui.components.YearPicker
 
 @Composable
 fun EditEntryPopup(
@@ -97,7 +99,7 @@ fun EditEntryPopup(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text("Rating", modifier = Modifier.padding(bottom = 4.dp))
-                            NumberPicker(
+                            FloatPicker(
                                 value = rating,
                                 onValueChange = { rating = it }
                             )
@@ -111,21 +113,24 @@ fun EditEntryPopup(
                                 onValueChange = { animeName = it },
                                 label = { Text("Anime Name") },
                                 modifier = Modifier.weight(1f)
-                                    .focusOrder(animeNameRequester) { next = releaseYearRequester },
+                                    .focusRequester(animeNameRequester)
+                                    .focusProperties { next = releaseYearRequester },
                                 singleLine = true
                             )
-                            OutlinedTextField(
+                            YearPicker(
                                 value = releaseYear,
-                                onValueChange = { newValue ->
-                                    // Only allow digits
-                                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                                        releaseYear = newValue
-                                    }
+                                onValueChange = { releaseYear = it },
+                                onIncrement = {
+                                    val year = releaseYear.toIntOrNull() ?: 0
+                                    if (year < 9999) releaseYear = (year + 1).toString()
                                 },
-                                label = { Text("Release Year") },
+                                onDecrement = {
+                                    val year = releaseYear.toIntOrNull() ?: 0
+                                    if (year > 0) releaseYear = (year - 1).toString()
+                                },
                                 modifier = Modifier.weight(1f)
-                                    .focusOrder(releaseYearRequester) { next = genreRequester },
-                                singleLine = true
+                                    .focusRequester(releaseYearRequester)
+                                    .focusProperties { next = genreRequester }
                             )
                         }
                         TagInput(
@@ -133,21 +138,21 @@ fun EditEntryPopup(
                             onValueChange = { genre = it },
                             label = "Genre",
                             modifier = Modifier.fillMaxWidth()
-                                .focusOrder(genreRequester) { next = studioNameRequester }
+                                .focusRequester(genreRequester)
                         )
                         TagInput(
                             value = studioName,
                             onValueChange = { studioName = it },
                             label = "Studio",
                             modifier = Modifier.fillMaxWidth()
-                                .focusOrder(studioNameRequester) { next = tagsRequester }
+                                .focusRequester(studioNameRequester)
                         )
                         TagInput(
                             value = tags,
                             onValueChange = { tags = it },
                             label = "Custom Tags",
                             modifier = Modifier.fillMaxWidth()
-                                .focusOrder(tagsRequester) { next = statusRequester }
+                                .focusRequester(tagsRequester)
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             SimpleDropdown(
@@ -156,7 +161,8 @@ fun EditEntryPopup(
                                 onOptionSelected = { status = it },
                                 label = "Status",
                                 modifier = Modifier.weight(1f)
-                                    .focusOrder(statusRequester) { next = releasingEveryRequester }
+                                    .focusRequester(statusRequester)
+                                    .focusProperties { next = releasingEveryRequester }
                             )
                             SimpleDropdown(
                                 options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
@@ -164,7 +170,8 @@ fun EditEntryPopup(
                                 onOptionSelected = { releasingEvery = it },
                                 label = "Releasing Every",
                                 modifier = Modifier.weight(1f)
-                                    .focusOrder(releasingEveryRequester) { next = descriptionRequester }
+                                    .focusRequester(releasingEveryRequester)
+                                    .focusProperties { next = descriptionRequester }
                             )
                         }
                     }
@@ -176,7 +183,7 @@ fun EditEntryPopup(
                             .fillMaxWidth()
                             .padding(top = 8.dp, bottom = 8.dp)
                             .height(120.dp)
-                            .focusOrder(descriptionRequester),
+                            .focusRequester(descriptionRequester),
                         maxLines = 5
                     )
                 }

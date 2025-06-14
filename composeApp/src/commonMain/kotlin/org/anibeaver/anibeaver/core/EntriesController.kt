@@ -1,13 +1,13 @@
-package org.anibeaver.anibeaver.controller
+package org.anibeaver.anibeaver.core
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import org.anibeaver.anibeaver.model.Entry
+import org.anibeaver.anibeaver.datastructures.Entry
 
 object EntriesController {
     private var nextId = 1
     private val _entries = mutableStateListOf(
+        //TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
         Entry("Fullmetal Alchemist: Brotherhood", "2009", "Bones", "Action, Adventure, Fantasy", "Epic alchemy adventure.", 9.5f, "Finished", "Sunday", "Shounen, Classic", nextId++),
         Entry("Steins;Gate", "2011", "White Fox", "Sci-Fi, Thriller", "Time travel thriller.", 9.0f, "Finished", "Wednesday", "Time Travel, Thriller", nextId++),
         Entry("Your Lie in April", "2014", "A-1 Pictures", "Drama, Romance, Music", "Emotional music drama.", 8.8f, "Finished", "Friday", "Music, Romance", nextId++),
@@ -35,29 +35,13 @@ object EntriesController {
         debugPrintIds()
     }
 
-    fun updateEntry(index: Int, entry: Entry) {
-        if (index in _entries.indices) {
+    fun updateEntry(entry: Entry) {
+        val index = _entries.indexOfFirst { it.getId() == entry.getId() }
+        if (index != -1) {
             _entries[index] = entry
             debugPrintIds()
-        }
-    }
-
-    fun updateEntryById(id: Int, data: Entry) {
-        val idx = _entries.indexOfFirst { it.getId() == id }
-        if (idx != -1) {
-            _entries[idx] = Entry(
-                data.animeName,
-                data.releaseYear,
-                data.studioName,
-                data.genre,
-                data.description,
-                data.rating,
-                data.status,
-                data.releasingEvery,
-                data.tags,
-                id
-            )
-            debugPrintIds()
+        } else {
+            println("No entry to update with id ${entry.getId()} found")
         }
     }
 

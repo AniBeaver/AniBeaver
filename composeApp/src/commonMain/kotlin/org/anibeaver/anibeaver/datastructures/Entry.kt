@@ -1,6 +1,6 @@
-package org.anibeaver.anibeaver.model
+package org.anibeaver.anibeaver.datastructures
 
-// Entry is now a class with id assigned only by EntriesController
+//TODO: potentially tags to String[]
 class Entry internal constructor(
     val animeName: String,
     val releaseYear: String,
@@ -11,8 +11,7 @@ class Entry internal constructor(
     val status: String,
     val releasingEvery: String,
     val tags: String,
-    internal val id: Int // Only EntriesController can set this
+    internal val id: Int
 ) {
-    // Public getter for id, but no public setter
     fun getId(): Int = id
 }
