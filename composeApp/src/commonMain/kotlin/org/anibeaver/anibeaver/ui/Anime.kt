@@ -34,12 +34,32 @@ fun AnimeScreen(
     // Use CardsController.cards directly, do not create a local copy
     Column(Modifier.fillMaxSize()) {
         Text("Anime", style = Typography.headlineLarge)
-        Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
-        Button(onClick = {
-            editingEntry = null
-            showPopup = true
-        }) { Text("New Entry") }
-
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
+            Button(onClick = {
+                editingEntry = null
+                showPopup = true
+            }) { Text("New Entry") }
+            Button(onClick = {
+                val entry = org.anibeaver.anibeaver.controller.EntriesController.createEntry(
+                    animeName = "Placeholder Anime",
+                    releaseYear = "2025",
+                    studioName = "Placeholder Studio",
+                    genre = "Genre",
+                    description = "This is a placeholder entry.",
+                    rating = 8.5f,
+                    status = "Unknown",
+                    releasingEvery = "Never",
+                    tags = "placeholder, ph"
+                )
+                org.anibeaver.anibeaver.controller.EntriesController.addEntry(entry)
+                org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
+            }) { Text("Add Placeholder Entry") }
+            Button(onClick = {
+                org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
+            }) { Text("Sync") }
+        }
+        Spacer(Modifier.height(16.dp))
         if (showPopup) {
             EditEntryPopup(
                 show = showPopup,
@@ -77,6 +97,7 @@ fun AnimeScreen(
                         id = card.id,
                         name = card.name,
                         labels = card.labels,
+                        description = card.description,
                         onEdit = {
                             val entry = org.anibeaver.anibeaver.controller.EntriesController.entries.find { it.getId() == card.id }
                             if (entry != null) {
