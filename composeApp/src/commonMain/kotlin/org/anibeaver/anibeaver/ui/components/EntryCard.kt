@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun EntryCard(
+    id: Int,
     name: String,
     labels: String,
     onEdit: () -> Unit = {},

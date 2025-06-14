@@ -33,51 +33,33 @@ fun AnimeScreen(
     // Use CardsController.cards directly, do not create a local copy
     Column(Modifier.fillMaxSize()) {
         Text("Anime", style = Typography.headlineLarge)
+        Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
+        Button(onClick = { showPopup = true }) { Text("Open Popup") }
         Button(onClick = {
-            navController.navigate(Screens.Home.name)
-        }) {
-            Text("Go to Home")
-        }
-        Button(onClick = { showPopup = true }) {
-            Text("Open Popup")
-        }
-        Button(onClick = {
-            CardsController.cards.add(AnimeCard("Test Card", "Test Tag"))
-        }) {
-            Text("Add Test Card")
-        }
-        // Show a placeholder EntryCard directly under the button
-        EntryCard(
-            name = "Placeholder Name",
-            labels = "Placeholder Labels"
-        )
+            val nextId = (CardsController.cards.maxOfOrNull { it.id } ?: 0) + 1
+            CardsController.cards.add(AnimeCard(nextId, "Test Card", "Test Tag"))
+        }) { Text("Add Test Card") }
+
         EditEntryPopup(
             show = showPopup,
             onDismiss = { showPopup = false },
-            onConfirm = { entryData ->
-                EditEntryController.handleEditEntry(entryData)
+            onConfirm = {
+                EditEntryController.handleEditEntry(it)
                 showPopup = false
             }
         )
-        // Remove scrollable column grid, use a manual 3-column grid with rows
-        val cardsList = CardsController.cards.toList()
-        val rows = cardsList.chunked(3)
-        Column(Modifier.fillMaxSize()) {
-            // Manual 3-column grid
-            rows.forEach { rowCards ->
-                Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    rowCards.forEach { card ->
-                        EntryCard(
-                            name = card.name,
-                            labels = card.labels
-                        )
-                        Spacer(Modifier.width(12.dp))
-                    }
-                    // Fill empty columns if needed
-                    repeat(3 - rowCards.size) {
-                        Spacer(Modifier.width(432.dp))
-                    }
+        CardsController.cards.chunked(3).forEach { rowCards ->
+            Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                rowCards.forEach { card ->
+                    EntryCard(
+                        id = card.id,
+                        name = card.name,
+                        labels = card.labels,
+                        onDelete = { CardsController.cards.removeIf { it.id == card.id } }
+                    )
+                    Spacer(Modifier.width(12.dp))
                 }
+                repeat(3 - rowCards.size) { Spacer(Modifier.width(432.dp)) }
             }
         }
     }
