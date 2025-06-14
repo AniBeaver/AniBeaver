@@ -36,8 +36,19 @@ fun AnimeScreen(
         Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
         Button(onClick = { showPopup = true }) { Text("Open Popup") }
         Button(onClick = {
-            val nextId = (CardsController.cards.maxOfOrNull { it.id } ?: 0) + 1
-            CardsController.cards.add(AnimeCard(nextId, "Test Card", "Test Tag"))
+            val entry = org.anibeaver.anibeaver.controller.EntriesController.createEntry(
+                animeName = "Test Card",
+                releaseYear = "",
+                studioName = "",
+                genre = "Test Tag",
+                description = "",
+                rating = 0f,
+                status = "",
+                releasingEvery = "",
+                tags = ""
+            )
+            org.anibeaver.anibeaver.controller.EntriesController.addEntry(entry)
+            org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
         }) { Text("Add Test Card") }
 
         EditEntryPopup(
@@ -55,7 +66,10 @@ fun AnimeScreen(
                         id = card.id,
                         name = card.name,
                         labels = card.labels,
-                        onDelete = { CardsController.cards.removeIf { it.id == card.id } }
+                        onDelete = {
+                            org.anibeaver.anibeaver.controller.EntriesController.removeEntryById(card.id)
+                            org.anibeaver.anibeaver.controller.CardsController.syncWithEntries()
+                        }
                     )
                     Spacer(Modifier.width(12.dp))
                 }
