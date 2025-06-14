@@ -8,7 +8,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.setValue
 import org.anibeaver.anibeaver.controller.EntriesController
 
-data class AnimeCard(val id: Int, val name: String, val labels: String)
+data class AnimeCard(val id: Int, val name: String, val labels: String, val description: String)
 
 object CardsController {
     private val _cards = mutableStateListOf<AnimeCard>()
@@ -25,7 +25,8 @@ object CardsController {
                 AnimeCard(
                     id = entry.id,
                     name = entry.animeName,
-                    labels = entry.genre
+                    labels = entry.genre,
+                    description = entry.description
                 )
             )
         }

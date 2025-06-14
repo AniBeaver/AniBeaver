@@ -20,37 +20,36 @@ fun EntryCard(
     id: Int,
     name: String,
     labels: String,
+    description: String,
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
     Card(shape = RoundedCornerShape(6.dp)) {
         Row(
             Modifier
-                .height(120.dp)
-                .width(420.dp)
+                .height(100.dp)
+                .width(350.dp)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                Modifier
-                    .size(44.dp)
-                    .background(Color.LightGray, RoundedCornerShape(4.dp)),
+                Modifier.size(40.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("IMG", fontSize = 10.sp, color = Color.DarkGray)
+                Text("IMG", fontSize = 10.sp)
             }
-            Spacer(Modifier.width(16.dp))
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
                 Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Spacer(Modifier.height(8.dp))
-                Text(labels, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp, color = Color.Gray)
+                Text(labels, maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                Text(description, maxLines = 2, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
             }
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(12.dp))
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
-                Button(onClick = onEdit, contentPadding = PaddingValues(0.dp), modifier = Modifier.height(28.dp)) {
+                Button(onClick = onEdit, modifier = Modifier.height(28.dp)) {
                     Text("Edit", fontSize = 12.sp)
                 }
-                Button(onClick = onDelete, contentPadding = PaddingValues(0.dp), modifier = Modifier.height(28.dp)) {
+                Button(onClick = onDelete, modifier = Modifier.height(28.dp)) {
                     Text("Delete", fontSize = 12.sp)
                 }
             }
