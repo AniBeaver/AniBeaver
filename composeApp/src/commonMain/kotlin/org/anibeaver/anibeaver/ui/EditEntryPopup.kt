@@ -8,16 +8,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusOrder
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.ui.components.NumberPicker
 import org.anibeaver.anibeaver.ui.components.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.TagInput
 import org.anibeaver.anibeaver.ui.components.ImageInput
 
+data class EditEntryData(
+    val animeName: String,
+    val releaseYear: String,
+    val studioName: String,
+    val genre: String,
+    val description: String,
+    val rating: Float,
+    val status: String,
+    val releasingEvery: String,
+    val tags: String
+)
+
 @Composable
 fun EditEntryPopup(
     show: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onConfirm: (EditEntryData) -> Unit
 ) {
     var animeName by remember { mutableStateOf("") }
     var releaseYear by remember { mutableStateOf("") }
@@ -29,11 +45,36 @@ fun EditEntryPopup(
     var releasingEvery by remember { mutableStateOf("") }
     var tags by remember { mutableStateOf("") }
 
+    // FocusRequesters for tab navigation
+    val focusManager = LocalFocusManager.current
+    val animeNameRequester = remember { FocusRequester() }
+    val releaseYearRequester = remember { FocusRequester() }
+    val genreRequester = remember { FocusRequester() }
+    val studioNameRequester = remember { FocusRequester() }
+    val tagsRequester = remember { FocusRequester() }
+    val statusRequester = remember { FocusRequester() }
+    val releasingEveryRequester = remember { FocusRequester() }
+    val descriptionRequester = remember { FocusRequester() }
+
     if (show) {
         AlertDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                Button(onClick = onDismiss) {
+                Button(onClick = {
+                    onConfirm(
+                        EditEntryData(
+                            animeName = animeName,
+                            releaseYear = releaseYear,
+                            studioName = studioName,
+                            genre = genre,
+                            description = description,
+                            rating = rating,
+                            status = status,
+                            releasingEvery = releasingEvery,
+                            tags = tags
+                        )
+                    )
+                }) {
                     Text("Confirm")
                 }
             },
@@ -66,6 +107,8 @@ fun EditEntryPopup(
                                 onValueChange = { animeName = it },
                                 label = { Text("Anime Name") },
                                 modifier = Modifier.weight(1f)
+                                    .focusOrder(animeNameRequester) { next = releaseYearRequester },
+                                singleLine = true
                             )
                             OutlinedTextField(
                                 value = releaseYear,
@@ -77,6 +120,8 @@ fun EditEntryPopup(
                                 },
                                 label = { Text("Release Year") },
                                 modifier = Modifier.weight(1f)
+                                    .focusOrder(releaseYearRequester) { next = genreRequester },
+                                singleLine = true
                             )
                         }
                         TagInput(
@@ -84,18 +129,21 @@ fun EditEntryPopup(
                             onValueChange = { genre = it },
                             label = "Genre",
                             modifier = Modifier.fillMaxWidth()
+                                .focusOrder(genreRequester) { next = studioNameRequester }
                         )
                         TagInput(
                             value = studioName,
                             onValueChange = { studioName = it },
                             label = "Studio",
                             modifier = Modifier.fillMaxWidth()
+                                .focusOrder(studioNameRequester) { next = tagsRequester }
                         )
                         TagInput(
                             value = tags,
                             onValueChange = { tags = it },
                             label = "Custom Tags",
                             modifier = Modifier.fillMaxWidth()
+                                .focusOrder(tagsRequester) { next = statusRequester }
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             SimpleDropdown(
@@ -104,6 +152,7 @@ fun EditEntryPopup(
                                 onOptionSelected = { status = it },
                                 label = "Status",
                                 modifier = Modifier.weight(1f)
+                                    .focusOrder(statusRequester) { next = releasingEveryRequester }
                             )
                             SimpleDropdown(
                                 options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
@@ -111,6 +160,7 @@ fun EditEntryPopup(
                                 onOptionSelected = { releasingEvery = it },
                                 label = "Releasing Every",
                                 modifier = Modifier.weight(1f)
+                                    .focusOrder(releasingEveryRequester) { next = descriptionRequester }
                             )
                         }
                     }
@@ -121,7 +171,8 @@ fun EditEntryPopup(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp, bottom = 8.dp)
-                            .height(120.dp),
+                            .height(120.dp)
+                            .focusOrder(descriptionRequester),
                         maxLines = 5
                     )
                 }
