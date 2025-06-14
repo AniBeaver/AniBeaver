@@ -16,7 +16,7 @@ object EntriesController {
     )
     val entries: SnapshotStateList<Entry> get() = _entries
 
-    fun createEntry(
+    fun packEntry(
         animeName: String,
         releaseYear: String,
         studioName: String,

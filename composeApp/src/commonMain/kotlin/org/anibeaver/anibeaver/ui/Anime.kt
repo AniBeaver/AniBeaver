@@ -44,7 +44,7 @@ fun AnimeScreen(
                     showPopup = true
                 }) { Text("New Entry") }
                 Button(onClick = {
-                    val entry = EntriesController.createEntry(
+                    val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
                         releaseYear = "2025",
                         studioName = "Placeholder Studio",
@@ -65,7 +65,7 @@ fun AnimeScreen(
                     onDismiss = { showPopup = false },
                     onConfirm = { entryData ->
                         if (editingEntry == null) {
-                            val entry = EntriesController.createEntry(
+                            val entry = EntriesController.packEntry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
                                 studioName = entryData.studioName,
