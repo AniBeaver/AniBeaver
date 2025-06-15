@@ -48,7 +48,7 @@ fun HomeScreen(
         }
 
         Button(onClick = {
-            activityKiller()
+            dataWrapper.activityKiller()
         }) {
             Text("Close")
         }
