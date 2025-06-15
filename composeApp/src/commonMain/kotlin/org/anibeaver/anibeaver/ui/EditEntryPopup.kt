@@ -33,7 +33,7 @@ fun EditEntryPopup(
     var studioName by remember { mutableStateOf(initialEntry?.studioName ?: "") }
     var genre by remember { mutableStateOf(initialEntry?.genre ?: "") }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
-    var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.0f) }
+    var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
     var status by remember { mutableStateOf(initialEntry?.status ?: "") }
     var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
     var tags by remember { mutableStateOf(initialEntry?.tags ?: "") }
