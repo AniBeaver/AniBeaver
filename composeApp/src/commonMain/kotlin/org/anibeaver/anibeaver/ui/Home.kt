@@ -1,5 +1,7 @@
 package org.anibeaver.anibeaver.ui
 
+import org.anibeaver.anibeaver.DataWrapper
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -20,7 +22,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun HomeScreen(
-    navController: NavHostController = rememberNavController(), activityKiller : () -> Unit = {}
+    navController: NavHostController = rememberNavController(),
+    dataWrapper: DataWrapper
 ) {
     var showEditPopup by remember { mutableStateOf(false) }
     Column(modifier = Modifier.padding(32.dp)) {

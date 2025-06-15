@@ -21,13 +21,16 @@ import org.anibeaver.anibeaver.ui.AnimeScreen
 import org.anibeaver.anibeaver.ui.HomeScreen
 import org.anibeaver.anibeaver.ui.MangaScreen
 import org.anibeaver.anibeaver.ui.SettingsScreen
+import org.anibeaver.anibeaver.ui.TestScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
+import org.anibeaver.anibeaver.DataWrapper
+import org.anibeaver.anibeaver.api.ApiHandler
 
 @Composable
 @Preview
-fun App(navController: NavHostController = rememberNavController(), activityKiller: () -> Unit = {}) {
+fun App(navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper) {
     AniBeaverTheme (darkTheme = true) {
         Scaffold {
             Column{
@@ -43,16 +46,19 @@ fun App(navController: NavHostController = rememberNavController(), activityKill
                         .safeContentPadding()
                 ) {
                     composable (route = Screens.Home.name) {
-                        HomeScreen(navController, activityKiller)
+                        HomeScreen(navController, dataWrapper)
                     }
                     composable (route = Screens.Anime.name) {
-                        AnimeScreen(navController)
+                        AnimeScreen(navController, dataWrapper)
                     }
                     composable (route = Screens.Manga.name) {
                         MangaScreen(navController)
                     }
                     composable (route = Screens.Settings.name) {
                         SettingsScreen(navController)
+                    }
+                    composable (route = Screens.Test.name) {
+                        TestScreen(navController, dataWrapper)
                     }
                 }
             }
