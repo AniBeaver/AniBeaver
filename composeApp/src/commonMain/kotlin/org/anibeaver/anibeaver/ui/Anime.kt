@@ -1,8 +1,12 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
+import org.anibeaver.anibeaver.DataWrapper
+
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.core.EntriesController
@@ -19,11 +24,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.anibeaver.anibeaver.Screens
 import androidx.compose.foundation.layout.BoxWithConstraints
 import kotlin.math.max
+import androidx.compose.runtime.getValue
 
 @Composable
 @Preview
 fun AnimeScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    dataWrapper: DataWrapper
 ) {
     var showPopup by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.datastructures.Entry?>(null) }
