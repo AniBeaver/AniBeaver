@@ -82,7 +82,12 @@ fun EditEntryPopup(
                         )
                     )
                 }) {
-                    Text("Confirm")
+                    Text("Confirm/Create")
+                }
+            },
+            dismissButton = {
+                Button(onClick = onDismiss) {
+                    Text("Dismiss/Close")
                 }
             },
             title = { Text("Edit Entry") },
