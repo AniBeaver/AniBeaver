@@ -50,8 +50,4 @@ fun HomeScreen(
             Text("Close")
         }
     }
-    // Focus order for tab navigation
-    // This requires passing Modifier.focusOrder to each input in EditEntryPopup
-    // and managing FocusRequester chain
-    // See EditEntryPopup for implementation
 }

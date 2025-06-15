@@ -39,7 +39,6 @@ fun App(navController: NavHostController = rememberNavController(), activityKill
                     popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                     popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                     modifier = Modifier
-                        //.fillMaxSize()
                         .verticalScroll(rememberScrollState())
                         .safeContentPadding()
                 ) {
