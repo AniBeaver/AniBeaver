@@ -1,6 +1,7 @@
 package org.anibeaver.anibeaver.api
 
 import org.anibeaver.anibeaver.api.jsonStructures.*
+import org.anibeaver.anibeaver.api.ApiAuthorizationHandler
 
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -15,10 +16,9 @@ import io.ktor.client.call.body
 
 import kotlin.reflect.KClass
 
-abstract class ApiHandler{
-    abstract fun openUrl (url : String)
+class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
 
-    val client = HttpClient(CIO){
+    val client : HttpClient? = HttpClient(CIO){
         engine {
             // this: CIOEngineConfig
             maxConnectionsCount = 1000
@@ -38,52 +38,92 @@ abstract class ApiHandler{
             })
         }
     }
-    var standartVariables:Map<String, String> = emptyMap<String, String>()
+    
 
-    suspend fun makeManualRequest(
-        query : String = "",
-        variables: Map<String, String>? = null,
-        url: String = "https://graphql.anilist.co",
-        accesToken: String = ""
-    ):HttpResponse {
-        require(query!=null){"Null was passed as query"}
-        require(!query.isEmpty()){"An empty String has been passed as query"}
-        require(isValidQuery(query)){"An invalid query has been passed"}
-
-        val response = client.post(url) {
-            contentType(ContentType.Application.Json)
-            setBody(GraphQLRequest(
-                query = query.trimIndent(), 
-                variables = variables))
-        }
-
-        println(response.status.toString())
-        println(isValidResponse(response))
-        check(isValidResponse(response)){"Response was invalid. "  + response.status.toString()}
-        return response
+    inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
+        val requestType : RequestType? = getRequestTypeByClass(T::class)
+        check(requestType!=null){"No valid requestType was found. Try giving request type manually"}
+        makeAuthorizedRequest(variables = variables, valueSetter = valueSetter, requestType = requestType)
     }
-    private fun isValidQuery(query : String) : Boolean{return true}
-    private fun isValidResponse(response : HttpResponse) : Boolean{return (response.status.value==200)}
+    inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>, requestType: RequestType){
+        try {
+            if(apiAuthorizationHandler.authCodeStorage.accessToken==null){
+                apiAuthorizationHandler.getValidAccessToken()
+            }
+            check(apiAuthorizationHandler.authCodeStorage.accessToken!=null){"Access token was null"}
+            
+            var response : HttpResponse = makeManualRequest(
+                query = requestType.query,
+                variables = variables,
+                accessToken = apiAuthorizationHandler.authCodeStorage.accessToken
+            )
+            if(isExpiredTokenResponse(response)){
+                println("Access token no longer valid. Retrying ...")
+                apiAuthorizationHandler.getValidAccessToken()
+                response = makeManualRequest(
+                    query = requestType.query,
+                    variables = variables,
+                    accessToken = apiAuthorizationHandler.authCodeStorage.accessToken
+                )
+            }
+
+            check(isValidResponse(response)){"Invalid Http Response: " + response.status.toString()}
+            val jsonBody : T = response.body()
+            valueSetter.callValueSet(jsonBody)
+        }
+        catch(e: Exception) {
+            println("Api request failed with following error:")
+            println(e.toString())
+        }
+    }
 
     inline suspend fun <reified T> makeRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
         val requestType : RequestType? = getRequestTypeByClass(T::class)
         check(requestType!=null){"No valid requestType was found. Try giving request type manually"}
         makeRequest(variables = variables, valueSetter = valueSetter, requestType = requestType)
     }
+
     inline suspend fun <reified T> makeRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>, requestType: RequestType){
         try {
             val response : HttpResponse = makeManualRequest(
                 query = requestType.query,
-                variables = standartVariables + variables
+                variables = variables
             )
+            check(isValidResponse(response)){"Invalid Http Response: " + response.status.toString()}
             val jsonBody : T = response.body()
             valueSetter.callValueSet(jsonBody)
         }
-        catch(e: IllegalStateException) {
+        catch(e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
         }
     }
+
+    suspend fun makeManualRequest(
+        query : String = "",
+        variables: Map<String, String>? = null,
+        url: String = "https://graphql.anilist.co",
+        accessToken: String? = null
+    ):HttpResponse {
+        require(query!=null){"Null was passed as query"}
+        require(!query.isEmpty()){"An empty String has been passed as query"}
+        require(isValidQuery(query)){"An invalid query has been passed"}
+        require(client != null){"Client was null while trying to make a Api request."}
+
+        val response = client.post(url) {
+            contentType(ContentType.Application.Json)
+            if(accessToken != null){header("Authorization", "Bearer " + accessToken)}
+            setBody(GraphQLRequest(
+                query = query.trimIndent(), 
+                variables = variables))
+        }
+
+        return response
+    }
+    private fun isValidQuery(query: String): Boolean{return true}
+    fun isValidResponse(response: HttpResponse): Boolean{return (response.status.value==200)}
+    fun isExpiredTokenResponse(response: HttpResponse): Boolean{return (response.status.value==404)}
+
     suspend fun getRequestTypeByClass(expectedClass : KClass<*>) : RequestType?{
         for(requestType in RequestType.entries){
             if(requestType.associateClass == expectedClass){return requestType}

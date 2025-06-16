@@ -40,7 +40,7 @@ fun TestScreen(
         }
 
         Button(onClick = {
-                dataWrapper.apiHandler.openUrl("https://anilist.co/api/v2/oauth/authorize?client_id=27567&response_type=token")
+                scope.launch{dataWrapper.apiHandler.apiAuthorizationHandler.getValidAccessToken()}
             }) {
                 Text("Get Auth Code")
             }
@@ -49,8 +49,8 @@ fun TestScreen(
         Text(text2)
 
         scope.launch{
-            dataWrapper.apiHandler.makeRequest(
-                variables = mapOf("userName" to "AAA", "type" to "ANIME"),
+            dataWrapper.apiHandler.makeAuthorizedRequest(
+                variables = mapOf("userName" to "AnAnteater", "type" to "ANIME"),
                 valueSetter = ValueSetter({m:MediaListResponse -> text2 = (m.data.MediaListCollection.lists.get(0).entries.get(1).media.title.english.toString())})
             )
         }
