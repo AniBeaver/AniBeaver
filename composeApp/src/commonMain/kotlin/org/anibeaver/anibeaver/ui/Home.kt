@@ -46,6 +46,11 @@ fun HomeScreen(
         }) {
             Text("Go to Settings")
         }
+        Button(onClick = {
+            navController.navigate(Screens.Test.name)
+        }) {
+            Text("Test")
+        }
 
         Button(onClick = {
             dataWrapper.activityKiller()

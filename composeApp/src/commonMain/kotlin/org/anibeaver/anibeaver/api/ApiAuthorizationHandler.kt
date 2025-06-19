@@ -143,7 +143,6 @@ abstract class ApiAuthorizationHandler{
         authCodeStorage.accessToken = jsonBody.access_token
     }
     private fun retrieveClientSecret() : String{
-        check(false){"Client secret is not present"}
         return ""
     }
 }

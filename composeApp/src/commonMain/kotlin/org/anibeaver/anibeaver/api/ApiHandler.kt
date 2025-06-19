@@ -9,10 +9,11 @@ import io.ktor.http.*
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
-import io.ktor.client.call.body
+import kotlinx.serialization.Contextual
 
 import kotlin.reflect.KClass
 
@@ -101,7 +102,7 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
 
     suspend fun makeManualRequest(
         query : String = "",
-        variables: Map<String, String>? = null,
+        variables: Map<String, String>,
         url: String = "https://graphql.anilist.co",
         accessToken: String? = null
     ):HttpResponse {
@@ -109,6 +110,7 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
         require(!query.isEmpty()){"An empty String has been passed as query"}
         require(isValidQuery(query)){"An invalid query has been passed"}
         require(client != null){"Client was null while trying to make a Api request."}
+        require(variables.size!=0){"No variables were passed"}
 
         val response = client.post(url) {
             contentType(ContentType.Application.Json)
@@ -135,7 +137,7 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
 @Serializable
 data class GraphQLRequest(
     val query: String,
-    val variables: Map<String, String>? = null
+    val variables: Map<String, String>
 )
 
 class ValueSetter<T>(val callValueSet : (T) -> Unit)
@@ -148,6 +150,7 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                     lists {
                         entries {
                             media {
+                                id
                                 title {
                                     english
                                 }
@@ -156,6 +159,28 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                     }
                 }
             }""",
-        associateClass = MediaListResponse::class
+        associateClass = MediaListQuery::class
+    ),
+    MEDIA(
+        query = """
+            query Media(${'$'}mediaId: Int, ${'$'}type: MediaType, ${'$'}tag: String, ${'$'}search: String) {
+                Media(id: ${'$'}mediaId, type: ${'$'}type, tag: ${'$'}tag, search: ${'$'}search) {
+                    id
+                    title {
+                        english
+                    }
+                }
+            }""",
+        associateClass = MediaQuery::class
+    ),
+    SAVE_MEDIA_LIST_ENTRY(
+        query = """
+            mutation Mutation(${'$'}saveMediaListEntryId: Int, ${'$'}status: MediaListStatus, ${'$'}score: Float, ${'$'}scoreRaw: Int, ${'$'}progress: Int, ${'$'}progressVolumes: Int, ${'$'}private: Boolean, ${'$'}notes: String, ${'$'}mediaId: Int) {
+                SaveMediaListEntry(id: ${'$'}saveMediaListEntryId, status: ${'$'}status, score: ${'$'}score, scoreRaw: ${'$'}scoreRaw, progress: ${'$'}progress, progressVolumes: ${'$'}progressVolumes, private: ${'$'}private, notes: ${'$'}notes, mediaId: ${'$'}mediaId) {
+                    id
+                    notes
+                }
+            }""",
+        associateClass = SaveMediaListQuery::class
     )
 }

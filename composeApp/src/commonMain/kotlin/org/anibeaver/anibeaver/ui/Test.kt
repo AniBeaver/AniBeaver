@@ -49,9 +49,20 @@ fun TestScreen(
         Text(text2)
 
         scope.launch{
+            var id: Int = 0
+            dataWrapper.apiHandler.makeRequest(
+                variables = mapOf("search" to "ame to kimi to", "type" to "MANGA"),
+                valueSetter = ValueSetter({mediaQuery:MediaQuery -> id = (mediaQuery.data.media.id)})
+            )
+            var notes: String = ""
             dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("userName" to "AnAnteater", "type" to "ANIME"),
-                valueSetter = ValueSetter({m:MediaListResponse -> text2 = (m.data.MediaListCollection.lists.get(0).entries.get(1).media.title.english.toString())})
+                variables = mapOf("mediaId" to id.toString()),
+                valueSetter = ValueSetter({m:SaveMediaListQuery -> notes = m.data.saveMediaListEntry.notes.toString()})
+            )
+            //text2 = notes
+            dataWrapper.apiHandler.makeAuthorizedRequest(
+                variables = mapOf("mediaId" to id.toString(), "status" to "PLANNING", "notes" to notes+"test"),
+                valueSetter = ValueSetter({m:SaveMediaListQuery -> println("Mutation completed")})
             )
         }
     }
