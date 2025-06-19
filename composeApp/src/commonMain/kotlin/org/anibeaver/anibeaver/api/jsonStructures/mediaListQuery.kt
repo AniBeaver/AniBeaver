@@ -1,15 +1,18 @@
 package org.anibeaver.anibeaver.api.jsonStructures
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+
+import org.anibeaver.anibeaver.api.jsonStructures.Media
 
 @Serializable
-data class MediaListResponse(
-    val data: Data
+data class MediaListQuery(
+    val data: MediaListQueryData
 )
 
 @Serializable
-data class Data(
-    val MediaListCollection: MediaListCollection
+data class MediaListQueryData(
+    @SerialName("MediaListCollection") val mediaListCollection: MediaListCollection
 )
 
 @Serializable
@@ -24,14 +27,4 @@ data class MediaList(
 @Serializable
 data class MediaEntry(
     val media: Media
-)
-
-@Serializable
-data class Media(
-    val title: Title
-)
-
-@Serializable
-data class Title(
-    val english: String?
 )
