@@ -13,11 +13,12 @@ import org.anibeaver.anibeaver.ui.components.ColorPicker
 
 @Composable
 fun TagRow(
+    tagId: Int,
     tagName: String,
     onTagNameChange: (String) -> Unit,
     tagHex: String,
     onTagHexChange: (String) -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -34,7 +35,7 @@ fun TagRow(
             onHexChange = onTagHexChange,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onClick = onDelete) {
+        IconButton(onClick = { onDelete(tagId) }) {
             Text("Del")
         }
     }
