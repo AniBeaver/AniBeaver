@@ -116,8 +116,7 @@ fun AnimeScreen(
                 show = showManageTags,
                 onDismiss = { showManageTags = false },
                 onConfirm = { showManageTags = false },
-                onCreateTag = { showNewTagPopupFromManage = true },
-                onRefresh = { refreshTags() }
+                onCreateTag = { showNewTagPopupFromManage = true }
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
