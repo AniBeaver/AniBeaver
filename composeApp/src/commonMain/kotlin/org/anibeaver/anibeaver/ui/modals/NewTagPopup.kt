@@ -54,14 +54,14 @@ fun NewTagPopup(
                         singleLine = true,
                         label = { Text("Tag Name") },
                         modifier = Modifier.weight(1f),
-                        textStyle = androidx.compose.ui.text.TextStyle(color = org.anibeaver.anibeaver.ui.components.parseHexColor(tagHex))
+                        textStyle = TextStyle(color = parseHexColor(tagHex))
                     )
                     Spacer(Modifier.width(8.dp))
                     Box(
                         modifier = Modifier.size(32.dp).background(
                             try {
                                 val cleanHex = tagHex.removePrefix("#")
-                                if (cleanHex.length == 6) org.anibeaver.anibeaver.ui.components.parseHexColor(tagHex)
+                                if (cleanHex.length == 6) parseHexColor(tagHex)
                                 else Color.White
                             } catch (_: Exception) {
                                 Color.White

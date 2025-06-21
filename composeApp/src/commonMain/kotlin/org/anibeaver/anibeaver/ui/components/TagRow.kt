@@ -8,8 +8,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.ui.components.ColorPicker
+import org.anibeaver.anibeaver.ui.components.parseHexColor
 
 @Composable
 fun TagRow(
@@ -28,7 +30,7 @@ fun TagRow(
             singleLine = true,
             label = { Text("Tag Name") },
             modifier = Modifier.weight(1f),
-            textStyle = androidx.compose.ui.text.TextStyle(color = org.anibeaver.anibeaver.ui.components.parseHexColor(tagHex))
+            textStyle = TextStyle(color = parseHexColor(tagHex))
         )
         ColorPicker(
             hex = tagHex,

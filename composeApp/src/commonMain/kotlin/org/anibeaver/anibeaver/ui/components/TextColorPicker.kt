@@ -29,19 +29,14 @@ fun ColorPicker(
             onValueChange = onHexChange,
             label = { Text("Hex") },
             singleLine = true,
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(8.dp),
-            colors = androidx.compose.material3.OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent
-            )
+            modifier = Modifier.weight(1f)
         )
         Box(
             Modifier
                 .weight(1f)
                 .height(56.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
+                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
                 .background(org.anibeaver.anibeaver.ui.components.parseHexColor(hex))
         )
     }
