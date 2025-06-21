@@ -43,8 +43,9 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
-            implementation("org.jetbrains.compose.material3.adaptive:adaptive-navigation:1.0.0-alpha03") // Added M3 Adaptive Navigation
-            implementation(compose.material.iconsCore) // Material Icons Core
+            implementation(compose.material3AdaptiveNavigationSuite)
+            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Core
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
