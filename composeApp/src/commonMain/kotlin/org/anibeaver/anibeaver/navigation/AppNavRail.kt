@@ -1,5 +1,6 @@
 package org.anibeaver.anibeaver.navigation
 
+import androidx.compose.foundation.layout.fillMaxHeight // Added import
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem

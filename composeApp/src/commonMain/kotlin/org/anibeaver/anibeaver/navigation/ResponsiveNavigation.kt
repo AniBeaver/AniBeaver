@@ -1,6 +1,6 @@
 package org.anibeaver.anibeaver.navigation
 
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass // This was correct
 import androidx.compose.runtime.Composable
 // Modifier is not directly used by this decision-making composable anymore
 // import androidx.compose.ui.Modifier

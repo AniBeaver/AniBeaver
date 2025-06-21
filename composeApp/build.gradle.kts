@@ -43,6 +43,8 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation("androidx.compose.material3:material3-window-size-class:1.2.1") // Added M3 Window Size Class
+            implementation(compose.material.iconsCore) // Added Material Icons Core
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
