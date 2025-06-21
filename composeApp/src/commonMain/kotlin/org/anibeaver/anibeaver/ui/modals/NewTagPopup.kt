@@ -28,7 +28,6 @@ fun NewTagPopup(
     var tagName by remember { mutableStateOf(initialTagName) }
     var tagHex by remember { mutableStateOf(initialHex.ifBlank { "#FFFFFF" }) }
 
-    // Reset fields to initial values every time the popup is shown
     LaunchedEffect(show) {
         if (show) {
             tagName = initialTagName
