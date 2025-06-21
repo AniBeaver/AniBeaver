@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.ui.components.ColorPicker
+import org.anibeaver.anibeaver.ui.components.DeleteButton
 import org.anibeaver.anibeaver.ui.components.parseHexColor
 
 @Composable
@@ -37,8 +38,6 @@ fun TagRow(
             onHexChange = onTagHexChange,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onClick = { onDelete(tagId) }) {
-            Text("Del")
-        }
+        DeleteButton(onClick = { onDelete(tagId) })
     }
 }
