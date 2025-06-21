@@ -2,11 +2,19 @@ package org.anibeaver.anibeaver.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+
+@Composable
+fun DeleteButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        androidx.compose.material3.Text("Del")
+    }
+}
 
 @Composable
 fun ItemRow(
@@ -30,8 +38,6 @@ fun ItemRow(
             singleLine = true,
             modifier = Modifier.weight(1f)
         )
-        IconButton(onClick = onDelete) {
-            androidx.compose.material3.Text("✕")
-        }
+        DeleteButton(onClick = onDelete)
     }
 }
