@@ -25,12 +25,7 @@ fun ManageTagsModal(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = onConfirm) {
-                    Text("Confirm/Save")
-                }
-            },
-            dismissButton = {
-                Button(onClick = onDismiss) {
-                    Text("Dismiss/Undo")
+                    Text("Confirm") //TODO: is this really the right word? It's more like "close" or "ok"
                 }
             },
             title = { Text("Manage Tags") },
@@ -39,23 +34,25 @@ fun ManageTagsModal(
                     Button(onClick = onCreateTag, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         Text("Create new tag")
                     }
-                    // Tag management UI: scrollable list of TagRow for all tags
                     androidx.compose.foundation.layout.Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 240.dp)
+                            .heightIn(max = 400.dp, min=400.dp)
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         for (tag in TagsController.tags) {
-                            var name by remember { mutableStateOf(tag.name) }
-                            var hex by remember { mutableStateOf(tag.color) }
                             TagRow(
-                                tagName = name,
-                                onTagNameChange = { name = it },
-                                tagHex = hex,
-                                onTagHexChange = { hex = it },
-                                onDelete = { TagsController.removeTagById(tag.getId()) }
+                                tagId = tag.getId(),
+                                tagName = tag.name,
+                                onTagNameChange = { name ->
+                                    TagsController.updateTag(tag.getId(), name, tag.color)
+                                },
+                                tagHex = tag.color,
+                                onTagHexChange = { hex ->
+                                    TagsController.updateTag(tag.getId(), tag.name, hex)
+                                },
+                                onDelete = { id -> TagsController.removeTagById(id) }
                             )
                         }
                     }
