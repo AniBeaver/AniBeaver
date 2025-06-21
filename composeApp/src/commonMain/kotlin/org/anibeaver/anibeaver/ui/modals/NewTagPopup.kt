@@ -28,6 +28,18 @@ fun NewTagPopup(
     var tagName by remember { mutableStateOf(initialTagName) }
     var tagHex by remember { mutableStateOf(initialHex.ifBlank { "#FFFFFF" }) }
 
+    // Reset fields to initial values every time the popup is shown
+    LaunchedEffect(show) {
+        if (show) {
+            tagName = initialTagName
+            tagHex = initialHex.ifBlank { "#FFFFFF" }
+        }
+    }
+
+    val isHexValid = tagHex.matches(Regex("^#([A-Fa-f0-9]{6})$"))
+    val isNameValid = tagName.isNotBlank()
+    val isConfirmEnabled = isHexValid && isNameValid
+
     if (!show) return
 
     AlertDialog(
@@ -65,7 +77,7 @@ fun NewTagPopup(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(tagName, tagHex) }) {
+            Button(onClick = { onConfirm(tagName, tagHex) }, enabled = isConfirmEnabled) {
                 Text("Confirm/Create")
             }
         },
