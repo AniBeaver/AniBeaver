@@ -6,7 +6,6 @@ import org.anibeaver.anibeaver.DataWrapper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.core.EntriesController
@@ -24,7 +22,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.anibeaver.anibeaver.Screens
 import androidx.compose.foundation.layout.BoxWithConstraints
 import kotlin.math.max
-import androidx.compose.runtime.getValue
+import org.anibeaver.anibeaver.datastructures.Entry
+import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
+import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
+import org.anibeaver.anibeaver.ui.modals.NewTagPopup
 
 @Composable
 @Preview
@@ -34,6 +35,12 @@ fun AnimeScreen(
 ) {
     var showPopup by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.datastructures.Entry?>(null) }
+    var showManageTags by remember { mutableStateOf(false) }
+    var showNewTagPopupFromManage by remember { mutableStateOf(false) }
+
+    fun refreshTags() {
+        // TODO: Implement tag refresh logic here
+    }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
@@ -50,6 +57,7 @@ fun AnimeScreen(
                     editingEntry = null
                     showPopup = true
                 }) { Text("New Entry") }
+                Button(onClick = { showManageTags = true }) { Text("Manage tags") }
                 Button(onClick = {
                     val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
@@ -85,7 +93,7 @@ fun AnimeScreen(
                             )
                             EntriesController.addEntry(entry)
                         } else {
-                            val updatedEntry = org.anibeaver.anibeaver.datastructures.Entry(
+                            val updatedEntry = Entry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
                                 studioName = entryData.studioName,
@@ -104,6 +112,18 @@ fun AnimeScreen(
                     initialEntry = editingEntry
                 )
             }
+            ManageTagsModal(
+                show = showManageTags,
+                onDismiss = { showManageTags = false },
+                onConfirm = { showManageTags = false },
+                onCreateTag = { showNewTagPopupFromManage = true },
+                onRefresh = { refreshTags() }
+            )
+            NewTagPopup(
+                show = showNewTagPopupFromManage,
+                onDismiss = { showNewTagPopupFromManage = false },
+                onConfirm = { _, _ -> showNewTagPopupFromManage = false }
+            )
 
             // Grid
             EntriesController.entries.chunked(columns).forEach { rowEntries ->
