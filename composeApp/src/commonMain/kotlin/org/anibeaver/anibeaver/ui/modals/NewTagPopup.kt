@@ -1,5 +1,7 @@
 package org.anibeaver.anibeaver.ui.modals
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -7,11 +9,25 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.anibeaver.anibeaver.ui.components.ColorPicker
+
+fun parseHexColor(hex: String): Color {
+    return try {
+        val cleanHex = hex.removePrefix("#")
+        if (cleanHex.length == 6) {
+            val intColor = cleanHex.toLong(16).toInt()
+            Color(
+                red = ((intColor shr 16) and 0xFF) / 255f,
+                green = ((intColor shr 8) and 0xFF) / 255f,
+                blue = (intColor and 0xFF) / 255f
+            )
+        } else Color.Black
+    } catch (_: Exception) {
+        Color.Black
+    }
+}
 
 @Composable
 fun NewTagPopup(
@@ -23,54 +39,54 @@ fun NewTagPopup(
 ) {
     var tagName by remember { mutableStateOf(initialTagName) }
     var tagHex by remember { mutableStateOf(initialHex) }
+    var showColorPalette by remember { mutableStateOf(false) }
 
-    // Reset fields when initial values change
-    LaunchedEffect(initialTagName, initialHex) {
-        tagName = initialTagName
-        tagHex = initialHex
-    }
+    if (!show) return
 
-    val focusManager = LocalFocusManager.current
-    val tagNameRequester = remember { FocusRequester() }
-    val tagHexRequester = remember { FocusRequester() }
-
-    if (show) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                Button(onClick = {
-                    onConfirm(tagName, tagHex)
-                }) {
-                    Text("Confirm/Create")
-                }
-            },
-            dismissButton = {
-                Button(onClick = onDismiss) {
-                    Text("Dismiss/Close")
-                }
-            },
-            title = { Text("New Tag") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = tagName,
-                        onValueChange = { tagName = it },
-                        label = { Text("Tag Name") },
-                        modifier = Modifier.fillMaxWidth()
-                            .focusRequester(tagNameRequester)
-                            .focusProperties { next = tagHexRequester },
-                        singleLine = true
-                    )
-                    OutlinedTextField(
-                        value = tagHex,
-                        onValueChange = { tagHex = it },
-                        label = { Text("Tag Hex Code") },
-                        modifier = Modifier.fillMaxWidth()
-                            .focusRequester(tagHexRequester),
-                        singleLine = true
-                    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("New Tag") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = tagName,
+                    onValueChange = { tagName = it },
+                    label = { Text("Tag Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                ColorPicker(
+                    hex = tagHex,
+                    onHexChange = { tagHex = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (showColorPalette) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf("#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF").forEach { hex ->
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(32.dp)
+                                    .background(parseHexColor(hex))
+                                    .clickable {
+                                        tagHex = hex
+                                        showColorPalette = false
+                                    }
+                            )
+                        }
+                    }
                 }
             }
-        )
-    }
+        },
+        confirmButton = {
+            Button(onClick = { onConfirm(tagName, tagHex) }) {
+                Text("Confirm/Create")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Dismiss/Close")
+            }
+        }
+    )
 }
