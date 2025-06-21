@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState // Added import
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.navigation.Screens
 import org.anibeaver.anibeaver.navigation.mainNavigationItems
@@ -25,10 +25,7 @@ import org.anibeaver.anibeaver.ui.MangaScreen
 import org.anibeaver.anibeaver.ui.SettingsScreen
 import org.anibeaver.anibeaver.ui.TestScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.material3.adaptive.navigation.NavigationSuiteScaffold
-// Potentially, if the above doesn't bring NavigationSuiteScaffold directly:
-// import androidx.compose.material3.adaptive.navigation.NavigationSuiteScaffold
-
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
 import org.anibeaver.anibeaver.DataWrapper
