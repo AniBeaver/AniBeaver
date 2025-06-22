@@ -181,7 +181,7 @@ fun EditEntryPopup(
                         tags = tagsIds,
                         onTagsChange = { tagsIds = it },
                         tagType = TagType.CUSTOM,
-                        label = "Custom Tags",
+                        label = "Tags",
                         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(tagsRequester),
                         onCreateTagClick = {
                             newTagInitialType = TagType.CUSTOM
