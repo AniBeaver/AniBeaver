@@ -2,11 +2,12 @@ package org.anibeaver.anibeaver.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -38,6 +39,8 @@ fun TagChipInput(
         var textFieldWidth by remember { mutableStateOf(0) }
         val density = LocalDensity.current
         Box(modifier = Modifier.fillMaxWidth()) {
+            val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+
             OutlinedTextField(
                 value = input,
                 onValueChange = {
@@ -49,7 +52,8 @@ fun TagChipInput(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldWidth = coordinates.size.width
-                    },
+                    }
+                    .focusRequester(focusRequester),
                 leadingIcon = {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -64,7 +68,9 @@ fun TagChipInput(
                             )
                         }
                     }
-                }
+                },
+                keyboardOptions = KeyboardOptions.Default,
+                // Remove broken KeyboardActions, handle key events manually
             )
             // Custom suggestion dropdown below the text field
             if (input.isNotBlank() && suggestions.isNotEmpty()) {
@@ -76,7 +82,7 @@ fun TagChipInput(
                     Surface(
                         tonalElevation = 4.dp,
                         shape = MaterialTheme.shapes.medium,
-                        color = Color(0xFF181818), // much blacker background
+                        color = Color(0xFF181818),
                         modifier = Modifier
                             .width(with(density) { textFieldWidth.toDp() })
                     ) {
@@ -104,9 +110,10 @@ fun TagChipInput(
         }
     }
     LaunchedEffect(input) {
-        if (input.endsWith(",") && input.dropLast(1).isNotBlank()) {
-            val newTag = input.dropLast(1).trim()
-            val matchedTag = suggestions.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
+        val trimmed = input.trimEnd()
+        if ((trimmed.endsWith(",") || trimmed.endsWith(" ")) && trimmed.dropLast(1).isNotBlank()) {
+            val newTag = trimmed.dropLast(1).trim()
+            val matchedTag = allSuggestions.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
             if (matchedTag != null && matchedTag.getId() !in tags) {
                 onTagsChange(tags + matchedTag.getId())
             }
