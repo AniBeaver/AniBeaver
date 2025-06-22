@@ -9,6 +9,7 @@ object TagsController {
     private var nextId = 1
     private val _tags = mutableStateListOf<Tag>()
     val tags: SnapshotStateList<Tag> get() = _tags
+    // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
 
     init {
         listOf(
