@@ -1,6 +1,5 @@
 package org.anibeaver.anibeaver.ui.modals
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -14,16 +13,13 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import org.anibeaver.anibeaver.datastructures.Entry
-import org.anibeaver.anibeaver.ui.components.FloatPicker
-import org.anibeaver.anibeaver.ui.components.SimpleDropdown
-import org.anibeaver.anibeaver.ui.components.TagChipInput
-import org.anibeaver.anibeaver.datastructures.TagType
-import org.anibeaver.anibeaver.ui.components.ImageInput
-import org.anibeaver.anibeaver.ui.components.YearPicker
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import org.anibeaver.anibeaver.ui.modals.NewTagPopup
+import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.TagType
+import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
+import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
+import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
+import org.anibeaver.anibeaver.ui.components.basic.ImageInput
+import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 
 //TODO: tiny windows not supported still
 @Composable
@@ -74,22 +70,20 @@ fun EditEntryPopup(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = {
-                    if (studioIds.isNotEmpty() && genreIds.isNotEmpty()) {
-                        onConfirm(
-                            Entry(
-                                animeName = animeName,
-                                releaseYear = releaseYear,
-                                studioIds = studioIds,
-                                genreIds = genreIds,
-                                description = description,
-                                rating = rating,
-                                status = status,
-                                releasingEvery = releasingEvery,
-                                tagIds = tagsIds,
-                                id = initialEntry?.getId() ?: 0
-                            )
+                    onConfirm(
+                        Entry(
+                            animeName = animeName,
+                            releaseYear = releaseYear,
+                            studioIds = studioIds,
+                            genreIds = genreIds,
+                            description = description,
+                            rating = rating,
+                            status = status,
+                            releasingEvery = releasingEvery,
+                            tagIds = tagsIds,
+                            id = initialEntry?.getId() ?: 0
                         )
-                    }
+                    )
                 }) {
                     Text("Confirm/Create")
                 }

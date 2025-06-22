@@ -2,8 +2,8 @@ package org.anibeaver.anibeaver.core
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import org.anibeaver.anibeaver.datastructures.Tag
-import org.anibeaver.anibeaver.datastructures.TagType
+import org.anibeaver.anibeaver.core.datastructures.Tag
+import org.anibeaver.anibeaver.core.datastructures.TagType
 
 object TagsController {
     private var nextId = 1

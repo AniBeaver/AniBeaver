@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.TagsController
-import org.anibeaver.anibeaver.ui.components.TagRow
+import org.anibeaver.anibeaver.ui.components.tag_chips.TagRow
 
 @Composable
 fun ManageTagsModal(
@@ -22,9 +22,9 @@ fun ManageTagsModal(
         var selectedTab by remember { mutableStateOf(0) }
         val tabTitles = listOf("Custom", "Genre", "Studio")
         val tagTypes = listOf(
-            org.anibeaver.anibeaver.datastructures.TagType.CUSTOM,
-            org.anibeaver.anibeaver.datastructures.TagType.GENRE,
-            org.anibeaver.anibeaver.datastructures.TagType.STUDIO
+            org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM,
+            org.anibeaver.anibeaver.core.datastructures.TagType.GENRE,
+            org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO
         )
         AlertDialog(
             onDismissRequest = onDismiss,
