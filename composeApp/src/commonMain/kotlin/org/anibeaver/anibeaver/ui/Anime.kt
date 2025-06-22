@@ -62,7 +62,7 @@ fun AnimeScreen(
                     val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
                         releaseYear = "2025",
-                        studioId = 18, // Bones studio id
+                        studioIds = listOf(18), // Bones studio id
                         genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
                         description = "This is a placeholder entry.",
                         rating = 8.5f,
@@ -83,7 +83,7 @@ fun AnimeScreen(
                             val entry = EntriesController.packEntry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioId = entryData.studioId,
+                                studioIds = entryData.studioIds,
                                 genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
@@ -96,7 +96,7 @@ fun AnimeScreen(
                             val updatedEntry = Entry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioId = entryData.studioId,
+                                studioIds = entryData.studioIds,
                                 genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
@@ -134,13 +134,13 @@ fun AnimeScreen(
                     Spacer(Modifier.width(cardSpacing))
 
                     rowEntries.forEach { entry ->
-                        val studioTag = org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == entry.studioId }?.name
+                        val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
                         val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
                         val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
                         EntryCard(
                             id = entry.getId(),
                             name = entry.animeName,
-                            tags = (genreTags + entry.releaseYear + listOfNotNull(studioTag) + customTags).joinToString(", "),
+                            tags = (genreTags + entry.releaseYear + studioTags + customTags).joinToString(", "),
                             description = entry.description,
                             onEdit = {
                                 editingEntry = entry

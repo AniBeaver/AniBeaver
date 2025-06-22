@@ -33,7 +33,7 @@ fun EditEntryPopup(
 ) {
     var animeName by remember { mutableStateOf(initialEntry?.animeName ?: "") }
     var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "2010") }
-    var studioId by remember { mutableStateOf(initialEntry?.studioId) }
+    var studioIds by remember { mutableStateOf(initialEntry?.studioIds ?: emptyList()) }
     var genreIds by remember { mutableStateOf(initialEntry?.genreIds ?: emptyList()) }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
     var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
@@ -46,7 +46,7 @@ fun EditEntryPopup(
     LaunchedEffect(initialEntry) {
         animeName = initialEntry?.animeName ?: ""
         releaseYear = initialEntry?.releaseYear ?: "2010"
-        studioId = initialEntry?.studioId
+        studioIds = initialEntry?.studioIds ?: emptyList()
         genreIds = initialEntry?.genreIds ?: emptyList()
         description = initialEntry?.description ?: ""
         rating = initialEntry?.rating ?: 8.5f
@@ -71,19 +71,19 @@ fun EditEntryPopup(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = {
-                    if (studioId != null && genreIds.isNotEmpty()) {
+                    if (studioIds.isNotEmpty() && genreIds.isNotEmpty()) {
                         onConfirm(
                             Entry(
-                                id = 0, // id to be set by EntriesController
                                 animeName = animeName,
                                 releaseYear = releaseYear,
-                                studioId = studioId!!,
+                                studioIds = studioIds,
                                 genreIds = genreIds,
                                 description = description,
                                 rating = rating,
                                 status = status,
                                 releasingEvery = releasingEvery,
-                                tagIds = tagsIds
+                                tagIds = tagsIds,
+                                id = initialEntry?.getId() ?: 0
                             )
                         )
                     }
@@ -117,7 +117,6 @@ fun EditEntryPopup(
                             )
                         }
                     }
-                    // Main info fields
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
                             value = animeName,
@@ -140,7 +139,22 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(releaseYearRequester).focusProperties { next = genreRequester }
                         )
                     }
-                    // Tag pickers grouped
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        SimpleDropdown(
+                            options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
+                            selectedOption = status,
+                            onOptionSelected = { status = it },
+                            label = "Status",
+                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
+                        )
+                        SimpleDropdown(
+                            options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
+                            selectedOption = releasingEvery,
+                            onOptionSelected = { releasingEvery = it },
+                            label = "Releasing Every",
+                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
+                        )
+                    }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         TagChipInput(
                             tags = genreIds,
@@ -149,15 +163,28 @@ fun EditEntryPopup(
                             label = "Genre",
                             modifier = Modifier.weight(1f).focusRequester(genreRequester)
                         )
+                        Button(
+                            onClick = { showNewTagPopup = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text("Create tag")
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         TagChipInput(
-                            tags = studioId?.let { listOf(it) } ?: emptyList(),
-                            onTagsChange = { studioId = it.firstOrNull() },
+                            tags = studioIds,
+                            onTagsChange = { studioIds = it },
                             tagType = TagType.STUDIO,
                             label = "Studio",
                             modifier = Modifier.weight(1f).focusRequester(studioNameRequester)
                         )
+                        Button(
+                            onClick = { showNewTagPopup = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text("Create tag")
+                        }
                     }
-                    // Custom tags and create button
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         TagChipInput(
                             tags = tagsIds,
@@ -181,23 +208,7 @@ fun EditEntryPopup(
                             showNewTagPopup = false
                         }
                     )
-                    // Status and releasing every
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        SimpleDropdown(
-                            options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
-                            selectedOption = status,
-                            onOptionSelected = { status = it },
-                            label = "Status",
-                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
-                        )
-                        SimpleDropdown(
-                            options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
-                            selectedOption = releasingEvery,
-                            onOptionSelected = { releasingEvery = it },
-                            label = "Releasing Every",
-                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
-                        )
-                    }
+
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },

@@ -13,7 +13,7 @@ object EntriesController {
         Entry(
             "Fullmetal Alchemist: Brotherhood",
             "2009",
-            18, // Bones studio id
+            listOf(18), // Bones studio id
             listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
             "Epic alchemy adventure.",
             9.5f,
@@ -25,7 +25,7 @@ object EntriesController {
         Entry(
             "Steins;Gate",
             "2011",
-            15, // White Fox studio id
+            listOf(15), // White Fox studio id
             listOf(12, 13), // Sci-Fi, Thriller genre ids
             "Time travel thriller.",
             9.0f,
@@ -37,7 +37,7 @@ object EntriesController {
         Entry(
             "Your Lie in April",
             "2014",
-            16, // A-1 Pictures studio id
+            listOf(16), // A-1 Pictures studio id
             listOf(5, 6, 1), // Drama, Romance, Music genre ids
             "Emotional music drama.",
             8.8f,
@@ -49,7 +49,7 @@ object EntriesController {
         Entry(
             "Attack on Titan",
             "2013",
-            19, // Wit Studio studio id
+            listOf(19), // Wit Studio studio id
             listOf(7, 5, 9), // Action, Drama, Fantasy genre ids
             "Humanity vs Titans.",
             9.2f,
@@ -61,13 +61,25 @@ object EntriesController {
         Entry(
             "K-On!",
             "2009",
-            20, // Kyoto Animation studio id
+            listOf(20), // Kyoto Animation studio id
             listOf(1, 22, 4), // Music, Slice of Life, Comedy genre ids
             "Cute girls play music.",
             8.0f,
             "Finished",
             "Thursday",
             listOf(22, 1), // Slice of Life, Music custom tag ids
+            nextId++
+        ),
+        Entry(
+            "Tag Overload!",
+            "2022",
+            listOf(18, 15, 16, 19, 20, 21, 22, 23, 24, 25),
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
+            "An anime with a ridiculous number of tags for testing UI overflow and performance.",
+            7.7f,
+            "Finished",
+            "Monday",
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
             nextId++
         )
     )
@@ -76,7 +88,7 @@ object EntriesController {
     fun packEntry(
         animeName: String,
         releaseYear: String,
-        studioId: Int,
+        studioIds: List<Int>,
         genreIds: List<Int>,
         description: String,
         rating: Float,
@@ -84,7 +96,7 @@ object EntriesController {
         releasingEvery: String,
         tagIds: List<Int>
     ): Entry {
-        return Entry(animeName, releaseYear, studioId, genreIds, description, rating, status, releasingEvery, tagIds, nextId++)
+        return Entry(animeName, releaseYear, studioIds, genreIds, description, rating, status, releasingEvery, tagIds, nextId++)
     }
 
     fun addEntry(entry: Entry) {

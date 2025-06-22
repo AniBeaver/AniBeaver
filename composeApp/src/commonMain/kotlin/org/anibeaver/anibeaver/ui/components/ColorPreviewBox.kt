@@ -38,3 +38,4 @@ fun parseHexColor(hex: String): Color {
         Color.Gray
     }
 }
+
