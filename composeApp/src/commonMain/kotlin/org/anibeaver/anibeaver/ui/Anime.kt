@@ -121,8 +121,8 @@ fun AnimeScreen(
             NewTagPopup(
                 show = showNewTagPopupFromManage,
                 onDismiss = { showNewTagPopupFromManage = false },
-                onConfirm = { name, color ->
-                    org.anibeaver.anibeaver.core.TagsController.addTag(name, color)
+                onConfirm = { name, color, type ->
+                    org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
                     showNewTagPopupFromManage = false
                 }
             )

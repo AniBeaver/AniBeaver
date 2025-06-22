@@ -174,8 +174,8 @@ fun EditEntryPopup(
                         NewTagPopup(
                             show = showNewTagPopup,
                             onDismiss = { showNewTagPopup = false },
-                            onConfirm = { name, color ->
-                                org.anibeaver.anibeaver.core.TagsController.addTag(name, color)
+                            onConfirm = { name, color, type ->
+                                org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
                                 showNewTagPopup = false
                             }
                         )
