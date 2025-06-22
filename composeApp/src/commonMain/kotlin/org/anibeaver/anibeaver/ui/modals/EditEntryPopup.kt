@@ -41,6 +41,7 @@ fun EditEntryPopup(
     var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
     var tagsIds by remember { mutableStateOf(initialEntry?.tagIds ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
+    var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
 
     // Reset fields when initialEntry changes (for editing)
     LaunchedEffect(initialEntry) {
@@ -164,10 +165,13 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(genreRequester)
                         )
                         Button(
-                            onClick = { showNewTagPopup = true },
+                            onClick = {
+                                newTagInitialType = TagType.GENRE
+                                showNewTagPopup = true
+                            },
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
-                            Text("Create tag")
+                            Text("Create genre")
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -179,10 +183,13 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(studioNameRequester)
                         )
                         Button(
-                            onClick = { showNewTagPopup = true },
+                            onClick = {
+                                newTagInitialType = TagType.STUDIO
+                                showNewTagPopup = true
+                            },
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
-                            Text("Create tag")
+                            Text("Create studio")
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -194,7 +201,10 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(tagsRequester)
                         )
                         Button(
-                            onClick = { showNewTagPopup = true },
+                            onClick = {
+                                newTagInitialType = TagType.CUSTOM
+                                showNewTagPopup = true
+                            },
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
                             Text("Create tag")
@@ -204,9 +214,15 @@ fun EditEntryPopup(
                         show = showNewTagPopup,
                         onDismiss = { showNewTagPopup = false },
                         onConfirm = { name, color, type ->
-                            org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
+                            val newId = org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
+                            when (type) {
+                                TagType.GENRE -> genreIds = genreIds + newId
+                                TagType.STUDIO -> studioIds = studioIds + newId
+                                TagType.CUSTOM -> tagsIds = tagsIds + newId
+                            }
                             showNewTagPopup = false
-                        }
+                        },
+                        initialType = newTagInitialType
                     )
 
                     OutlinedTextField(
