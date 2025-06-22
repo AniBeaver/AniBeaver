@@ -42,7 +42,6 @@ fun TagChipInput(
                 value = input,
                 onValueChange = {
                     input = it
-                    expanded = it.isNotBlank()
                 },
                 label = { Text(label) },
                 singleLine = true,
@@ -65,33 +64,45 @@ fun TagChipInput(
                             )
                         }
                     }
-                },
-                // Remove enabled/readOnly, and add interactionSource to avoid focus loss
-                interactionSource = remember { MutableInteractionSource() }
+                }
             )
-            // Use DropdownMenu as an overlay for suggestions
-            androidx.compose.material3.DropdownMenu(
-                expanded = expanded && suggestions.isNotEmpty(),
-                onDismissRequest = { expanded = false },
-                modifier = if (textFieldWidth > 0) with(density) { Modifier.width(textFieldWidth.toDp()) } else Modifier
-            ) {
-                suggestions.forEach { suggestion ->
-                    androidx.compose.material3.DropdownMenuItem(
-                        text = {
-                            Text(suggestion.name)
-                        },
-                        onClick = {
-                            onTagsChange(tags + suggestion.getId())
-                            input = ""
-                            expanded = false
-                        },
-                        // Remove focusable/highlight logic
-                    )
+            // Custom suggestion dropdown below the text field
+            if (input.isNotBlank() && suggestions.isNotEmpty()) {
+                androidx.compose.ui.window.Popup(
+                    alignment = androidx.compose.ui.Alignment.TopStart,
+                    offset = androidx.compose.ui.unit.IntOffset(0, 100),
+                    onDismissRequest = {}
+                ) {
+                    Surface(
+                        tonalElevation = 4.dp,
+                        shape = MaterialTheme.shapes.medium,
+                        color = Color(0xFF181818), // much blacker background
+                        modifier = Modifier
+                            .width(with(density) { textFieldWidth.toDp() })
+                    ) {
+                        Column {
+                            suggestions.forEach { suggestion ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            onTagsChange(tags + suggestion.getId())
+                                            input = ""
+                                        }
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        suggestion.name,
+                                        color = parseHexColor(suggestion.color)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
-    // Remove keyboard navigation/focus LaunchedEffect
     LaunchedEffect(input) {
         if (input.endsWith(",") && input.dropLast(1).isNotBlank()) {
             val newTag = input.dropLast(1).trim()
