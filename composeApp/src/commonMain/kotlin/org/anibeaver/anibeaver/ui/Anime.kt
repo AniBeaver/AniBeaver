@@ -22,7 +22,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.anibeaver.anibeaver.Screens
 import androidx.compose.foundation.layout.BoxWithConstraints
 import kotlin.math.max
-import org.anibeaver.anibeaver.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
 import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
 import org.anibeaver.anibeaver.ui.modals.NewTagPopup
@@ -34,7 +35,7 @@ fun AnimeScreen(
     dataWrapper: DataWrapper
 ) {
     var showPopup by remember { mutableStateOf(false) }
-    var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.datastructures.Entry?>(null) }
+    var editingEntry by remember { mutableStateOf<Entry?>(null) }
     var showManageTags by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
 
