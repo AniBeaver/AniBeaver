@@ -46,11 +46,11 @@ fun ManageTagsModal(
                                 tagId = tag.getId(),
                                 tagName = tag.name,
                                 onTagNameChange = { name ->
-                                    TagsController.updateTag(tag.getId(), name, tag.color)
+                                    TagsController.updateTag(tag.getId(), name, tag.color, tag.type)
                                 },
                                 tagHex = tag.color,
                                 onTagHexChange = { hex ->
-                                    TagsController.updateTag(tag.getId(), tag.name, hex)
+                                    TagsController.updateTag(tag.getId(), tag.name, hex, tag.type)
                                 },
                                 onDelete = { id -> TagsController.removeTagById(id) }
                             )
