@@ -14,6 +14,7 @@ fun ImageInput(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    //TODO: implement this whole thing
     Box(
         modifier = modifier
             .size(width = 120.dp, height = 80.dp)
