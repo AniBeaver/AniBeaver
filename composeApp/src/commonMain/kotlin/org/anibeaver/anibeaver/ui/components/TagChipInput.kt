@@ -25,17 +25,18 @@ import org.anibeaver.anibeaver.ui.components.parseHexColor
 
 @Composable
 fun TagChipInput(
-    tags: List<String>,
-    onTagsChange: (List<String>) -> Unit,
+    tags: List<Int>,
+    onTagsChange: (List<Int>) -> Unit,
     tagType: TagType,
     modifier: Modifier = Modifier,
     label: String = "Tags"
 ) {
     var input by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+    val tagObjects = tags.mapNotNull { id -> TagsController.tags.find { it.getId() == id && it.type == tagType } }
     val suggestions = TagsController.tags
-        .filter { it.type == tagType && it.name.contains(input, ignoreCase = true) && it.name !in tags }
-        .map { it.name }
+        .filter { it.type == tagType && it.name.contains(input, ignoreCase = true) && it.getId() !in tags }
+        .map { it }
 
     Column(modifier) {
         // OutlinedTextField with chips inside
@@ -55,11 +56,11 @@ fun TagChipInput(
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier.padding(start = 4.dp)
                     ) {
-                        tags.forEach { tag ->
+                        tagObjects.forEach { tag ->
                             TagChip(
-                                label = tag,
-                                onDelete = { onTagsChange(tags - tag) },
-                                color = TagsController.tags.find { it.name == tag && it.type == tagType }?.color?.let { parseHexColor(it) } ?: Color.Gray
+                                label = tag.name,
+                                onDelete = { onTagsChange(tags - tag.getId()) },
+                                color = parseHexColor(tag.color)
                             )
                         }
                     }
@@ -73,11 +74,11 @@ fun TagChipInput(
                         .padding(top = 2.dp)) {
                         suggestions.forEach { suggestion ->
                             Text(
-                                suggestion,
+                                suggestion.name,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        onTagsChange(tags + suggestion)
+                                        onTagsChange(tags + suggestion.getId())
                                         input = ""
                                         expanded = false
                                     }
@@ -89,12 +90,12 @@ fun TagChipInput(
             }
         }
     }
-    // Add tag on comma or enter
     LaunchedEffect(input) {
         if (input.endsWith(",") && input.dropLast(1).isNotBlank()) {
             val newTag = input.dropLast(1).trim()
-            if (newTag.isNotBlank() && newTag !in tags) {
-                onTagsChange(tags + newTag)
+            val matchedTag = suggestions.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
+            if (matchedTag != null && matchedTag.getId() !in tags) {
+                onTagsChange(tags + matchedTag.getId())
             }
             input = ""
         }

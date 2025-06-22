@@ -62,13 +62,13 @@ fun AnimeScreen(
                     val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
                         releaseYear = "2025",
-                        studioName = "Placeholder Studio",
-                        genre = "Genre",
+                        studioId = 18, // Bones studio id
+                        genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
                         description = "This is a placeholder entry.",
                         rating = 8.5f,
                         status = "Unknown",
                         releasingEvery = "Never",
-                        tags = "placeholder, ph"
+                        tagIds = listOf(10, 11) // Shounen, Classic custom tag ids
                     )
                     EntriesController.addEntry(entry)
                 }) { Text("Add Placeholder Entry") }
@@ -83,26 +83,26 @@ fun AnimeScreen(
                             val entry = EntriesController.packEntry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioName = entryData.studioName,
-                                genre = entryData.genre,
+                                studioId = entryData.studioId,
+                                genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
                                 status = entryData.status,
                                 releasingEvery = entryData.releasingEvery,
-                                tags = entryData.tags
+                                tagIds = entryData.tagIds
                             )
                             EntriesController.addEntry(entry)
                         } else {
                             val updatedEntry = Entry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioName = entryData.studioName,
-                                genre = entryData.genre,
+                                studioId = entryData.studioId,
+                                genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
                                 status = entryData.status,
                                 releasingEvery = entryData.releasingEvery,
-                                tags = entryData.tags,
+                                tagIds = entryData.tagIds,
                                 id = editingEntry!!.getId()
                             )
                             EntriesController.updateEntry(updatedEntry)
@@ -134,12 +134,13 @@ fun AnimeScreen(
                     Spacer(Modifier.width(cardSpacing))
 
                     rowEntries.forEach { entry ->
+                        val studioTag = org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == entry.studioId }?.name
+                        val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                        val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
                         EntryCard(
                             id = entry.getId(),
                             name = entry.animeName,
-                            tags = listOfNotNull(entry.genre, entry.releaseYear, entry.studioName)
-                                .plus(entry.tags?.split(",") ?: emptyList())
-                                .joinToString(", "),
+                            tags = (genreTags + entry.releaseYear + listOfNotNull(studioTag) + customTags).joinToString(", "),
                             description = entry.description,
                             onEdit = {
                                 editingEntry = entry

@@ -12,16 +12,29 @@ object TagsController {
 
     init {
         listOf(
-            //TODO: again, placeholder values
             Tag("Music", "#FFB300", TagType.CUSTOM, nextId++),
             Tag("Intro", "#1976D2", TagType.CUSTOM, nextId++),
             Tag("Fight Scenes", "#D32F2F", TagType.CUSTOM, nextId++),
             Tag("Comedy", "#FBC02D", TagType.GENRE, nextId++),
             Tag("Drama", "#7B1FA2", TagType.GENRE, nextId++),
             Tag("Romance", "#C2185B", TagType.GENRE, nextId++),
-            Tag("MAPPA", "#43A047", TagType.STUDIO, nextId++),
+            Tag("Action", "#FF0000", TagType.GENRE, nextId++),
+            Tag("Adventure", "#00FF00", TagType.GENRE, nextId++),
+            Tag("Fantasy", "#0000FF", TagType.GENRE, nextId++),
+            Tag("Shounen", "#AAAAAA", TagType.CUSTOM, nextId++),
+            Tag("Classic", "#BBBBBB", TagType.CUSTOM, nextId++),
+            Tag("Sci-Fi", "#CCCCCC", TagType.GENRE, nextId++),
+            Tag("Thriller", "#DDDDDD", TagType.GENRE, nextId++),
+            Tag("Time Travel", "#EEEEEE", TagType.CUSTOM, nextId++),
+            Tag("White Fox", "#123456", TagType.STUDIO, nextId++),
             Tag("A-1 Pictures", "#039BE5", TagType.STUDIO, nextId++),
-            Tag("Madhouse", "#8E24AA", TagType.STUDIO, nextId++)
+            Tag("Madhouse", "#8E24AA", TagType.STUDIO, nextId++),
+            Tag("Bones", "#654321", TagType.STUDIO, nextId++),
+            Tag("Wit Studio", "#FEDCBA", TagType.STUDIO, nextId++),
+            Tag("Kyoto Animation", "#ABCDEF", TagType.STUDIO, nextId++),
+            Tag("Slice of Life", "#F0F0F0", TagType.GENRE, nextId++),
+            Tag("Dark", "#111111", TagType.CUSTOM, nextId++),
+            Tag("Music", "#FFB300", TagType.GENRE, nextId++)
         ).forEach { _tags.add(it) }
     }
 

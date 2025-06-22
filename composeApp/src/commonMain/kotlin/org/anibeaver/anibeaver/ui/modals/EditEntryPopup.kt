@@ -33,26 +33,26 @@ fun EditEntryPopup(
 ) {
     var animeName by remember { mutableStateOf(initialEntry?.animeName ?: "") }
     var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "2010") }
-    var studioName by remember { mutableStateOf(initialEntry?.studioName ?: "") }
-    var genre by remember { mutableStateOf(initialEntry?.genre ?: "") }
+    var studioId by remember { mutableStateOf(initialEntry?.studioId) }
+    var genreIds by remember { mutableStateOf(initialEntry?.genreIds ?: emptyList()) }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
     var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
     var status by remember { mutableStateOf(initialEntry?.status ?: "") }
     var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
-    var tags by remember { mutableStateOf(initialEntry?.tags ?: "") }
+    var tagsIds by remember { mutableStateOf(initialEntry?.tagIds ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
 
     // Reset fields when initialEntry changes (for editing)
     LaunchedEffect(initialEntry) {
         animeName = initialEntry?.animeName ?: ""
         releaseYear = initialEntry?.releaseYear ?: "2010"
-        studioName = initialEntry?.studioName ?: ""
-        genre = initialEntry?.genre ?: ""
+        studioId = initialEntry?.studioId
+        genreIds = initialEntry?.genreIds ?: emptyList()
         description = initialEntry?.description ?: ""
         rating = initialEntry?.rating ?: 8.5f
         status = initialEntry?.status ?: ""
         releasingEvery = initialEntry?.releasingEvery ?: ""
-        tags = initialEntry?.tags ?: ""
+        tagsIds = initialEntry?.tagIds ?: emptyList()
     }
 
     //for tab navigation
@@ -71,20 +71,22 @@ fun EditEntryPopup(
             onDismissRequest = onDismiss,
             confirmButton = {
                 Button(onClick = {
-                    onConfirm(
-                        Entry(
-                            id = 0, // id to be set by EntriesController
-                            animeName = animeName,
-                            releaseYear = releaseYear,
-                            studioName = studioName,
-                            genre = genre,
-                            description = description,
-                            rating = rating,
-                            status = status,
-                            releasingEvery = releasingEvery,
-                            tags = tags
+                    if (studioId != null && genreIds.isNotEmpty()) {
+                        onConfirm(
+                            Entry(
+                                id = 0, // id to be set by EntriesController
+                                animeName = animeName,
+                                releaseYear = releaseYear,
+                                studioId = studioId!!,
+                                genreIds = genreIds,
+                                description = description,
+                                rating = rating,
+                                status = status,
+                                releasingEvery = releasingEvery,
+                                tagIds = tagsIds
+                            )
                         )
-                    )
+                    }
                 }) {
                     Text("Confirm/Create")
                 }
@@ -96,9 +98,9 @@ fun EditEntryPopup(
             },
             title = { Text("Edit Entry") },
             text = {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ImageInput(
@@ -115,101 +117,92 @@ fun EditEntryPopup(
                             )
                         }
                     }
-                    // Grid layout for fields
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedTextField(
-                                value = animeName,
-                                onValueChange = { animeName = it },
-                                label = { Text("Anime Name") },
-                                modifier = Modifier.weight(1f)
-                                    .focusRequester(animeNameRequester)
-                                    .focusProperties { next = releaseYearRequester },
-                                singleLine = true
-                            )
-                            YearPicker(
-                                value = releaseYear,
-                                onValueChange = { releaseYear = it },
-                                onIncrement = {
-                                    val year = releaseYear.toIntOrNull() ?: 0
-                                    if (year < 9999) releaseYear = (year + 1).toString()
-                                },
-                                onDecrement = {
-                                    val year = releaseYear.toIntOrNull() ?: 0
-                                    if (year > 0) releaseYear = (year - 1).toString()
-                                },
-                                modifier = Modifier.weight(1f)
-                                    .focusRequester(releaseYearRequester)
-                                    .focusProperties { next = genreRequester }
-                            )
-                        }
+                    // Main info fields
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = animeName,
+                            onValueChange = { animeName = it },
+                            label = { Text("Anime Name") },
+                            modifier = Modifier.weight(1f).focusRequester(animeNameRequester).focusProperties { next = releaseYearRequester },
+                            singleLine = true
+                        )
+                        YearPicker(
+                            value = releaseYear,
+                            onValueChange = { releaseYear = it },
+                            onIncrement = {
+                                val year = releaseYear.toIntOrNull() ?: 0
+                                if (year < 9999) releaseYear = (year + 1).toString()
+                            },
+                            onDecrement = {
+                                val year = releaseYear.toIntOrNull() ?: 0
+                                if (year > 0) releaseYear = (year - 1).toString()
+                            },
+                            modifier = Modifier.weight(1f).focusRequester(releaseYearRequester).focusProperties { next = genreRequester }
+                        )
+                    }
+                    // Tag pickers grouped
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         TagChipInput(
-                            tags = genre.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            onTagsChange = { genre = it.joinToString(", ") },
+                            tags = genreIds,
+                            onTagsChange = { genreIds = it },
                             tagType = TagType.GENRE,
                             label = "Genre",
-                            modifier = Modifier.fillMaxWidth().focusRequester(genreRequester)
+                            modifier = Modifier.weight(1f).focusRequester(genreRequester)
                         )
                         TagChipInput(
-                            tags = studioName.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                            onTagsChange = { studioName = it.joinToString(", ") },
+                            tags = studioId?.let { listOf(it) } ?: emptyList(),
+                            onTagsChange = { studioId = it.firstOrNull() },
                             tagType = TagType.STUDIO,
                             label = "Studio",
-                            modifier = Modifier.fillMaxWidth().focusRequester(studioNameRequester)
+                            modifier = Modifier.weight(1f).focusRequester(studioNameRequester)
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                            TagChipInput(
-                                tags = tags.split(",").map { it.trim() }.filter { it.isNotBlank() },
-                                onTagsChange = { tags = it.joinToString(", ") },
-                                tagType = TagType.CUSTOM,
-                                label = "Custom Tags",
-                                modifier = Modifier.weight(1f).focusRequester(tagsRequester)
-                            )
-                            Button(
-                                onClick = { showNewTagPopup = true },
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            ) {
-                                Text("Create tag")
-                            }
-                        }
-                        NewTagPopup(
-                            show = showNewTagPopup,
-                            onDismiss = { showNewTagPopup = false },
-                            onConfirm = { name, color, type ->
-                                org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
-                                showNewTagPopup = false
-                            }
+                    }
+                    // Custom tags and create button
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        TagChipInput(
+                            tags = tagsIds,
+                            onTagsChange = { tagsIds = it },
+                            tagType = TagType.CUSTOM,
+                            label = "Custom Tags",
+                            modifier = Modifier.weight(1f).focusRequester(tagsRequester)
                         )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            SimpleDropdown(
-                                options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
-                                selectedOption = status,
-                                onOptionSelected = { status = it },
-                                label = "Status",
-                                modifier = Modifier.weight(1f)
-                                    .focusRequester(statusRequester)
-                                    .focusProperties { next = releasingEveryRequester }
-                            )
-                            SimpleDropdown(
-                                options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
-                                selectedOption = releasingEvery,
-                                onOptionSelected = { releasingEvery = it },
-                                label = "Releasing Every",
-                                modifier = Modifier.weight(1f)
-                                    .focusRequester(releasingEveryRequester)
-                                    .focusProperties { next = descriptionRequester }
-                            )
+                        Button(
+                            onClick = { showNewTagPopup = true },
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text("Create tag")
                         }
+                    }
+                    NewTagPopup(
+                        show = showNewTagPopup,
+                        onDismiss = { showNewTagPopup = false },
+                        onConfirm = { name, color, type ->
+                            org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
+                            showNewTagPopup = false
+                        }
+                    )
+                    // Status and releasing every
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        SimpleDropdown(
+                            options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
+                            selectedOption = status,
+                            onOptionSelected = { status = it },
+                            label = "Status",
+                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
+                        )
+                        SimpleDropdown(
+                            options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
+                            selectedOption = releasingEvery,
+                            onOptionSelected = { releasingEvery = it },
+                            label = "Releasing Every",
+                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
+                        )
                     }
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
                         label = { Text("Description") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 8.dp)
-                            .height(120.dp)
-                            .focusRequester(descriptionRequester),
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp).height(120.dp).focusRequester(descriptionRequester),
                         maxLines = 5
                     )
                 }
