@@ -1,5 +1,6 @@
 package org.anibeaver.anibeaver.ui.modals
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -21,6 +22,7 @@ import org.anibeaver.anibeaver.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.ImageInput
 import org.anibeaver.anibeaver.ui.components.YearPicker
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import org.anibeaver.anibeaver.ui.modals.NewTagPopup
 
 //TODO: tiny windows not supported still
@@ -156,60 +158,43 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        TagChipInput(
-                            tags = genreIds,
-                            onTagsChange = { genreIds = it },
-                            tagType = TagType.GENRE,
-                            label = "Genre",
-                            modifier = Modifier.weight(1f).focusRequester(genreRequester)
-                        )
-                        Button(
-                            onClick = {
-                                newTagInitialType = TagType.GENRE
-                                showNewTagPopup = true
-                            },
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Text("Create genre")
-                        }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        TagChipInput(
-                            tags = studioIds,
-                            onTagsChange = { studioIds = it },
-                            tagType = TagType.STUDIO,
-                            label = "Studio",
-                            modifier = Modifier.weight(1f).focusRequester(studioNameRequester)
-                        )
-                        Button(
-                            onClick = {
-                                newTagInitialType = TagType.STUDIO
-                                showNewTagPopup = true
-                            },
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Text("Create studio")
-                        }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        TagChipInput(
-                            tags = tagsIds,
-                            onTagsChange = { tagsIds = it },
-                            tagType = TagType.CUSTOM,
-                            label = "Custom Tags",
-                            modifier = Modifier.weight(1f).focusRequester(tagsRequester)
-                        )
-                        Button(
-                            onClick = {
-                                newTagInitialType = TagType.CUSTOM
-                                showNewTagPopup = true
-                            },
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Text("Create tag")
-                        }
-                    }
+                    TagChipInput(
+                        tags = genreIds,
+                        onTagsChange = { genreIds = it },
+                        tagType = TagType.GENRE,
+                        label = "Genre",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(genreRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.GENRE
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
+                    TagChipInput(
+                        tags = studioIds,
+                        onTagsChange = { studioIds = it },
+                        tagType = TagType.STUDIO,
+                        label = "Studio",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(studioNameRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.STUDIO
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
+                    // Custom Tag Input
+                    TagChipInput(
+                        tags = tagsIds,
+                        onTagsChange = { tagsIds = it },
+                        tagType = TagType.CUSTOM,
+                        label = "Custom Tags",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(tagsRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.CUSTOM
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
                     NewTagPopup(
                         show = showNewTagPopup,
                         onDismiss = { showNewTagPopup = false },

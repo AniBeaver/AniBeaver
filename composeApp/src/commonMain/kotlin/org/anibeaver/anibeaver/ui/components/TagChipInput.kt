@@ -1,6 +1,6 @@
 package org.anibeaver.anibeaver.ui.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,13 +10,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.datastructures.TagType
 
@@ -26,13 +26,15 @@ fun TagChipInput(
     onTagsChange: (List<Int>) -> Unit,
     tagType: TagType,
     modifier: Modifier = Modifier,
-    label: String = "Tags"
+    label: String = "Tags",
+    buttonContent: (@Composable () -> Unit)? = null,
+    onCreateTagClick: (() -> Unit)? = null
 ) {
     var input by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+    var textFieldWidth by remember { mutableStateOf(0) }
+    val density = LocalDensity.current
     Column(modifier) {
-        var textFieldWidth by remember { mutableStateOf(0) }
-        val density = LocalDensity.current
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.Center,
@@ -48,62 +50,72 @@ fun TagChipInput(
                 )
             }
         }
-        Box(modifier = Modifier.fillMaxWidth()) {
-            val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
-            OutlinedTextField(
-                value = input,
-                onValueChange = {
-                    input = it
-                },
-                label = { Text(label) },
-                singleLine = true,
-                minLines = 1,
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        textFieldWidth = coordinates.size.width
-                    }
-                    .focusRequester(focusRequester),
-                keyboardOptions = KeyboardOptions.Default,
-            )
-            if (input.isNotBlank() && TagsController.tags.filter { it.type == tagType && it.getId() !in tags }.isNotEmpty()) {
-                val suggestions = TagsController.tags
-                    .filter { it.type == tagType && it.getId() !in tags }
-                    .filter { it.name.contains(input, ignoreCase = true) }
-                if (suggestions.isNotEmpty()) {
-                    androidx.compose.ui.window.Popup(
-                        alignment = androidx.compose.ui.Alignment.TopStart,
-                        offset = androidx.compose.ui.unit.IntOffset(0, 100),
-                        onDismissRequest = {}
-                    ) {
-                        Surface(
-                            tonalElevation = 4.dp,
-                            shape = MaterialTheme.shapes.medium,
-                            color = Color(0xFF181818),
-                            modifier = Modifier
-                                .width(with(density) { textFieldWidth.toDp() })
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.weight(1f)) {
+                val focusRequester = remember { androidx.compose.ui.focus.FocusRequester() }
+                OutlinedTextField(
+                    value = input,
+                    onValueChange = {
+                        input = it
+                    },
+                    label = { Text(label) },
+                    singleLine = true,
+                    minLines = 1,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coordinates ->
+                            textFieldWidth = coordinates.size.width
+                        }
+                        .focusRequester(focusRequester),
+                    keyboardOptions = KeyboardOptions.Default,
+                )
+                if (input.isNotBlank() && TagsController.tags.filter { it.type == tagType && it.getId() !in tags }.isNotEmpty()) {
+                    val suggestions = TagsController.tags
+                        .filter { it.type == tagType && it.getId() !in tags }
+                        .filter { it.name.contains(input, ignoreCase = true) }
+                    if (suggestions.isNotEmpty()) {
+                        androidx.compose.ui.window.Popup(
+                            alignment = androidx.compose.ui.Alignment.TopStart,
+                            offset = androidx.compose.ui.unit.IntOffset(0, 100),
+                            onDismissRequest = {}
                         ) {
-                            Column {
-                                suggestions.forEach { suggestion ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable {
-                                                onTagsChange(tags + suggestion.getId())
-                                                input = ""
-                                            }
-                                            .padding(12.dp)
-                                    ) {
-                                        Text(
-                                            suggestion.name,
-                                            color = parseHexColor(suggestion.color)
-                                        )
+                            Surface(
+                                tonalElevation = 4.dp,
+                                shape = MaterialTheme.shapes.medium,
+                                color = Color(0xFF181818),
+                                modifier = Modifier
+                                    .width(with(density) { textFieldWidth.toDp() })
+                            ) {
+                                Column {
+                                    suggestions.forEach { suggestion ->
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    onTagsChange(tags + suggestion.getId())
+                                                    input = ""
+                                                }
+                                                .padding(12.dp)
+                                        ) {
+                                            Text(
+                                                suggestion.name,
+                                                color = parseHexColor(suggestion.color)
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+            if (onCreateTagClick != null) {
+                Button(
+                    onClick = onCreateTagClick,
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("Create ${label.lowercase()}")
                 }
             }
         }
@@ -118,5 +130,34 @@ fun TagChipInput(
             }
             input = ""
         }
+    }
+}
+
+@Composable
+fun TagChipInput(
+    tags: List<Int>,
+    onTagsChange: (List<Int>) -> Unit,
+    tagType: TagType,
+    modifier: Modifier = Modifier,
+    label: String = "Tags",
+    buttonContent: (@Composable () -> Unit)? = null,
+    onCreateTagClick: (() -> Unit)? = null,
+    surfaceColor: Color? = null
+) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        color = surfaceColor ?: Color.Unspecified,
+        modifier = modifier
+    ) {
+        TagChipInput(
+            tags = tags,
+            onTagsChange = onTagsChange,
+            tagType = tagType,
+            modifier = Modifier.padding(8.dp),
+            label = label,
+            buttonContent = buttonContent,
+            onCreateTagClick = onCreateTagClick
+        )
     }
 }
