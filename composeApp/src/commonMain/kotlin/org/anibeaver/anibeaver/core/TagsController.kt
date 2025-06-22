@@ -43,9 +43,11 @@ object TagsController {
         println("[TagsController] Current tag ids: " + _tags.map { it.getId() })
     }
 
-    fun addTag(name: String, color: String, type: TagType) {
-        _tags.add(Tag(name, color, type, nextId++))
+    fun addTag(name: String, color: String, type: TagType): Int {
+        val tag = Tag(name, color, type, nextId++)
+        _tags.add(tag)
         debugPrint()
+        return tag.getId()
     }
 
     fun removeTagById(id: Int) {
