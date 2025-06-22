@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.datastructures.Entry
 import org.anibeaver.anibeaver.ui.components.FloatPicker
 import org.anibeaver.anibeaver.ui.components.SimpleDropdown
-import org.anibeaver.anibeaver.ui.components.TagInput
+import org.anibeaver.anibeaver.ui.components.TagChipInput
+import org.anibeaver.anibeaver.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.ImageInput
 import org.anibeaver.anibeaver.ui.components.YearPicker
 import androidx.compose.material3.IconButton
@@ -142,27 +143,27 @@ fun EditEntryPopup(
                                     .focusProperties { next = genreRequester }
                             )
                         }
-                        TagInput(
-                            value = genre,
-                            onValueChange = { genre = it },
+                        TagChipInput(
+                            tags = genre.split(",").map { it.trim() }.filter { it.isNotBlank() },
+                            onTagsChange = { genre = it.joinToString(", ") },
+                            tagType = TagType.GENRE,
                             label = "Genre",
-                            modifier = Modifier.fillMaxWidth()
-                                .focusRequester(genreRequester)
+                            modifier = Modifier.fillMaxWidth().focusRequester(genreRequester)
                         )
-                        TagInput(
-                            value = studioName,
-                            onValueChange = { studioName = it },
+                        TagChipInput(
+                            tags = studioName.split(",").map { it.trim() }.filter { it.isNotBlank() },
+                            onTagsChange = { studioName = it.joinToString(", ") },
+                            tagType = TagType.STUDIO,
                             label = "Studio",
-                            modifier = Modifier.fillMaxWidth()
-                                .focusRequester(studioNameRequester)
+                            modifier = Modifier.fillMaxWidth().focusRequester(studioNameRequester)
                         )
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                            TagInput(
-                                value = tags,
-                                onValueChange = { tags = it },
+                            TagChipInput(
+                                tags = tags.split(",").map { it.trim() }.filter { it.isNotBlank() },
+                                onTagsChange = { tags = it.joinToString(", ") },
+                                tagType = TagType.CUSTOM,
                                 label = "Custom Tags",
-                                modifier = Modifier.weight(1f)
-                                    .focusRequester(tagsRequester)
+                                modifier = Modifier.weight(1f).focusRequester(tagsRequester)
                             )
                             Button(
                                 onClick = { showNewTagPopup = true },
