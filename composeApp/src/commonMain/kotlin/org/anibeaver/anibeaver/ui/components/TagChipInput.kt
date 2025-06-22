@@ -9,6 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.datastructures.TagType
@@ -35,6 +39,8 @@ fun TagChipInput(
 
     Column(modifier) {
         // OutlinedTextField with chips inside
+        var textFieldWidth by remember { mutableStateOf(0) }
+        val density = LocalDensity.current
         Box(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = input,
@@ -46,7 +52,10 @@ fun TagChipInput(
                 label = { Text(label) },
                 singleLine = true,
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .onGloballyPositioned { coordinates ->
+                        textFieldWidth = coordinates.size.width
+                    },
                 leadingIcon = {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -63,28 +72,31 @@ fun TagChipInput(
                     }
                 }
             )
-            if (expanded && suggestions.isNotEmpty()) {
-                DropdownSurface(visible = true) {
-                    Column(modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(top = 2.dp)) {
-                        suggestions.forEachIndexed { i, suggestion ->
-                            Text(
-                                suggestion.name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(if (i == focusedSuggestionIndex) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surface)
-                                    .clickable {
-                                        onTagsChange(tags + suggestion.getId())
-                                        input = ""
-                                        expanded = false
-                                        focusedSuggestionIndex = 0
-                                    }
-                                    .padding(12.dp)
+            // Use DropdownMenu as an overlay for suggestions
+            androidx.compose.material3.DropdownMenu(
+                expanded = expanded && suggestions.isNotEmpty(),
+                onDismissRequest = { expanded = false },
+                modifier = if (textFieldWidth > 0) with(density) { Modifier.width(textFieldWidth.toDp()) } else Modifier
+            ) {
+                suggestions.forEachIndexed { i, suggestion ->
+                    androidx.compose.material3.DropdownMenuItem(
+                        text = {
+                            Text(suggestion.name)
+                        },
+                        onClick = {
+                            onTagsChange(tags + suggestion.getId())
+                            input = ""
+                            expanded = false
+                            focusedSuggestionIndex = 0
+                        },
+                        modifier = Modifier
+                            .background(
+                                if (i == focusedSuggestionIndex)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                                else
+                                    MaterialTheme.colorScheme.surface
                             )
-                        }
-                    }
+                    )
                 }
             }
         }
@@ -100,20 +112,5 @@ fun TagChipInput(
             }
             input = ""
         }
-    }
-}
-
-@Composable
-fun DropdownSurface(visible: Boolean, content: @Composable () -> Unit) {
-    if (!visible) return
-    Surface(
-        tonalElevation = 8.dp,
-        shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 2.dp)
-    ) {
-        content()
     }
 }
