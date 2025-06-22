@@ -28,6 +28,7 @@ object TagsController {
             Tag("Time Travel", "#EEEEEE", TagType.CUSTOM, nextId++),
             Tag("White Fox", "#123456", TagType.STUDIO, nextId++),
             Tag("A-1 Pictures", "#039BE5", TagType.STUDIO, nextId++),
+            Tag("MAPPA", "#039BE5", TagType.STUDIO, nextId++),
             Tag("Madhouse", "#8E24AA", TagType.STUDIO, nextId++),
             Tag("Bones", "#654321", TagType.STUDIO, nextId++),
             Tag("Wit Studio", "#FEDCBA", TagType.STUDIO, nextId++),
