@@ -55,6 +55,9 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
             implementation("io.ktor:ktor-server-netty:3.1.3")
+            implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")
+            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Extended
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

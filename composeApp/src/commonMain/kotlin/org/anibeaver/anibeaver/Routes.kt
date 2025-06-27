@@ -1,9 +1,18 @@
 package org.anibeaver.anibeaver
 
-enum class Screens(val title: String) {
-    Home(title = "AniBeaver"),
-    Anime(title = "Anime"),
-    Manga(title = "Manga"),
-    Settings(title = "Settings"),
-    Test(title = "Test")
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
+
+enum class NavItemPosition {
+    Center,
+    Bottom
+}
+
+enum class Screens(val title: String, val icon: ImageVector, val position: NavItemPosition) {
+    Home(title = "AniBeaver", icon = Icons.Filled.Home, position = NavItemPosition.Center),
+    Anime(title = "Anime", icon = Icons.Filled.Videocam, position = NavItemPosition.Center),
+    Manga(title = "Manga", icon = Icons.Filled.Book, position = NavItemPosition.Center),
+    Test(title = "Test", icon = Icons.Filled.AccountCircle, position = NavItemPosition.Bottom),
+    Settings(title = "Settings", icon = Icons.Filled.Settings, position = NavItemPosition.Bottom)
 }
