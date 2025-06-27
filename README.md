@@ -1,14 +1,19 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+<img alt="Profile Banner" src="https://github.com/user-attachments/assets/b15885b6-671c-4011-aec5-c2b37f4d4762" width="100%" />
+&nbsp;
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+AniBeaver is a simple and straight-forward Anime Tracker for Windows, macOS and Linux. Built with Kotlin and Compose Multiplatform (Work in progress).
+We strive to build an application which has good user experience, modern and clean UI and allows syncing your data with AniList.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+If you want to help buliding the project (implementation, design, or just giving feedback/ideas) or want to chat with us, feel free to join our Discord server: https://discord.gg/fknGNDGKJB
 
+## Roadmap
+- [x] Base app setup (Compose Multiplatform)
+- [x] Create general navigation (different pages)
+- [ ] Add Anime entries (title, genre, year, tags, ...) -> entry creation popup modal
+- [ ] Sync Anime etnries with AniList
+- [ ] Autocomplete Anime entries with data fetched from AniList API
+- [ ] Remove Anime entries
+- [ ] Edit Anime entries
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+---
+Licensed under the GPLv3 license. Copyright (c) 2025 KaiFireborn, darius-it, MatejMinar-jpg
