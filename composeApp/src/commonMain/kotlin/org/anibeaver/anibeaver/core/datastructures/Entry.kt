@@ -31,7 +31,8 @@ data class FilterData(
     val minYear: String?,
     val maxYear: String?,
     val minRating: Float?,
-    val maxRating: Float?
+    val maxRating: Float?,
+    val selectedTagIds: List<Int>
 )
 
 class Entry internal constructor(
