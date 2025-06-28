@@ -55,7 +55,6 @@ fun FilterPopup(
 ) {
     if (!show) return
 
-    // Extract state into a single data class for clarity
     data class FilterUiState(
         var selectedStatus: List<Status>,
         var selectedSchedule: List<Schedule>,
@@ -70,13 +69,13 @@ fun FilterPopup(
     var state by remember {
         mutableStateOf(
             FilterUiState(
-                selectedStatus = initialFilter?.selectedStatus ?: FilterDefaults.defaultStatus(),
-                selectedSchedule = initialFilter?.selectedSchedule ?: FilterDefaults.defaultSchedule(),
-                minYear = initialFilter?.minYear ?: FilterDefaults.DEFAULT_MIN_YEAR,
-                maxYear = initialFilter?.maxYear ?: FilterDefaults.DEFAULT_MAX_YEAR,
-                minRating = initialFilter?.minRating ?: FilterDefaults.DEFAULT_MIN_RATING,
-                maxRating = initialFilter?.maxRating ?: FilterDefaults.DEFAULT_MAX_RATING,
-                selectedTagIds = initialFilter?.selectedTagIds ?: FilterDefaults.defaultTagIds(),
+                selectedStatus = initialFilter?.selectedStatus ?: defaultFilterData.selectedStatus,
+                selectedSchedule = initialFilter?.selectedSchedule ?: defaultFilterData.selectedSchedule,
+                minYear = initialFilter?.minYear ?: defaultFilterData.minYear,
+                maxYear = initialFilter?.maxYear ?: defaultFilterData.maxYear,
+                minRating = initialFilter?.minRating ?: defaultFilterData.minRating,
+                maxRating = initialFilter?.maxRating ?: defaultFilterData.maxRating,
+                selectedTagIds = initialFilter?.selectedTagIds ?: defaultFilterData.selectedTagIds,
                 selectedTab = 0
             )
         )
