@@ -10,7 +10,8 @@ fun YearPicker(
     onValueChange: (String) -> Unit,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    label: String = "Year"
 ) {
     SpinBox(
         value = value,
@@ -22,7 +23,6 @@ fun YearPicker(
         modifier = modifier,
         filter = { input -> input.filter { it.isDigit() } },
         maxLength = 4,
-        label = "Year"
+        label = label
     )
 }
-

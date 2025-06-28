@@ -1,7 +1,6 @@
 package org.anibeaver.anibeaver.ui.components.abstract
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,7 +18,7 @@ fun SpinBox(
     modifier: Modifier = Modifier,
     filter: (String) -> String = { it },
     maxLength: Int = Int.MAX_VALUE,
-    label: String? = null
+    label: String = ""
 ) {
     var textValue by remember { mutableStateOf(value) }
     LaunchedEffect(value) {
@@ -36,8 +35,8 @@ fun SpinBox(
                 onValueChange(filtered)
             },
             singleLine = true,
-            modifier = Modifier.size(width = 64.dp, height = 56.dp),
-            label = label?.let { { Text(it) } }
+            modifier = Modifier.widthIn(min = 48.dp, max = 72.dp),
+            label = if (label.isNotEmpty()) { { Text(label) } } else null
         )
         Button(onClick = onIncrement) { Text("+") }
     }
