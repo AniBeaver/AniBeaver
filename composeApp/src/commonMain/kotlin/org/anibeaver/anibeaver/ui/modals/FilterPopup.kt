@@ -223,7 +223,7 @@ private fun FilterGeneralTab(
             maxYear = maxYear,
             onMaxYearChange = onMaxYearChange
         )
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         FilterCheckboxRow(
             label = "Status",
             entries = Status.entries.toList(),
@@ -442,9 +442,9 @@ private fun TagCheckboxRow(
   val studios = allTags.filter { it.type == TagType.STUDIO }
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TagCheckboxSection("Genres", genres, selectedTagIds, onChange)
-        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         TagCheckboxSection("Custom tags", customs, selectedTagIds, onChange)
-        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         TagCheckboxSection("Studios", studios, selectedTagIds, onChange)
     }
 }

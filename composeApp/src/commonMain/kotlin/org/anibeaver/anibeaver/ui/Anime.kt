@@ -100,7 +100,7 @@ fun AnimeScreen(
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
-        val cardSpacing = 12.dp
+        val cardSpacing = 6.dp
         val totalWidth = maxWidth
         val columns = max(1, ((totalWidth + cardSpacing) / (cardWidth + cardSpacing)).toInt())
 
