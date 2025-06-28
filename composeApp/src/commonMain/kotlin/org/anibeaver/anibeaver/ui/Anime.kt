@@ -144,7 +144,14 @@ fun AnimeScreen(
             )
 
             // Grid
-            val entriesToShow = EntriesController.entries.filter { it.matchesFilter(filterData) }
+            val allEntries = EntriesController.entries
+            val entriesToShow = allEntries.filter { it.matchesFilter(filterData) }
+            val hiddenCount = allEntries.size - entriesToShow.size
+            if (hiddenCount > 0) {
+                val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
+                val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
+                Text("Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden by filters.", color = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.padding(bottom = 8.dp))
+            }
             entriesToShow.chunked(columns).forEach { rowEntries ->
                 Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
 
