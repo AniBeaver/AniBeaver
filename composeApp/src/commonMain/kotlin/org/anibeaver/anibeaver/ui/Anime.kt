@@ -1,38 +1,25 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
-import org.anibeaver.anibeaver.DataWrapper
-
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.core.EntriesController
-import org.anibeaver.anibeaver.ui.components.EntryCard
-import org.anibeaver.anibeaver.ui.theme.Typography
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.Screens
-import androidx.compose.foundation.layout.BoxWithConstraints
-import kotlin.math.max
+import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.FilterData
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 import org.anibeaver.anibeaver.core.datastructures.Status
-import org.anibeaver.anibeaver.core.datastructures.TagType
-import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
-import org.anibeaver.anibeaver.ui.modals.FilterPopup
-import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
-import org.anibeaver.anibeaver.ui.modals.NewTagPopup
-import org.anibeaver.anibeaver.core.datastructures.FilterData
-import org.anibeaver.anibeaver.ui.modals.FilterDefaults
-import org.anibeaver.anibeaver.ui.modals.defaultFilterData
+import org.anibeaver.anibeaver.ui.components.EntryCard
+import org.anibeaver.anibeaver.ui.modals.*
+import org.anibeaver.anibeaver.ui.theme.Typography
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.max
 
 data class AnimeFilterState(
     var filterData: FilterData? = null,

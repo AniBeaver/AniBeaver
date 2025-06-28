@@ -8,12 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.FilterData
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
 import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 
@@ -437,9 +437,9 @@ private fun TagCheckboxRow(
     selectedTagIds: List<Int>,
     onChange: (List<Int>) -> Unit
 ) {
-    val genres = allTags.filter { it.type.name == "GENRE" }
-    val customs = allTags.filter { it.type.name == "CUSTOM" }
-    val studios = allTags.filter { it.type.name == "STUDIO" }
+  val genres = allTags.filter { it.type == TagType.GENRE }
+  val customs = allTags.filter { it.type == TagType.CUSTOM }
+  val studios = allTags.filter { it.type == TagType.STUDIO }
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TagCheckboxSection("Genres", genres, selectedTagIds, onChange)
         Divider(modifier = Modifier.padding(vertical = 4.dp))
