@@ -6,7 +6,6 @@ import org.anibeaver.anibeaver.DataWrapper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.core.EntriesController
@@ -24,7 +22,77 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.anibeaver.anibeaver.Screens
 import androidx.compose.foundation.layout.BoxWithConstraints
 import kotlin.math.max
-import androidx.compose.runtime.getValue
+import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.datastructures.TagType
+import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
+import org.anibeaver.anibeaver.ui.modals.FilterPopup
+import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
+import org.anibeaver.anibeaver.ui.modals.NewTagPopup
+import org.anibeaver.anibeaver.core.datastructures.FilterData
+import org.anibeaver.anibeaver.ui.modals.FilterDefaults
+import org.anibeaver.anibeaver.ui.modals.defaultFilterData
+
+data class AnimeFilterState(
+    var filterData: FilterData? = null,
+    val onFilterChange: (FilterData?) -> Unit
+) {
+    fun clear() = onFilterChange(defaultFilterData)
+}
+
+@Composable
+fun rememberAnimeFilterState(): AnimeFilterState {
+    var filterData by remember { mutableStateOf<FilterData?>(null) }
+    return AnimeFilterState(filterData) { filterData = it }
+}
+
+@Composable
+private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, onClear: () -> Unit) {
+    val hiddenCount = allEntries.size - entriesToShow.size
+    if (hiddenCount > 0) {
+        val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
+        val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Text("Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.", color = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.padding(bottom = 8.dp))
+            Spacer(Modifier.width(12.dp))
+            Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
+                Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EntryGrid(
+    entriesToShow: List<Entry>,
+    columns: Int,
+    cardWidth: androidx.compose.ui.unit.Dp,
+    cardSpacing: androidx.compose.ui.unit.Dp,
+    onEdit: (Entry) -> Unit,
+    onDelete: (Entry) -> Unit
+) {
+    entriesToShow.chunked(columns).forEach { rowEntries ->
+        Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+            Spacer(Modifier.width(cardSpacing))
+            rowEntries.forEach { entry ->
+                val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                EntryCard(
+                    id = entry.getId(),
+                    name = entry.animeName,
+                    tags = (genreTags + entry.releaseYear + studioTags + customTags).joinToString(", "),
+                    description = entry.description,
+                    onEdit = { onEdit(entry) },
+                    onDelete = { onDelete(entry) }
+                )
+                Spacer(Modifier.width(cardSpacing))
+            }
+            repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+        }
+    }
+}
 
 @Composable
 @Preview
@@ -33,7 +101,15 @@ fun AnimeScreen(
     dataWrapper: DataWrapper
 ) {
     var showPopup by remember { mutableStateOf(false) }
-    var editingEntry by remember { mutableStateOf<org.anibeaver.anibeaver.datastructures.Entry?>(null) }
+    var editingEntry by remember { mutableStateOf<Entry?>(null) }
+    var showManageTags by remember { mutableStateOf(false) }
+    var showFilter by remember { mutableStateOf(false) }
+    var showNewTagPopupFromManage by remember { mutableStateOf(false) }
+    val filterState = rememberAnimeFilterState()
+
+    fun refreshTags() {
+        // TODO: Implement tag refresh logic here
+    }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
@@ -50,17 +126,19 @@ fun AnimeScreen(
                     editingEntry = null
                     showPopup = true
                 }) { Text("New Entry") }
+                Button(onClick = { showManageTags = true }) { Text("Manage tags") }
+                Button(onClick = { showFilter = true }) { Text("Filter entries") }
                 Button(onClick = {
                     val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
                         releaseYear = "2025",
-                        studioName = "Placeholder Studio",
-                        genre = "Genre",
+                        studioIds = listOf(18), // Bones studio id
+                        genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
                         description = "This is a placeholder entry.",
                         rating = 8.5f,
-                        status = "Unknown",
-                        releasingEvery = "Never",
-                        tags = "placeholder, ph"
+                        status = Status.Finished, // Use enum value
+                        releasingEvery = Schedule.Irregular, // Use enum value
+                        tagIds = listOf(10, 11) // Shounen, Classic custom tag ids
                     )
                     EntriesController.addEntry(entry)
                 }) { Text("Add Placeholder Entry") }
@@ -75,26 +153,26 @@ fun AnimeScreen(
                             val entry = EntriesController.packEntry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioName = entryData.studioName,
-                                genre = entryData.genre,
+                                studioIds = entryData.studioIds,
+                                genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
                                 status = entryData.status,
                                 releasingEvery = entryData.releasingEvery,
-                                tags = entryData.tags
+                                tagIds = entryData.tagIds
                             )
                             EntriesController.addEntry(entry)
                         } else {
-                            val updatedEntry = org.anibeaver.anibeaver.datastructures.Entry(
+                            val updatedEntry = Entry(
                                 animeName = entryData.animeName,
                                 releaseYear = entryData.releaseYear,
-                                studioName = entryData.studioName,
-                                genre = entryData.genre,
+                                studioIds = entryData.studioIds,
+                                genreIds = entryData.genreIds,
                                 description = entryData.description,
                                 rating = entryData.rating,
                                 status = entryData.status,
                                 releasingEvery = entryData.releasingEvery,
-                                tags = entryData.tags,
+                                tagIds = entryData.tagIds,
                                 id = editingEntry!!.getId()
                             )
                             EntriesController.updateEntry(updatedEntry)
@@ -104,34 +182,46 @@ fun AnimeScreen(
                     initialEntry = editingEntry
                 )
             }
-
-            // Grid
-            EntriesController.entries.chunked(columns).forEach { rowEntries ->
-                Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
-
-                    Spacer(Modifier.width(cardSpacing))
-
-                    rowEntries.forEach { entry ->
-                        EntryCard(
-                            id = entry.getId(),
-                            name = entry.animeName,
-                            tags = listOfNotNull(entry.genre, entry.releaseYear, entry.studioName)
-                                .plus(entry.tags?.split(",") ?: emptyList())
-                                .joinToString(", "),
-                            description = entry.description,
-                            onEdit = {
-                                editingEntry = entry
-                                showPopup = true
-                            },
-                            onDelete = {
-                                EntriesController.removeEntryById(entry.getId())
-                            }
-                        )
-                        Spacer(Modifier.width(cardSpacing))
-                    }
-                    repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+            ManageTagsModal(
+                show = showManageTags,
+                onDismiss = { showManageTags = false },
+                onConfirm = { showManageTags = false },
+                onCreateTag = { showNewTagPopupFromManage = true }
+            )
+            FilterPopup(
+                show = showFilter,
+                onDismiss = { showFilter = false },
+                onConfirm = { data ->
+                    filterState.onFilterChange(data)
+                    showFilter = false
+                },
+                initialFilter = filterState.filterData
+            )
+            NewTagPopup(
+                show = showNewTagPopupFromManage,
+                onDismiss = { showNewTagPopupFromManage = false },
+                onConfirm = { name, color, type ->
+                    org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
+                    showNewTagPopupFromManage = false
                 }
-            }
+            )
+
+            val allEntries = EntriesController.entries
+            val entriesToShow = allEntries.filter { it.matchesFilter(filterState.filterData) }
+            FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
+            EntryGrid(
+                entriesToShow = entriesToShow,
+                columns = columns,
+                cardWidth = cardWidth,
+                cardSpacing = cardSpacing,
+                onEdit = { entry ->
+                    editingEntry = entry
+                    showPopup = true
+                },
+                onDelete = { entry ->
+                    EntriesController.removeEntryById(entry.getId())
+                }
+            )
         }
     }
 }
