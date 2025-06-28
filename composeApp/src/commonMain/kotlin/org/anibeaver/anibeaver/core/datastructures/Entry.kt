@@ -51,20 +51,20 @@ class Entry internal constructor(
 
     fun matchesFilter(filter: FilterData?): Boolean {
         if (filter == null) return true
-        // Status
-        if (!filter.selectedStatus.contains(status)) return false
-        // Schedule
-        if (!filter.selectedSchedule.contains(releasingEvery)) return false
-        // Year
+
+        if (filter.selectedStatus.isNotEmpty() && !filter.selectedStatus.contains(status)) return false
+
+        if (filter.selectedSchedule.isNotEmpty() && !filter.selectedSchedule.contains(releasingEvery)) return false
+
         val minYear = filter.minYear?.toIntOrNull() ?: Int.MIN_VALUE
         val maxYear = filter.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
         val entryYear = releaseYear.toIntOrNull() ?: Int.MIN_VALUE
         if (entryYear < minYear || entryYear > maxYear) return false
-        // Rating
+
         val minRating = filter.minRating ?: Float.MIN_VALUE
         val maxRating = filter.maxRating ?: Float.MAX_VALUE
         if (rating < minRating || rating > maxRating) return false
-        // Tag filtering: must have at least one selected tag from each category (if any selected)
+
         val selectedCustomTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
         val selectedStudioTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
         val selectedGenreTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
@@ -74,4 +74,3 @@ class Entry internal constructor(
         return true
     }
 }
-

@@ -71,9 +71,8 @@ fun FilterPopup(
                 minRating = null
                 maxRating = null
                 selectedTagIds = allTags.map { it.getId() }
-                onDismiss()
             }) {
-                Text("Clear/Reset")
+                Text("Clear/Reset all fitlers")
             }
         },
         title = { Text("Filter Entries") },

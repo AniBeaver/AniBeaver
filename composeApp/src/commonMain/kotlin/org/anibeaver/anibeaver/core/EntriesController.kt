@@ -9,6 +9,7 @@ import org.anibeaver.anibeaver.core.datastructures.Schedule
 object EntriesController {
     private var nextId = 1
     private val _entries = mutableStateListOf(
+        //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
         // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
         Entry(
             "Fullmetal Alchemist: Brotherhood",
@@ -55,7 +56,7 @@ object EntriesController {
             9.2f,
             Status.Finished,
             Schedule.Sunday,
-            listOf(7, 21), // Action, Dark custom tag ids
+            listOf(23), // Dark custom tag id (corrected from 7, 21)
             nextId++
         ),
         Entry(
