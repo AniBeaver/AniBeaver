@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.FilterData
@@ -23,27 +22,13 @@ private const val MIN_RATING = 0f
 private const val MAX_RATING = 10f
 
 object FilterDefaults {
-    val DEFAULT_MIN_YEAR = MIN_YEAR.toString()
+val DEFAULT_MIN_YEAR = MIN_YEAR.toString()
     val DEFAULT_MAX_YEAR = MAX_YEAR.toString()
     val DEFAULT_MIN_RATING = MIN_RATING
     val DEFAULT_MAX_RATING = MAX_RATING
     fun defaultStatus() = Status.entries.toList()
     fun defaultSchedule() = Schedule.entries.toList()
     fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.getId() }
-    // Move all reset logic to FilterDefaults
-    fun resetFilter(onChange: (FilterData) -> Unit) {
-        onChange(
-            FilterData(
-                selectedStatus = defaultStatus(),
-                selectedSchedule = defaultSchedule(),
-                minYear = DEFAULT_MIN_YEAR,
-                maxYear = DEFAULT_MAX_YEAR,
-                minRating = DEFAULT_MIN_RATING,
-                maxRating = DEFAULT_MAX_RATING,
-                selectedTagIds = defaultTagIds()
-            )
-        )
-    }
 }
 
 @Composable
@@ -166,15 +151,7 @@ fun FilterPopup(
                             minRating = state.minRating,
                             onMinRatingChange = { state = state.copy(minRating = it) },
                             maxRating = state.maxRating,
-                            onMaxRatingChange = { state = state.copy(maxRating = it) },
-                            onResetMinMax = {
-                                state = state.copy(
-                                    minYear = FilterDefaults.DEFAULT_MIN_YEAR,
-                                    maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
-                                    minRating = FilterDefaults.DEFAULT_MIN_RATING,
-                                    maxRating = FilterDefaults.DEFAULT_MAX_RATING
-                                )
-                            }
+                            onMaxRatingChange = { state = state.copy(maxRating = it) }
                         )
                         1 -> TagCheckboxRow(
                             allTags = allTags,
@@ -201,8 +178,7 @@ private fun FilterGeneralTab(
     minRating: Float?,
     onMinRatingChange: (Float?) -> Unit,
     maxRating: Float?,
-    onMaxRatingChange: (Float?) -> Unit,
-    onResetMinMax: () -> Unit
+    onMaxRatingChange: (Float?) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -223,7 +199,7 @@ private fun FilterGeneralTab(
             maxYear = maxYear,
             onMaxYearChange = onMaxYearChange
         )
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         FilterCheckboxRow(
             label = "Status",
             entries = Status.entries.toList(),
@@ -375,7 +351,6 @@ private fun TagCheckboxSection(
     onChange: (List<Int>) -> Unit
 ) {
     val sectionTagIds = tags.map { it.getId() }
-    val sectionSelected = selectedTagIds.filter { it in sectionTagIds }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -442,9 +417,9 @@ private fun TagCheckboxRow(
     val studios = allTags.filter { it.type.name == "STUDIO" }
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TagCheckboxSection("Genres", genres, selectedTagIds, onChange)
-        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         TagCheckboxSection("Custom tags", customs, selectedTagIds, onChange)
-        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         TagCheckboxSection("Studios", studios, selectedTagIds, onChange)
     }
 }

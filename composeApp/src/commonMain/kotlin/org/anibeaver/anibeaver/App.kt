@@ -49,7 +49,7 @@ fun App(navController: NavHostController = rememberNavController(), dataWrapper:
                         HomeScreen(navController, dataWrapper)
                     }
                     composable (route = Screens.Anime.name) {
-                        AnimeScreen(navController, dataWrapper)
+                        AnimeScreen(navController)
                     }
                     composable (route = Screens.Manga.name) {
                         MangaScreen(navController)
