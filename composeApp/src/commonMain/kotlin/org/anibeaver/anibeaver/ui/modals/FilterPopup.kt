@@ -24,12 +24,13 @@ fun FilterPopup(
 
     var selectedStatus by remember { mutableStateOf(Status.entries.toList()) }
     var selectedSchedule by remember { mutableStateOf(Schedule.entries.toList()) }
-    var minYear by remember { mutableStateOf<String?>(null) }
-    var maxYear by remember { mutableStateOf<String?>(null) }
-    var minRating by remember { mutableStateOf<Float?>(null) }
-    var maxRating by remember { mutableStateOf<Float?>(null) }
+    var minYear by remember { mutableStateOf<String?>("1900") }
+    var maxYear by remember { mutableStateOf<String?>("2100") }
+    var minRating by remember { mutableStateOf<Float?>(0f) }
+    var maxRating by remember { mutableStateOf<Float?>(10f) }
 
     AlertDialog(
+        modifier = Modifier.width(520.dp),
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(onClick = {
@@ -104,37 +105,51 @@ private fun FilterPopupContent(
             .verticalScroll(scrollState)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Rating:", modifier = Modifier.weight(1f))
+            Text("Rating:", modifier = Modifier.width(80.dp))
             FloatPicker(
                 value = minRating ?: 0f,
                 onValueChange = { onMinRatingChange(it) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                label="Min"
             )
             Spacer(Modifier.width(16.dp))
-            Text("to", modifier = Modifier.weight(1f))
             FloatPicker(
                 value = maxRating ?: 10f,
                 onValueChange = { onMaxRatingChange(it) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                label="Max"
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            Text("Year", modifier = Modifier.weight(1f))
+            Text("Year:", modifier = Modifier.width(80.dp))
             YearPicker(
                 value = minYear ?: "",
                 onValueChange = { onMinYearChange(it.ifBlank { null }) },
-                onIncrement = {},
-                onDecrement = {},
-                modifier = Modifier.weight(1f)
+                onIncrement = {
+                    val year = (minYear?.toIntOrNull() ?: 1900) + 1
+                    onMinYearChange(year.coerceAtMost((maxYear?.toIntOrNull() ?: 2100)).toString())
+                },
+                onDecrement = {
+                    val year = (minYear?.toIntOrNull() ?: 1900) - 1
+                    onMinYearChange(year.coerceAtLeast(1900).toString())
+                },
+                modifier = Modifier.weight(1f),
+                label="Min"
             )
             Spacer(Modifier.width(16.dp))
-            Text("to", modifier = Modifier.weight(1f))
             YearPicker(
                 value = maxYear ?: "",
                 onValueChange = { onMaxYearChange(it.ifBlank { null }) },
-                onIncrement = {},
-                onDecrement = {},
-                modifier = Modifier.weight(1f)
+                onIncrement = {
+                    val year = (maxYear?.toIntOrNull() ?: 2100) + 1
+                    onMaxYearChange(year.coerceAtMost(2100).toString())
+                },
+                onDecrement = {
+                    val year = (maxYear?.toIntOrNull() ?: 2100) - 1
+                    onMaxYearChange(year.coerceAtLeast((minYear?.toIntOrNull() ?: 1900)).toString())
+                },
+                modifier = Modifier.weight(1f),
+                label="Max"
             )
         }
 
