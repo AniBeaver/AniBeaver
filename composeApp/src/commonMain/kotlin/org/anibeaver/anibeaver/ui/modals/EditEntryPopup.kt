@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.TagType
+import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.datastructures.Schedule
 import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
@@ -35,8 +37,8 @@ fun EditEntryPopup(
     var genreIds by remember { mutableStateOf(initialEntry?.genreIds ?: emptyList()) }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
     var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
-    var status by remember { mutableStateOf(initialEntry?.status ?: "") }
-    var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: "") }
+    var status by remember { mutableStateOf(initialEntry?.status ?: Status.Towatch) }
+    var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: Schedule.Monday) }
     var tagsIds by remember { mutableStateOf(initialEntry?.tagIds ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
@@ -49,8 +51,8 @@ fun EditEntryPopup(
         genreIds = initialEntry?.genreIds ?: emptyList()
         description = initialEntry?.description ?: ""
         rating = initialEntry?.rating ?: 8.5f
-        status = initialEntry?.status ?: ""
-        releasingEvery = initialEntry?.releasingEvery ?: ""
+        status = initialEntry?.status ?: Status.Towatch
+        releasingEvery = initialEntry?.releasingEvery ?: Schedule.Monday
         tagsIds = initialEntry?.tagIds ?: emptyList()
     }
 
@@ -104,15 +106,11 @@ fun EditEntryPopup(
                             modifier = Modifier.size(96.dp).padding(end = 24.dp),
                             onClick = { /* TODO: Handle image selection */ }
                         )
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text("Rating", modifier = Modifier.padding(bottom = 4.dp))
-                            FloatPicker(
-                                value = rating,
-                                onValueChange = { rating = it }
-                            )
-                        }
+                        FloatPicker(
+                            value = rating,
+                            onValueChange = { rating = it },
+                            label = "Rating"
+                        )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
@@ -133,19 +131,20 @@ fun EditEntryPopup(
                                 val year = releaseYear.toIntOrNull() ?: 0
                                 if (year > 0) releaseYear = (year - 1).toString()
                             },
-                            modifier = Modifier.weight(1f).focusRequester(releaseYearRequester).focusProperties { next = genreRequester }
+                            modifier = Modifier.weight(1f).focusRequester(releaseYearRequester).focusProperties { next = genreRequester },
+                            label = "Year"
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                         SimpleDropdown(
-                            options = listOf("Towatch", "Watching", "On Hold", "Finished", "Dropped"),
+                            options = Status.entries.toList(),
                             selectedOption = status,
                             onOptionSelected = { status = it },
                             label = "Status",
                             modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
                         )
                         SimpleDropdown(
-                            options = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Irregular"),
+                            options = Schedule.entries.toList(),
                             selectedOption = releasingEvery,
                             onOptionSelected = { releasingEvery = it },
                             label = "Releasing Every",

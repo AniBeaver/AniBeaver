@@ -8,7 +8,8 @@ import org.anibeaver.anibeaver.ui.components.abstract.SpinBox
 fun FloatPicker(
     value: Float,
     onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    label: String = ""
 ) {
     SpinBox(
         value = if (value % 1 == 0f) value.toInt().toString() else value.toString(),
@@ -22,6 +23,7 @@ fun FloatPicker(
             input.filterIndexed { idx, c ->
                 c.isDigit() || (c == '.' && !input.take(idx).contains('.'))
             }
-        }
+        },
+        label = label
     )
 }
