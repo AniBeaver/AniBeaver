@@ -31,6 +31,68 @@ import org.anibeaver.anibeaver.ui.modals.FilterPopup
 import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
 import org.anibeaver.anibeaver.ui.modals.NewTagPopup
 import org.anibeaver.anibeaver.core.datastructures.FilterData
+import org.anibeaver.anibeaver.ui.modals.FilterDefaults
+import org.anibeaver.anibeaver.ui.modals.defaultFilterData
+
+data class AnimeFilterState(
+    var filterData: FilterData? = null,
+    val onFilterChange: (FilterData?) -> Unit
+) {
+    fun clear() = onFilterChange(defaultFilterData)
+}
+
+@Composable
+fun rememberAnimeFilterState(): AnimeFilterState {
+    var filterData by remember { mutableStateOf<FilterData?>(null) }
+    return AnimeFilterState(filterData) { filterData = it }
+}
+
+@Composable
+private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, onClear: () -> Unit) {
+    val hiddenCount = allEntries.size - entriesToShow.size
+    if (hiddenCount > 0) {
+        val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
+        val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            Text("Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.", color = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.padding(bottom = 8.dp))
+            Spacer(Modifier.width(12.dp))
+            Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
+                Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EntryGrid(
+    entriesToShow: List<Entry>,
+    columns: Int,
+    cardWidth: androidx.compose.ui.unit.Dp,
+    cardSpacing: androidx.compose.ui.unit.Dp,
+    onEdit: (Entry) -> Unit,
+    onDelete: (Entry) -> Unit
+) {
+    entriesToShow.chunked(columns).forEach { rowEntries ->
+        Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+            Spacer(Modifier.width(cardSpacing))
+            rowEntries.forEach { entry ->
+                val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                EntryCard(
+                    id = entry.getId(),
+                    name = entry.animeName,
+                    tags = (genreTags + entry.releaseYear + studioTags + customTags).joinToString(", "),
+                    description = entry.description,
+                    onEdit = { onEdit(entry) },
+                    onDelete = { onDelete(entry) }
+                )
+                Spacer(Modifier.width(cardSpacing))
+            }
+            repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+        }
+    }
+}
 
 @Composable
 @Preview
@@ -43,7 +105,7 @@ fun AnimeScreen(
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
-    var filterData by remember { mutableStateOf<FilterData?>(null) }
+    val filterState = rememberAnimeFilterState()
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -130,10 +192,10 @@ fun AnimeScreen(
                 show = showFilter,
                 onDismiss = { showFilter = false },
                 onConfirm = { data ->
-                    filterData = data
+                    filterState.onFilterChange(data)
                     showFilter = false
                 },
-                initialFilter = filterData
+                initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -144,42 +206,22 @@ fun AnimeScreen(
                 }
             )
 
-            // Grid
             val allEntries = EntriesController.entries
-            val entriesToShow = allEntries.filter { it.matchesFilter(filterData) }
-            val hiddenCount = allEntries.size - entriesToShow.size
-            if (hiddenCount > 0) {
-                val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
-                val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
-                Text("Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden by filters.", color = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.padding(bottom = 8.dp))
-            }
-            entriesToShow.chunked(columns).forEach { rowEntries ->
-                Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
-
-                    Spacer(Modifier.width(cardSpacing))
-
-                    rowEntries.forEach { entry ->
-                        val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
-                        val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
-                        val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
-                        EntryCard(
-                            id = entry.getId(),
-                            name = entry.animeName,
-                            tags = (genreTags + entry.releaseYear + studioTags + customTags).joinToString(", "),
-                            description = entry.description,
-                            onEdit = {
-                                editingEntry = entry
-                                showPopup = true
-                            },
-                            onDelete = {
-                                EntriesController.removeEntryById(entry.getId())
-                            }
-                        )
-                        Spacer(Modifier.width(cardSpacing))
-                    }
-                    repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+            val entriesToShow = allEntries.filter { it.matchesFilter(filterState.filterData) }
+            FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
+            EntryGrid(
+                entriesToShow = entriesToShow,
+                columns = columns,
+                cardWidth = cardWidth,
+                cardSpacing = cardSpacing,
+                onEdit = { entry ->
+                    editingEntry = entry
+                    showPopup = true
+                },
+                onDelete = { entry ->
+                    EntriesController.removeEntryById(entry.getId())
                 }
-            }
+            )
         }
     }
 }

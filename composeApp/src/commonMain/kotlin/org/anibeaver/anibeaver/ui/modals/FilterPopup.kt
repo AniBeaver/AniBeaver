@@ -22,6 +22,30 @@ private const val MAX_YEAR = 2100
 private const val MIN_RATING = 0f
 private const val MAX_RATING = 10f
 
+object FilterDefaults {
+    val DEFAULT_MIN_YEAR = MIN_YEAR.toString()
+    val DEFAULT_MAX_YEAR = MAX_YEAR.toString()
+    val DEFAULT_MIN_RATING = MIN_RATING
+    val DEFAULT_MAX_RATING = MAX_RATING
+    fun defaultStatus() = Status.entries.toList()
+    fun defaultSchedule() = Schedule.entries.toList()
+    fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.getId() }
+    // Move all reset logic to FilterDefaults
+    fun resetFilter(onChange: (FilterData) -> Unit) {
+        onChange(
+            FilterData(
+                selectedStatus = defaultStatus(),
+                selectedSchedule = defaultSchedule(),
+                minYear = DEFAULT_MIN_YEAR,
+                maxYear = DEFAULT_MAX_YEAR,
+                minRating = DEFAULT_MIN_RATING,
+                maxRating = DEFAULT_MAX_RATING,
+                selectedTagIds = defaultTagIds()
+            )
+        )
+    }
+}
+
 @Composable
 fun FilterPopup(
     show: Boolean,
@@ -31,67 +55,97 @@ fun FilterPopup(
 ) {
     if (!show) return
 
-    var selectedStatus by remember { mutableStateOf(initialFilter?.selectedStatus ?: Status.entries.toList()) }
-    var selectedSchedule by remember { mutableStateOf(initialFilter?.selectedSchedule ?: Schedule.entries.toList()) }
-    var minYear by remember { mutableStateOf<String?>(initialFilter?.minYear ?: MIN_YEAR.toString()) }
-    var maxYear by remember { mutableStateOf<String?>(initialFilter?.maxYear ?: MAX_YEAR.toString()) }
-    var minRating by remember { mutableStateOf<Float?>(initialFilter?.minRating ?: MIN_RATING) }
-    var maxRating by remember { mutableStateOf<Float?>(initialFilter?.maxRating ?: MAX_RATING) }
+    // Extract state into a single data class for clarity
+    data class FilterUiState(
+        var selectedStatus: List<Status>,
+        var selectedSchedule: List<Schedule>,
+        var minYear: String?,
+        var maxYear: String?,
+        var minRating: Float?,
+        var maxRating: Float?,
+        var selectedTagIds: List<Int>,
+        var selectedTab: Int
+    )
     val allTags = remember { TagsController.tags.sortedBy { it.name } }
-    var selectedTagIds by remember { mutableStateOf<List<Int>>(initialFilter?.selectedTagIds ?: allTags.map { it.getId() }) }
-    var selectedTab by remember { mutableStateOf(0) }
+    var state by remember {
+        mutableStateOf(
+            FilterUiState(
+                selectedStatus = initialFilter?.selectedStatus ?: FilterDefaults.defaultStatus(),
+                selectedSchedule = initialFilter?.selectedSchedule ?: FilterDefaults.defaultSchedule(),
+                minYear = initialFilter?.minYear ?: FilterDefaults.DEFAULT_MIN_YEAR,
+                maxYear = initialFilter?.maxYear ?: FilterDefaults.DEFAULT_MAX_YEAR,
+                minRating = initialFilter?.minRating ?: FilterDefaults.DEFAULT_MIN_RATING,
+                maxRating = initialFilter?.maxRating ?: FilterDefaults.DEFAULT_MAX_RATING,
+                selectedTagIds = initialFilter?.selectedTagIds ?: FilterDefaults.defaultTagIds(),
+                selectedTab = 0
+            )
+        )
+    }
     val tabTitles = listOf("General", "Tags")
 
     AlertDialog(
-        modifier = Modifier.width(700.dp),
+        modifier = Modifier
+            .width(700.dp)
+            .height(800.dp), // Make the popup taller like EditEntry
         onDismissRequest = onDismiss,
         confirmButton = {
-            Button(onClick = {
-                onConfirm(
-                    FilterData(
-                        selectedStatus,
-                        selectedSchedule,
-                        minYear,
-                        maxYear,
-                        minRating,
-                        maxRating,
-                        selectedTagIds
+            Button(
+                onClick = {
+                    onConfirm(
+                        FilterData(
+                            state.selectedStatus,
+                            state.selectedSchedule,
+                            state.minYear,
+                            state.maxYear,
+                            state.minRating,
+                            state.maxRating,
+                            state.selectedTagIds
+                        )
                     )
-                )
-            }) {
+                }
+            ) {
                 Text("Filter")
             }
         },
         dismissButton = {
-            Button(onClick = {
-                selectedStatus = Status.entries.toList()
-                selectedSchedule = Schedule.entries.toList()
-                minYear = null
-                maxYear = null
-                minRating = null
-                maxRating = null
-                selectedTagIds = allTags.map { it.getId() }
-            }) {
-                Text("Clear/Reset all fitlers")
+            Button(
+                onClick = {
+                    state = state.copy(
+                        selectedStatus = FilterDefaults.defaultStatus(),
+                        selectedSchedule = FilterDefaults.defaultSchedule(),
+                        minYear = FilterDefaults.DEFAULT_MIN_YEAR,
+                        maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
+                        minRating = FilterDefaults.DEFAULT_MIN_RATING,
+                        maxRating = FilterDefaults.DEFAULT_MAX_RATING,
+                        selectedTagIds = FilterDefaults.defaultTagIds()
+                    )
+                }
+            ) {
+                Text("Reset all filters")
             }
         },
         title = { Text("Filter Entries") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Surface(
                     tonalElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     TabRow(
-                        selectedTabIndex = selectedTab,
-                        modifier = Modifier.fillMaxWidth(),
+                        selectedTabIndex = state.selectedTab,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
                         tabTitles.forEachIndexed { index, title ->
                             Tab(
-                                selected = selectedTab == index,
-                                onClick = { selectedTab = index },
+                                selected = state.selectedTab == index,
+                                onClick = { state = state.copy(selectedTab = index) },
                                 text = { Text(title, style = MaterialTheme.typography.labelLarge) },
                                 selectedContentColor = MaterialTheme.colorScheme.primary,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -99,32 +153,36 @@ fun FilterPopup(
                         }
                     }
                 }
-                when (selectedTab) {
-                    0 -> FilterGeneralTab(
-                        selectedStatus = selectedStatus,
-                        onStatusChange = { selectedStatus = it },
-                        selectedSchedule = selectedSchedule,
-                        onScheduleChange = { selectedSchedule = it },
-                        minYear = minYear,
-                        onMinYearChange = { minYear = it },
-                        maxYear = maxYear,
-                        onMaxYearChange = { maxYear = it },
-                        minRating = minRating,
-                        onMinRatingChange = { minRating = it },
-                        maxRating = maxRating,
-                        onMaxRatingChange = { maxRating = it },
-                        onResetMinMax = {
-                            minYear = MIN_YEAR.toString()
-                            maxYear = MAX_YEAR.toString()
-                            minRating = MIN_RATING
-                            maxRating = MAX_RATING
-                        }
-                    )
-                    1 -> TagCheckboxRow(
-                        allTags = allTags,
-                        selectedTagIds = selectedTagIds,
-                        onChange = { selectedTagIds = it }
-                    )
+                Box(modifier = Modifier.weight(1f, fill = true)) {
+                    when (state.selectedTab) {
+                        0 -> FilterGeneralTab(
+                            selectedStatus = state.selectedStatus,
+                            onStatusChange = { state = state.copy(selectedStatus = it) },
+                            selectedSchedule = state.selectedSchedule,
+                            onScheduleChange = { state = state.copy(selectedSchedule = it) },
+                            minYear = state.minYear,
+                            onMinYearChange = { state = state.copy(minYear = it) },
+                            maxYear = state.maxYear,
+                            onMaxYearChange = { state = state.copy(maxYear = it) },
+                            minRating = state.minRating,
+                            onMinRatingChange = { state = state.copy(minRating = it) },
+                            maxRating = state.maxRating,
+                            onMaxRatingChange = { state = state.copy(maxRating = it) },
+                            onResetMinMax = {
+                                state = state.copy(
+                                    minYear = FilterDefaults.DEFAULT_MIN_YEAR,
+                                    maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
+                                    minRating = FilterDefaults.DEFAULT_MIN_RATING,
+                                    maxRating = FilterDefaults.DEFAULT_MAX_RATING
+                                )
+                            }
+                        )
+                        1 -> TagCheckboxRow(
+                            allTags = allTags,
+                            selectedTagIds = state.selectedTagIds,
+                            onChange = { state = state.copy(selectedTagIds = it) }
+                        )
+                    }
                 }
             }
         }
@@ -151,8 +209,7 @@ private fun FilterGeneralTab(
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(max = 400.dp, min = 400.dp)
+            .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
         RatingFilterRow(
@@ -392,3 +449,14 @@ private fun TagCheckboxRow(
         TagCheckboxSection("Studios", studios, selectedTagIds, onChange)
     }
 }
+
+val defaultFilterData: FilterData
+    get() = FilterData(
+        selectedStatus = FilterDefaults.defaultStatus(),
+        selectedSchedule = FilterDefaults.defaultSchedule(),
+        minYear = FilterDefaults.DEFAULT_MIN_YEAR,
+        maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
+        minRating = FilterDefaults.DEFAULT_MIN_RATING,
+        maxRating = FilterDefaults.DEFAULT_MAX_RATING,
+        selectedTagIds = FilterDefaults.defaultTagIds()
+    )
