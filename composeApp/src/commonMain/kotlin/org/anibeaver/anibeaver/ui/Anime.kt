@@ -132,7 +132,8 @@ fun AnimeScreen(
                 onConfirm = { data ->
                     filterData = data
                     showFilter = false
-                }
+                },
+                initialFilter = filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,

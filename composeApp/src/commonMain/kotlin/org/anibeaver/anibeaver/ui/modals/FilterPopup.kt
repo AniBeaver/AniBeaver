@@ -27,17 +27,18 @@ fun FilterPopup(
     show: Boolean,
     onDismiss: () -> Unit,
     onConfirm: (FilterData) -> Unit,
+    initialFilter: FilterData? = null,
 ) {
     if (!show) return
 
-    var selectedStatus by remember { mutableStateOf(Status.entries.toList()) }
-    var selectedSchedule by remember { mutableStateOf(Schedule.entries.toList()) }
-    var minYear by remember { mutableStateOf<String?>(MIN_YEAR.toString()) }
-    var maxYear by remember { mutableStateOf<String?>(MAX_YEAR.toString()) }
-    var minRating by remember { mutableStateOf<Float?>(MIN_RATING) }
-    var maxRating by remember { mutableStateOf<Float?>(MAX_RATING) }
-    var selectedTagIds by remember { mutableStateOf<List<Int>>(TagsController.tags.sortedBy { it.name }.map { it.getId() }) }
+    var selectedStatus by remember { mutableStateOf(initialFilter?.selectedStatus ?: Status.entries.toList()) }
+    var selectedSchedule by remember { mutableStateOf(initialFilter?.selectedSchedule ?: Schedule.entries.toList()) }
+    var minYear by remember { mutableStateOf<String?>(initialFilter?.minYear ?: MIN_YEAR.toString()) }
+    var maxYear by remember { mutableStateOf<String?>(initialFilter?.maxYear ?: MAX_YEAR.toString()) }
+    var minRating by remember { mutableStateOf<Float?>(initialFilter?.minRating ?: MIN_RATING) }
+    var maxRating by remember { mutableStateOf<Float?>(initialFilter?.maxRating ?: MAX_RATING) }
     val allTags = remember { TagsController.tags.sortedBy { it.name } }
+    var selectedTagIds by remember { mutableStateOf<List<Int>>(initialFilter?.selectedTagIds ?: allTags.map { it.getId() }) }
     var selectedTab by remember { mutableStateOf(0) }
     val tabTitles = listOf("General", "Tags")
 
@@ -72,7 +73,7 @@ fun FilterPopup(
                 selectedTagIds = allTags.map { it.getId() }
                 onDismiss()
             }) {
-                Text("Clear")
+                Text("Clear/Reset")
             }
         },
         title = { Text("Filter Entries") },
