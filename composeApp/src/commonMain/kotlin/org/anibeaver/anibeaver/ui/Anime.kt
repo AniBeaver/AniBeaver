@@ -23,8 +23,11 @@ import org.anibeaver.anibeaver.Screens
 import androidx.compose.foundation.layout.BoxWithConstraints
 import kotlin.math.max
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
+import org.anibeaver.anibeaver.ui.modals.FilterPopup
 import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
 import org.anibeaver.anibeaver.ui.modals.NewTagPopup
 
@@ -37,6 +40,7 @@ fun AnimeScreen(
     var showPopup by remember { mutableStateOf(false) }
     var editingEntry by remember { mutableStateOf<Entry?>(null) }
     var showManageTags by remember { mutableStateOf(false) }
+    var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
 
     fun refreshTags() {
@@ -59,6 +63,7 @@ fun AnimeScreen(
                     showPopup = true
                 }) { Text("New Entry") }
                 Button(onClick = { showManageTags = true }) { Text("Manage tags") }
+                Button(onClick = { showFilter = true }) { Text("Filter entries") }
                 Button(onClick = {
                     val entry = EntriesController.packEntry(
                         animeName = "Placeholder Anime",
@@ -67,8 +72,8 @@ fun AnimeScreen(
                         genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
                         description = "This is a placeholder entry.",
                         rating = 8.5f,
-                        status = "Unknown",
-                        releasingEvery = "Never",
+                        status = Status.Finished, // Use enum value
+                        releasingEvery = Schedule.Irregular, // Use enum value
                         tagIds = listOf(10, 11) // Shounen, Classic custom tag ids
                     )
                     EntriesController.addEntry(entry)
@@ -118,6 +123,11 @@ fun AnimeScreen(
                 onDismiss = { showManageTags = false },
                 onConfirm = { showManageTags = false },
                 onCreateTag = { showNewTagPopupFromManage = true }
+            )
+            FilterPopup(
+                show = showFilter,
+                onDismiss = { showFilter = false },
+                onConfirm = { showFilter = false }
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
