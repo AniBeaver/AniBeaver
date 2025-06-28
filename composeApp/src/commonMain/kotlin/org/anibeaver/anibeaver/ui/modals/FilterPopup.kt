@@ -312,23 +312,36 @@ private fun <T> FilterCheckboxRow(
 }
 
 @Composable
-private fun TagCheckboxRow(
-    allTags: List<org.anibeaver.anibeaver.core.datastructures.Tag>,
+private fun TagCheckboxSection(
+    label: String,
+    tags: List<org.anibeaver.anibeaver.core.datastructures.Tag>,
     selectedTagIds: List<Int>,
     onChange: (List<Int>) -> Unit
 ) {
+    val sectionTagIds = tags.map { it.getId() }
+    val sectionSelected = selectedTagIds.filter { it in sectionTagIds }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Tags", modifier = Modifier.weight(1f))
+            Text(label, modifier = Modifier.weight(1f))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Button(onClick = { onChange(emptyList()) }, modifier = Modifier.height(32.dp)) {
+                Button(
+                    onClick = {
+                        onChange(selectedTagIds - sectionTagIds)
+                    },
+                    modifier = Modifier.height(32.dp)
+                ) {
                     Text("Uncheck all")
                 }
-                Button(onClick = { onChange(allTags.map { it.getId() }) }, modifier = Modifier.height(32.dp)) {
+                Button(
+                    onClick = {
+                        onChange((selectedTagIds - sectionTagIds) + sectionTagIds)
+                    },
+                    modifier = Modifier.height(32.dp)
+                ) {
                     Text("Check all")
                 }
             }
@@ -338,7 +351,7 @@ private fun TagCheckboxRow(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            allTags.forEach { tag ->
+            tags.forEach { tag ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
                         checked = selectedTagIds.contains(tag.getId()),
@@ -359,5 +372,23 @@ private fun TagCheckboxRow(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TagCheckboxRow(
+    allTags: List<org.anibeaver.anibeaver.core.datastructures.Tag>,
+    selectedTagIds: List<Int>,
+    onChange: (List<Int>) -> Unit
+) {
+    val genres = allTags.filter { it.type.name == "GENRE" }
+    val customs = allTags.filter { it.type.name == "CUSTOM" }
+    val studios = allTags.filter { it.type.name == "STUDIO" }
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        TagCheckboxSection("Genres", genres, selectedTagIds, onChange)
+        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        TagCheckboxSection("Custom tags", customs, selectedTagIds, onChange)
+        Divider(modifier = Modifier.padding(vertical = 4.dp))
+        TagCheckboxSection("Studios", studios, selectedTagIds, onChange)
     }
 }
