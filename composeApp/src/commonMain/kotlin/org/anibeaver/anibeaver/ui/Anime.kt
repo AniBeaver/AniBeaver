@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.Entry

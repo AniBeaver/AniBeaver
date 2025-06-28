@@ -3,30 +3,20 @@ package org.anibeaver.anibeaver
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.ui.AnimeScreen
-import org.anibeaver.anibeaver.ui.HomeScreen
-import org.anibeaver.anibeaver.ui.MangaScreen
-import org.anibeaver.anibeaver.ui.SettingsScreen
-import org.anibeaver.anibeaver.ui.TestScreen
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
+import org.anibeaver.anibeaver.ui.*
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
-import org.anibeaver.anibeaver.DataWrapper
-import org.anibeaver.anibeaver.api.ApiHandler
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
