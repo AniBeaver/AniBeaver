@@ -30,6 +30,7 @@ import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
 import org.anibeaver.anibeaver.ui.modals.FilterPopup
 import org.anibeaver.anibeaver.ui.modals.ManageTagsModal
 import org.anibeaver.anibeaver.ui.modals.NewTagPopup
+import org.anibeaver.anibeaver.core.datastructures.FilterData
 
 @Composable
 @Preview
@@ -42,6 +43,7 @@ fun AnimeScreen(
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
+    var filterData by remember { mutableStateOf<FilterData?>(null) }
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -127,7 +129,10 @@ fun AnimeScreen(
             FilterPopup(
                 show = showFilter,
                 onDismiss = { showFilter = false },
-                onConfirm = { showFilter = false }
+                onConfirm = { data ->
+                    filterData = data
+                    showFilter = false
+                }
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -139,7 +144,8 @@ fun AnimeScreen(
             )
 
             // Grid
-            EntriesController.entries.chunked(columns).forEach { rowEntries ->
+            val entriesToShow = EntriesController.entries.filter { it.matchesFilter(filterData) }
+            entriesToShow.chunked(columns).forEach { rowEntries ->
                 Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
 
                     Spacer(Modifier.width(cardSpacing))
