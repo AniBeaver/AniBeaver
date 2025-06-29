@@ -4,10 +4,7 @@ package org.anibeaver.anibeaver
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -22,6 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.anibeaver.anibeaver.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.*
 import org.anibeaver.anibeaver.ui.layout.Sidebar
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
@@ -55,7 +53,7 @@ fun App(
                     Sidebar(navController, colors)
                 }
 
-                Column{
+                Column (modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
                     NavHost(
                         navController = navController,
                         startDestination = Screens.Home.name,
@@ -65,7 +63,6 @@ fun App(
                         popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                         modifier = Modifier
                             .safeContentPadding()
-                            .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
                         composable (route = Screens.Home.name) {
@@ -83,6 +80,12 @@ fun App(
                         composable (route = Screens.Test.name) {
                             TestScreen(navController, dataWrapper)
                         }
+
+
+                    }
+
+                    if (!showSidebar) {
+                        BottomNavBar(navController)
                     }
                 }
             }
