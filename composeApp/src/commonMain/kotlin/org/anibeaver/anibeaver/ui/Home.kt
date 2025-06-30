@@ -3,6 +3,7 @@ package org.anibeaver.anibeaver.ui
 import org.anibeaver.anibeaver.DataWrapper
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -26,7 +27,7 @@ fun HomeScreen(
     dataWrapper: DataWrapper
 ) {
     var showEditPopup by remember { mutableStateOf(false) }
-    Column(modifier = Modifier.padding(32.dp)) {
+    Column(modifier = Modifier.padding(32.dp).fillMaxSize() ){
         Text("Welcome to AniBeaver", style = Typography.headlineLarge, modifier = Modifier.padding(bottom = 8.dp))
 
         Button(onClick = {
