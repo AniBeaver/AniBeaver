@@ -45,9 +45,10 @@ class Entry internal constructor(
     val status: Status,
     val releasingEvery: Schedule,
     val tagIds: List<Int>,
-    private val id: Int
+    id: Int 
 ) {
-    fun getId(): Int = id
+    internal val id: Int = id
+        get() = field
 
     fun matchesFilter(filter: FilterData?): Boolean {
         if (filter == null) return true

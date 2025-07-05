@@ -29,7 +29,7 @@ object FilterDefaults {
     val DEFAULT_MAX_RATING = MAX_RATING
     fun defaultStatus() = Status.entries.toList()
     fun defaultSchedule() = Schedule.entries.toList()
-    fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.getId() }
+    fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.id }
     // Move all reset logic to FilterDefaults
     fun resetFilter(onChange: (FilterData) -> Unit) {
         onChange(
@@ -374,7 +374,7 @@ private fun TagCheckboxSection(
     selectedTagIds: List<Int>,
     onChange: (List<Int>) -> Unit
 ) {
-    val sectionTagIds = tags.map { it.getId() }
+    val sectionTagIds = tags.map { it.id }
     val sectionSelected = selectedTagIds.filter { it in sectionTagIds }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
@@ -410,10 +410,10 @@ private fun TagCheckboxSection(
             tags.forEach { tag ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
-                        checked = selectedTagIds.contains(tag.getId()),
+                        checked = selectedTagIds.contains(tag.id),
                         onCheckedChange = { checked ->
                             onChange(
-                                if (checked) selectedTagIds + tag.getId() else selectedTagIds - tag.getId()
+                                if (checked) selectedTagIds + tag.id else selectedTagIds - tag.id
                             )
                         }
                     )

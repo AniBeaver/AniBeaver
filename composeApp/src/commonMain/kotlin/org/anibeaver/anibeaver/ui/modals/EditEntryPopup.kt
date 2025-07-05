@@ -37,7 +37,7 @@ fun EditEntryPopup(
     var genreIds by remember { mutableStateOf(initialEntry?.genreIds ?: emptyList()) }
     var description by remember { mutableStateOf(initialEntry?.description ?: "") }
     var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
-    var status by remember { mutableStateOf(initialEntry?.status ?: Status.Towatch) }
+    var status by remember { mutableStateOf(initialEntry?.status ?: Status.Planning) }
     var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: Schedule.Monday) }
     var tagsIds by remember { mutableStateOf(initialEntry?.tagIds ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
@@ -51,7 +51,7 @@ fun EditEntryPopup(
         genreIds = initialEntry?.genreIds ?: emptyList()
         description = initialEntry?.description ?: ""
         rating = initialEntry?.rating ?: 8.5f
-        status = initialEntry?.status ?: Status.Towatch
+        status = initialEntry?.status ?: Status.Planning
         releasingEvery = initialEntry?.releasingEvery ?: Schedule.Monday
         tagsIds = initialEntry?.tagIds ?: emptyList()
     }
@@ -83,7 +83,7 @@ fun EditEntryPopup(
                             status = status,
                             releasingEvery = releasingEvery,
                             tagIds = tagsIds,
-                            id = initialEntry?.getId() ?: 0
+                            id = initialEntry?.id ?: 0
                         )
                     )
                 }) {

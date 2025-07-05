@@ -18,7 +18,7 @@ object EntriesController {
             listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
             "Epic alchemy adventure.",
             9.5f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Sunday,
             listOf(10, 11), // Shounen, Classic custom tag ids
             nextId++
@@ -30,7 +30,7 @@ object EntriesController {
             listOf(12, 13), // Sci-Fi, Thriller genre ids
             "Time travel thriller.",
             9.0f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Wednesday,
             listOf(14, 13), // Time Travel, Thriller custom tag ids
             nextId++
@@ -42,7 +42,7 @@ object EntriesController {
             listOf(5, 6, 1), // Drama, Romance, Music genre ids
             "Emotional music drama.",
             8.8f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Friday,
             listOf(1, 6), // Music, Romance custom tag ids
             nextId++
@@ -54,7 +54,7 @@ object EntriesController {
             listOf(7, 5, 9), // Action, Drama, Fantasy genre ids
             "Humanity vs Titans.",
             9.2f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Sunday,
             listOf(23), // Dark custom tag id (corrected from 7, 21)
             nextId++
@@ -66,7 +66,7 @@ object EntriesController {
             listOf(1, 22, 4), // Music, Slice of Life, Comedy genre ids
             "Cute girls play music.",
             8.0f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Thursday,
             listOf(22, 1), // Slice of Life, Music custom tag ids
             nextId++
@@ -78,7 +78,7 @@ object EntriesController {
             listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
             "An anime with a ridiculous number of tags for testing UI overflow and performance.",
             7.7f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Monday,
             listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
             nextId++
@@ -106,17 +106,17 @@ object EntriesController {
     }
 
     fun updateEntry(entry: Entry) {
-        val index = _entries.indexOfFirst { it.getId() == entry.getId() }
+        val index = _entries.indexOfFirst { it.id == entry.id }
         if (index != -1) {
             _entries[index] = entry
             debugPrintIds()
         } else {
-            println("No entry to update with id ${entry.getId()} found")
+            println("No entry to update with id ${entry.id} found")
         }
     }
 
     fun removeEntryById(id: Int) {
-        _entries.removeAll { it.getId() == id }
+        _entries.removeAll { it.id == id }
         debugPrintIds()
     }
 
@@ -126,6 +126,6 @@ object EntriesController {
     }
 
     fun debugPrintIds() {
-        println("[EntriesController] Current entry ids: " + _entries.map { it.getId() })
+        println("[EntriesController] Current entry ids: " + _entries.map { it.id })
     }
 }

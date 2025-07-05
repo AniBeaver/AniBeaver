@@ -63,11 +63,11 @@ private fun EntryGrid(
         Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
             Spacer(Modifier.width(cardSpacing))
             rowEntries.forEach { entry ->
-                val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
-                val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
-                val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.getId() == id }?.name }
+                val studioTags = entry.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
+                val genreTags = entry.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
+                val customTags = entry.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
                 EntryCard(
-                    id = entry.getId(),
+                    id = entry.id,
                     name = entry.animeName,
                     tags = (genreTags + entry.releaseYear + studioTags + customTags).joinToString(", "),
                     description = entry.description,
@@ -123,7 +123,7 @@ fun AnimeScreen(
                         genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
                         description = "This is a placeholder entry.",
                         rating = 8.5f,
-                        status = Status.Finished, // Use enum value
+                        status = Status.Completed, // Use enum value
                         releasingEvery = Schedule.Irregular, // Use enum value
                         tagIds = listOf(10, 11) // Shounen, Classic custom tag ids
                     )
@@ -160,7 +160,7 @@ fun AnimeScreen(
                                 status = entryData.status,
                                 releasingEvery = entryData.releasingEvery,
                                 tagIds = entryData.tagIds,
-                                id = editingEntry!!.getId()
+                                id = editingEntry!!.id
                             )
                             EntriesController.updateEntry(updatedEntry)
                         }
@@ -206,7 +206,7 @@ fun AnimeScreen(
                     showPopup = true
                 },
                 onDelete = { entry ->
-                    EntriesController.removeEntryById(entry.getId())
+                    EntriesController.removeEntryById(entry.id)
                 }
             )
         }

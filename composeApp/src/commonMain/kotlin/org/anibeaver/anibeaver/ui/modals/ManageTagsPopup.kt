@@ -78,14 +78,14 @@ private fun TagList(tagType: TagType) {
     ) {
         tags.forEach { tag ->
             TagRow(
-                tagId = tag.getId(),
+                tagId = tag.id,
                 tagName = tag.name,
                 onTagNameChange = { name ->
-                    TagsController.updateTag(tag.getId(), name, tag.color, tag.type)
+                    TagsController.updateTag(tag.id, name, tag.color, tag.type)
                 },
                 tagHex = tag.color,
                 onTagHexChange = { hex ->
-                    TagsController.updateTag(tag.getId(), tag.name, hex, tag.type)
+                    TagsController.updateTag(tag.id, tag.name, hex, tag.type)
                 },
                 onDelete = { id -> TagsController.removeTagById(id) }
             )

@@ -46,10 +46,10 @@ fun TagChipInput(
                 .padding(start = 4.dp, bottom = 4.dp)
                 .fillMaxWidth()
         ) {
-            tags.mapNotNull { id -> TagsController.tags.find { it.getId() == id && it.type == tagType } }.forEach { tag ->
+            tags.mapNotNull { id -> TagsController.tags.find { it.id == id && it.type == tagType } }.forEach { tag ->
                 TagChip(
                     label = tag.name,
-                    onDelete = { onTagsChange(tags - tag.getId()) },
+                    onDelete = { onTagsChange(tags - tag.id) },
                     color = parseHexColor(tag.color)
                 )
             }
@@ -74,9 +74,9 @@ fun TagChipInput(
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions.Default,
                 )
-                if (input.isNotBlank() && TagsController.tags.filter { it.type == tagType && it.getId() !in tags }.isNotEmpty()) {
+                if (input.isNotBlank() && TagsController.tags.filter { it.type == tagType && it.id !in tags }.isNotEmpty()) {
                     val suggestions = TagsController.tags
-                        .filter { it.type == tagType && it.getId() !in tags }
+                        .filter { it.type == tagType && it.id !in tags }
                         .filter { it.name.contains(input, ignoreCase = true) }
                     if (suggestions.isNotEmpty()) {
                         Popup(
@@ -97,7 +97,7 @@ fun TagChipInput(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    onTagsChange(tags + suggestion.getId())
+                                                    onTagsChange(tags + suggestion.id)
                                                     input = ""
                                                 }
                                                 .padding(12.dp)
@@ -129,8 +129,8 @@ fun TagChipInput(
         if ((trimmed.endsWith(",") || trimmed.endsWith(" ")) && trimmed.dropLast(1).isNotBlank()) {
             val newTag = trimmed.dropLast(1).trim()
             val matchedTag = TagsController.tags.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
-            if (matchedTag != null && matchedTag.getId() !in tags) {
-                onTagsChange(tags + matchedTag.getId())
+            if (matchedTag != null && matchedTag.id !in tags) {
+                onTagsChange(tags + matchedTag.id)
             }
             input = ""
         }

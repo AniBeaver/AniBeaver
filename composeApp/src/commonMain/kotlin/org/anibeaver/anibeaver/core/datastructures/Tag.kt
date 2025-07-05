@@ -12,15 +12,16 @@ class Tag(
     val name: String,
     val color: String,
     val type: TagType,
-    internal val id: Int
+    id: Int 
 ) {
-    fun getId(): Int = id
-
+    internal val id: Int = id
+        get() = field
+    
     companion object {
         private val idToTypeCache = mutableMapOf<Int, TagType>()
         fun getTypeById(id: Int): TagType? {
             idToTypeCache[id]?.let { return it }
-            val type = TagsController.tags.find { it.getId() == id }?.type
+            val type = TagsController.tags.find { it.id == id }?.type
             if (type != null) {
                 idToTypeCache[id] = type
             }

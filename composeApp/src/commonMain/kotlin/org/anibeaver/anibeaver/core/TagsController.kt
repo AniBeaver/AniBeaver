@@ -41,18 +41,18 @@ object TagsController {
     }
 
     private fun debugPrint() {
-        println("[TagsController] Current tag ids: " + _tags.map { it.getId() })
+        println("[TagsController] Current tag ids: " + _tags.map { it.id })
     }
 
     fun addTag(name: String, color: String, type: TagType): Int {
         val tag = Tag(name, color, type, nextId++)
         _tags.add(tag)
         debugPrint()
-        return tag.getId()
+        return tag.id
     }
 
     fun removeTagById(id: Int) {
-        _tags.removeAll { it.getId() == id }
+        _tags.removeAll { it.id == id }
         debugPrint()
     }
 
@@ -61,7 +61,7 @@ object TagsController {
     }
 
     fun updateTag(id: Int, name: String, color: String, type: TagType) {
-        val index = _tags.indexOfFirst { it.getId() == id }
+        val index = _tags.indexOfFirst { it.id == id }
         if (index != -1) {
             _tags[index] = Tag(name, color, type, id)
             debugPrint()
