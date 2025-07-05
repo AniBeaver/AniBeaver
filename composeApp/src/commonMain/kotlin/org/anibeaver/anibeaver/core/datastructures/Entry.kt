@@ -1,12 +1,12 @@
 package org.anibeaver.anibeaver.core.datastructures
 
 enum class Status {
-    Towatch, Watching, OnHold, Finished, Dropped;
+    Planning, Watching, Paused, Completed, Dropped;
     override fun toString(): String = when(this) {
-        Towatch -> "Towatch"
+        Planning -> "Planning"
         Watching -> "Watching"
-        OnHold -> "On Hold"
-        Finished -> "Finished"
+        Paused -> "On Hold"
+        Completed -> "Completed"
         Dropped -> "Dropped"
     }
 }
@@ -45,7 +45,7 @@ class Entry internal constructor(
     val status: Status,
     val releasingEvery: Schedule,
     val tagIds: List<Int>,
-    internal val id: Int
+    private val id: Int
 ) {
     fun getId(): Int = id
 
