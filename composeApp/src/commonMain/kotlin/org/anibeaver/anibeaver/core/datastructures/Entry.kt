@@ -1,5 +1,54 @@
 package org.anibeaver.anibeaver.core.datastructures
 
+class Entry internal constructor(
+    var entryData: EntryData = EntryData(),
+    id: Int? = null
+) {
+    internal val id: Int = id ?: retrieveValidId()
+        get() = field
+
+    private fun retrieveValidId(): Int{
+        return -1
+    }
+
+    fun matchesFilter(filterData: FilterData?): Boolean {
+        if (filterData == null) return true
+
+        if (filterData.selectedStatus.isNotEmpty() && !filterData.selectedStatus.contains(entryData.status)) return false
+
+        if (filterData.selectedSchedule.isNotEmpty() && !filterData.selectedSchedule.contains(entryData.releasingEvery)) return false
+
+        val minYear = filterData.minYear?.toIntOrNull() ?: Int.MIN_VALUE
+        val maxYear = filterData.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
+        val entryYear = entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE
+        if (entryYear < minYear || entryYear > maxYear) return false
+
+        val minRating = filterData.minRating ?: Float.MIN_VALUE
+        val maxRating = filterData.maxRating ?: Float.MAX_VALUE
+        if (entryData.rating < minRating || entryData.rating > maxRating) return false
+
+        val selectedCustomTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
+        val selectedStudioTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
+        val selectedGenreTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
+        if (selectedCustomTags.isNotEmpty() && selectedCustomTags.none { it in entryData.tagIds }) return false
+        if (selectedStudioTags.isNotEmpty() && selectedStudioTags.none { it in entryData.studioIds }) return false
+        if (selectedGenreTags.isNotEmpty() && selectedGenreTags.none { it in entryData.genreIds }) return false
+        return true
+    }
+}
+
+class EntryData internal constructor(
+    val animeName: String = "",
+    val releaseYear: String = "2000",
+    val studioIds: List<Int> = emptyList(),
+    val genreIds: List<Int> = emptyList(),
+    val description: String = "",
+    val rating: Float = 0f,
+    val status: Status = Status.Watching,
+    val releasingEvery: Schedule = Schedule.Irregular,
+    val tagIds: List<Int> = emptyList()
+)
+
 enum class Status {
     Planning, Watching, Paused, Completed, Dropped;
     override fun toString(): String = when(this) {
@@ -34,44 +83,3 @@ data class FilterData(
     val maxRating: Float?,
     val selectedTagIds: List<Int>
 )
-
-class Entry internal constructor(
-    val animeName: String,
-    val releaseYear: String,
-    val studioIds: List<Int>,
-    val genreIds: List<Int>,
-    val description: String,
-    val rating: Float,
-    val status: Status,
-    val releasingEvery: Schedule,
-    val tagIds: List<Int>,
-    id: Int 
-) {
-    internal val id: Int = id
-        get() = field
-
-    fun matchesFilter(filter: FilterData?): Boolean {
-        if (filter == null) return true
-
-        if (filter.selectedStatus.isNotEmpty() && !filter.selectedStatus.contains(status)) return false
-
-        if (filter.selectedSchedule.isNotEmpty() && !filter.selectedSchedule.contains(releasingEvery)) return false
-
-        val minYear = filter.minYear?.toIntOrNull() ?: Int.MIN_VALUE
-        val maxYear = filter.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
-        val entryYear = releaseYear.toIntOrNull() ?: Int.MIN_VALUE
-        if (entryYear < minYear || entryYear > maxYear) return false
-
-        val minRating = filter.minRating ?: Float.MIN_VALUE
-        val maxRating = filter.maxRating ?: Float.MAX_VALUE
-        if (rating < minRating || rating > maxRating) return false
-
-        val selectedCustomTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
-        val selectedStudioTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
-        val selectedGenreTags = filter.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
-        if (selectedCustomTags.isNotEmpty() && selectedCustomTags.none { it in tagIds }) return false
-        if (selectedStudioTags.isNotEmpty() && selectedStudioTags.none { it in studioIds }) return false
-        if (selectedGenreTags.isNotEmpty() && selectedGenreTags.none { it in genreIds }) return false
-        return true
-    }
-}

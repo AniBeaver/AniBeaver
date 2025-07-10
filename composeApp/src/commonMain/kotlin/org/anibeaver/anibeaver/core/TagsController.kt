@@ -38,6 +38,9 @@ object TagsController {
             Tag("Dark", "#111111", TagType.CUSTOM, nextId++),
             Tag("Music", "#FFB300", TagType.GENRE, nextId++)
         ).forEach { _tags.add(it) }
+        for (i in 1..100) {
+            addTag("test", "#FF0000", TagType.GENRE)
+        }
     }
 
     private fun debugPrint() {

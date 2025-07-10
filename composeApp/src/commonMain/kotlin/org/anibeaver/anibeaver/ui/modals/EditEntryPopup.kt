@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.Schedule
@@ -28,32 +29,33 @@ import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 fun EditEntryPopup(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (Entry) -> Unit,
-    initialEntry: Entry? = null
+    onConfirm: (EntryData) -> Unit,
+    initialValues: EntryData? = null
 ) {
-    var animeName by remember { mutableStateOf(initialEntry?.animeName ?: "") }
-    var releaseYear by remember { mutableStateOf(initialEntry?.releaseYear ?: "2010") }
-    var studioIds by remember { mutableStateOf(initialEntry?.studioIds ?: emptyList()) }
-    var genreIds by remember { mutableStateOf(initialEntry?.genreIds ?: emptyList()) }
-    var description by remember { mutableStateOf(initialEntry?.description ?: "") }
-    var rating by remember { mutableStateOf(initialEntry?.rating ?: 8.5f) }
-    var status by remember { mutableStateOf(initialEntry?.status ?: Status.Planning) }
-    var releasingEvery by remember { mutableStateOf(initialEntry?.releasingEvery ?: Schedule.Monday) }
-    var tagsIds by remember { mutableStateOf(initialEntry?.tagIds ?: emptyList()) }
+
+    var animeName by remember { mutableStateOf(initialValues?.animeName ?: "") }
+    var releaseYear by remember { mutableStateOf(initialValues?.releaseYear ?: "2010") }
+    var studioIds by remember { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
+    var genreIds by remember { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
+    var description by remember { mutableStateOf(initialValues?.description ?: "") }
+    var rating by remember { mutableStateOf(initialValues?.rating ?: 8.5f) }
+    var status by remember { mutableStateOf(initialValues?.status ?: Status.Planning) }
+    var releasingEvery by remember { mutableStateOf(initialValues?.releasingEvery ?: Schedule.Monday) }
+    var tagsIds by remember { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
 
-    // Reset fields when initialEntry changes (for editing)
-    LaunchedEffect(initialEntry) {
-        animeName = initialEntry?.animeName ?: ""
-        releaseYear = initialEntry?.releaseYear ?: "2010"
-        studioIds = initialEntry?.studioIds ?: emptyList()
-        genreIds = initialEntry?.genreIds ?: emptyList()
-        description = initialEntry?.description ?: ""
-        rating = initialEntry?.rating ?: 8.5f
-        status = initialEntry?.status ?: Status.Planning
-        releasingEvery = initialEntry?.releasingEvery ?: Schedule.Monday
-        tagsIds = initialEntry?.tagIds ?: emptyList()
+    // Reset fields when initialValues changes (for editing)
+    LaunchedEffect(initialValues) {
+        animeName = initialValues?.animeName ?: ""
+        releaseYear = initialValues?.releaseYear ?: "2010"
+        studioIds = initialValues?.studioIds ?: emptyList()
+        genreIds = initialValues?.genreIds ?: emptyList()
+        description = initialValues?.description ?: ""
+        rating = initialValues?.rating ?: 8.5f
+        status = initialValues?.status ?: Status.Planning
+        releasingEvery = initialValues?.releasingEvery ?: Schedule.Monday
+        tagsIds = initialValues?.tagIds ?: emptyList()
     }
 
     //for tab navigation
@@ -73,7 +75,7 @@ fun EditEntryPopup(
             confirmButton = {
                 Button(onClick = {
                     onConfirm(
-                        Entry(
+                        EntryData(
                             animeName = animeName,
                             releaseYear = releaseYear,
                             studioIds = studioIds,
@@ -83,7 +85,6 @@ fun EditEntryPopup(
                             status = status,
                             releasingEvery = releasingEvery,
                             tagIds = tagsIds,
-                            id = initialEntry?.id ?: 0
                         )
                     )
                 }) {
