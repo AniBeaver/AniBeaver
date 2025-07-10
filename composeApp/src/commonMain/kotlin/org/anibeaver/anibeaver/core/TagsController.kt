@@ -44,7 +44,7 @@ object TagsController {
     }
 
     private fun debugPrint() {
-        println("[TagsController] Current tag ids: " + _tags.map { it.id })
+        //println("[TagsController] Current tag ids: " + _tags.map { it.id })
     }
 
     fun addTag(name: String, color: String, type: TagType): Int {

@@ -1,5 +1,7 @@
 package org.anibeaver.anibeaver.core.datastructures
 
+import org.anibeaver.anibeaver.core.EntriesController
+
 class Entry internal constructor(
     var entryData: EntryData = EntryData(),
     id: Int? = null
@@ -8,7 +10,7 @@ class Entry internal constructor(
         get() = field
 
     private fun retrieveValidId(): Int{
-        return -1
+        return EntriesController.getValidEntryId()
     }
 
     fun matchesFilter(filterData: FilterData?): Boolean {

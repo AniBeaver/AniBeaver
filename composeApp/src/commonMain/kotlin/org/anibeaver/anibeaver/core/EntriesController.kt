@@ -8,11 +8,14 @@ import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 
 object EntriesController {
-    private var nextId = 1
-    private val _entries = mutableListOf(
-        //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
-        // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
-        Entry(EntryData(
+    private var lastId = 0
+
+    //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
+    // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
+    private val _entries = HashMap<Int, Entry>()
+    val entries: SnapshotStateList<Entry> = mutableStateListOf()
+    init{
+        addEntry(Entry(EntryData(
             "Fullmetal Alchemist: Brotherhood",
             "2009",
             listOf(18), // Bones studio id
@@ -22,8 +25,8 @@ object EntriesController {
             Status.Completed,
             Schedule.Sunday,
             listOf(10, 11) // Shounen, Classic custom tag ids
-        ),nextId++),
-        Entry(EntryData(
+        )))
+        addEntry(Entry(EntryData(
             "Steins;Gate",
             "2011",
             listOf(15), // White Fox studio id
@@ -33,9 +36,8 @@ object EntriesController {
             Status.Completed,
             Schedule.Wednesday,
             listOf(14, 13) // Time Travel, Thriller custom tag ids
-            ),nextId++
-        ),
-        Entry(EntryData(
+            )))
+        addEntry(Entry(EntryData(
             "Your Lie in April",
             "2014",
             listOf(16), // A-1 Pictures studio id
@@ -45,9 +47,8 @@ object EntriesController {
             Status.Completed,
             Schedule.Friday,
             listOf(1, 6) // Music, Romance custom tag ids
-            ),nextId++
-        ),
-        Entry(EntryData(
+            )))
+        addEntry(Entry(EntryData(
             "Attack on Titan",
             "2013",
             listOf(19), // Wit Studio studio id
@@ -57,9 +58,8 @@ object EntriesController {
             Status.Completed,
             Schedule.Sunday,
             listOf(23) // Dark custom tag id (corrected from 7, 21)
-            ),nextId++
-        ),
-        Entry(EntryData(
+            )))
+        addEntry(Entry(EntryData(
             "K-On!",
             "2009",
             listOf(20), // Kyoto Animation studio id
@@ -69,9 +69,8 @@ object EntriesController {
             Status.Completed,
             Schedule.Thursday,
             listOf(22, 1) // Slice of Life, Music custom tag ids
-            ),nextId++
-        ),
-        Entry(EntryData(
+            )))
+        addEntry(Entry(EntryData(
             "Tag Overload!",
             "2022",
             listOf(18, 15, 16, 19, 20, 21, 22, 23, 24, 25),
@@ -81,44 +80,48 @@ object EntriesController {
             Status.Completed,
             Schedule.Monday,
             listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
-            ),nextId++
-        )
-    )
-    val entries: SnapshotStateList<Entry> = mutableStateListOf()
-    init{
-        for (e in _entries) {
-            entries.add(e)
-        }
+            )))
     }
 
     fun addEntry(id: Int? = null, entryData: EntryData){
         addEntry(Entry(entryData, id))
     }
     private fun addEntry(entry: Entry) {
-        _entries.add(entry)
+        _entries.put(entry.id, entry)
         entries.add(entry)
     }
 
+    //update Entry and add if non-existing
     fun updateEntry(id: Int?, entryData: EntryData = EntryData()) {
-        val index = _entries.indexOfFirst { it.id == id }
-        if (index != -1) {
-            _entries[index].entryData = entryData
+        if(_entries.contains(id)){
+            _entries.get(id)!!.entryData = entryData
+
+            val index = entries.indexOfFirst { it.id == id }
+            //add failsafe if necessary to add Entry to entries manually. Should usually never happen
+            require(index != -1){"Failed to find entry in entries but was found in _entries"}
             entries[index].entryData = entryData
-            debugPrintIds()
-        } else {
+        }else{
             addEntry(id, entryData)
         }
+        
     }
 
     fun deleteEntry(id: Int?) {
-        require(id!=null){"id was null"}
-        _entries.removeAll { it.id == id }
+        if(id == null){
+            return
+        }
+        _entries.remove(id)
         entries.removeAll {it.id == id}
         //debugPrintIds()
     }
 
+    fun getValidEntryId() : Int{
+        lastId = lastId+1
+        return lastId
+    }
+
     fun getEntryDataById(id: Int?): EntryData?{
-        return _entries.firstOrNull{it.id==id}?.entryData ?: null
+        return _entries.get(id)?.entryData ?: null
     }
 
     fun debugPrintIds() {
