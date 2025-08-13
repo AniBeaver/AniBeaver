@@ -19,8 +19,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.*
+import org.anibeaver.anibeaver.ui.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.layout.Sidebar
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
 import org.anibeaver.anibeaver.ui.theme.getColorScheme
@@ -66,7 +66,7 @@ fun App(
                             .verticalScroll(rememberScrollState())
                     ) {
                         composable (route = Screens.Home.name) {
-                            HomeScreen(navController, dataWrapper)
+                            HomeScreen(navController)
                         }
                         composable (route = Screens.Anime.name) {
                             AnimeScreen(navController, dataWrapper)
