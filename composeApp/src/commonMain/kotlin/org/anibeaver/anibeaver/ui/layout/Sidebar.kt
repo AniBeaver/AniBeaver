@@ -43,7 +43,7 @@ fun Sidebar(
             Image(
                 painter = painterResource(Res.drawable.abvr_icon),
                 contentDescription = null, // decorative element
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(60.dp)
             )
 
             Column(
