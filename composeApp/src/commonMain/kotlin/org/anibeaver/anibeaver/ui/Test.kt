@@ -30,6 +30,31 @@ fun TestScreen(
 ) {
     val scope = rememberCoroutineScope()
 
+    fun makeRandomRequests() {
+        scope.launch{
+            var id: Int = 0
+            dataWrapper.apiHandler.makeRequest(
+                variables = mapOf("search" to "ame to kimi to", "type" to "MANGA"),
+                valueSetter = ValueSetter { mediaQuery: MediaQuery -> id = (mediaQuery.data.media.id) }
+            )
+            var notes: String = ""
+            dataWrapper.apiHandler.makeAuthorizedRequest(
+                variables = mapOf("mediaId" to id.toString()),
+                valueSetter = ValueSetter { m: SaveMediaListQuery ->
+                    val savedNotes = m.data.saveMediaListEntry.notes
+                    if (savedNotes != null) {
+                        notes = savedNotes
+                    }
+                }
+            )
+            //text2 = notes
+            dataWrapper.apiHandler.makeAuthorizedRequest(
+                variables = mapOf("mediaId" to id.toString(), "status" to "PLANNING", "notes" to notes+"hi from anibeaver"),
+                valueSetter = ValueSetter { m: SaveMediaListQuery -> println("Mutation completed") }
+            )
+        }
+    }
+
     Column{
         Text("Test", style = Typography.headlineLarge)
 
@@ -44,26 +69,14 @@ fun TestScreen(
             }) {
                 Text("Get Auth Code")
             }
+
+        Button(onClick = {
+            makeRandomRequests()
+        }) {
+            Text("Make Random Requests")
+        }
         
         var text2 by remember {mutableStateOf("None!")}
         Text(text2)
-
-        scope.launch{
-            var id: Int = 0
-            dataWrapper.apiHandler.makeRequest(
-                variables = mapOf("search" to "ame to kimi to", "type" to "MANGA"),
-                valueSetter = ValueSetter({mediaQuery:MediaQuery -> id = (mediaQuery.data.media.id)})
-            )
-            var notes: String = ""
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString()),
-                valueSetter = ValueSetter({m:SaveMediaListQuery -> notes = m.data.saveMediaListEntry.notes.toString()})
-            )
-            //text2 = notes
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString(), "status" to "PLANNING", "notes" to notes+"test"),
-                valueSetter = ValueSetter({m:SaveMediaListQuery -> println("Mutation completed")})
-            )
-        }
     }
 }
