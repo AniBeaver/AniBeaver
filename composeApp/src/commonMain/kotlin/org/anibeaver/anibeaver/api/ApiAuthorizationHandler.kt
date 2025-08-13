@@ -1,23 +1,14 @@
 package org.anibeaver.anibeaver.api
 
-import org.anibeaver.anibeaver.api.AuthCodeStorage
 import org.anibeaver.anibeaver.api.jsonStructures.AccessTokenRepsonse
 
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import java.net.BindException
-
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.client.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.Serializable
 import kotlinx.coroutines.*
 
 import io.ktor.client.call.body
@@ -27,7 +18,7 @@ abstract class ApiAuthorizationHandler{
 
     val authCodeStorage: AuthCodeStorage = AuthCodeStorage()
 
-    val clientId : Int = 27567
+    val clientId : Int = -1
     val redirectUri : String = "http://127.0.0.1:8080"
 
     suspend fun getValidAccessToken(){
@@ -41,18 +32,28 @@ abstract class ApiAuthorizationHandler{
     }
 
     private suspend fun doAuthorizationRoutine(){
+        var localOauthServer: OAuthLocalServer? = null;
+
         if(authCodeStorage.authCode==null){
             try {
-                runBasicServer()
+                println("Starting local server to get authentication code...")
+                localOauthServer = OAuthLocalServer(authCodeStorage)
+                localOauthServer.start()
+                println("Server started successfully. Waiting for authorization...")
+                // Keep the server running until we get the auth code
+                // The server will be stopped in getAccessToken() after the code is retrieved
             }
             catch(e: Exception) {
                 println("Failed running Server")
                 throw(e)
             }
+
+            println("${authCodeStorage.authCode}, ${authCodeStorage.accessToken} GURT YO")
+
             try {
-                println("Getting authentication code")
+                println("Getting authentication code...")
                 getAuthCode()
-                val timeOutTries = 1000
+                val timeOutTries = 1000 // 10 seconds with 200ms delay
                 var counter = timeOutTries
                 while(authCodeStorage.authCode == null && (counter>0)){
                     delay(200)
@@ -61,45 +62,39 @@ abstract class ApiAuthorizationHandler{
                 check(counter>0){"Timeout while doing Authorization"}
             }
             catch(e: Exception) {
-                println("Aquiring authorisation code failed.")
+                println("Acquiring authorisation code failed.")
+                throw(e)
+            }
+        }
+
+        // After getting a callback with the auth code, we can stop the local server
+        if (localOauthServer != null) {
+            try {
+                println("Stopping local OAuth callback server...")
+                localOauthServer.stop()
+            }
+            catch(e: Exception) {
+                println("Failed stopping local server")
                 throw(e)
             }
         }
 
         try {
-            println("Retrieving access token")
+            println("Retrieving access token...")
             getAccessToken()
             authCodeStorage.authCode = null
         }
         catch(e: Exception) {
-            println("Failed retrieving acces token")
+            println("Failed retrieving access token")
             throw(e)
         }
     }
-    private suspend fun runBasicServer(){
-        try {
-            println("Running local server.")
-            embeddedServer(Netty, port = 8080) {
-                routing {
-                    get("/") {
-                        //Mandatory ; cause Kotlin jank
-                        {code : String? -> if(code!=null){authCodeStorage.authCode = code}}(call.request.queryParameters["code"]);
-                        {token : String? -> if(token!=null){authCodeStorage.accessToken = token}}(call.request.queryParameters["access_token"])
-                        call.respondText("Authentication complete. Please close this tab")
-                    }
-                }
-            }.start(wait = false)
-            println("Server started")
-        }
-        catch(e : BindException) {
-            println("Server already running ...")
-            println(e.toString())
-        }
-    }
+
     private fun getAuthCode(){
         val url : String = "https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code"
         openUrl(url)
     }
+
     private suspend fun getAccessToken(){
         require(authCodeStorage.authCode != null){"Authentication code may not be null when getting an access token."}
 
@@ -125,6 +120,8 @@ abstract class ApiAuthorizationHandler{
         }
         check(client != null){"Failed creating temporary http client"}
 
+        println("Created temporary HTTP client. Making request to get AL access token...")
+
         val response = client.post("https://anilist.co/api/v2/oauth/token") {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -142,6 +139,7 @@ abstract class ApiAuthorizationHandler{
         val jsonBody: AccessTokenRepsonse = response.body()
         authCodeStorage.accessToken = jsonBody.access_token
     }
+
     private fun retrieveClientSecret() : String{
         return ""
     }

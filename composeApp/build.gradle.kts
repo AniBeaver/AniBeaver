@@ -34,10 +34,13 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
+        val ktor_version = "3.2.3"
 
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -49,12 +52,16 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.navigation.compose)
+
             implementation(libs.ktor.client.core)
-            implementation("io.ktor:ktor-client-cio:3.1.3")
-            implementation("io.ktor:ktor-client-content-negotiation:3.1.3")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:3.1.3")
+            implementation("io.ktor:ktor-server-core:${ktor_version}")
+            implementation("io.ktor:ktor-server-cio:${ktor_version}")
+            implementation("io.ktor:ktor-client-cio:${ktor_version}")
+            implementation("io.ktor:ktor-client-content-negotiation:${ktor_version}")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
+
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-            implementation("io.ktor:ktor-server-netty:3.1.3")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")
             implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Extended
@@ -65,6 +72,9 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
