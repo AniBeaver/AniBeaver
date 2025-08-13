@@ -61,6 +61,9 @@ kotlin {
             implementation("io.ktor:ktor-server-content-negotiation:${ktor_version}")
             implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
 
+            implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+            implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")

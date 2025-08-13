@@ -182,5 +182,32 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                 }
             }""",
         associateClass = SaveMediaListQuery::class
+    ),
+    GET_AUTHED_USER_PROFILE(
+        query = """
+            query Viewer {
+                Viewer {
+                    id
+                    name
+                    avatar {
+                        large
+                        medium
+                    }
+                    bannerImage
+                    statistics {
+                        anime {
+                            count
+                            minutesWatched
+                            episodesWatched
+                        }
+                        manga {
+                            count
+                            chaptersRead
+                            volumesRead
+                        }
+                    }
+                }
+            }""",
+        associateClass = UserProfileQuery::class
     )
 }
