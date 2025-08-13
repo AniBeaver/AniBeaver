@@ -32,7 +32,7 @@ abstract class ApiAuthorizationHandler{
     }
 
     private suspend fun doAuthorizationRoutine(){
-        var localOauthServer: OAuthLocalServer? = null;
+        var localOauthServer: OAuthLocalServer? = null
 
         if(authCodeStorage.authCode==null){
             try {
@@ -91,7 +91,7 @@ abstract class ApiAuthorizationHandler{
     }
 
     private fun getAuthCode(){
-        val url : String = "https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code"
+        val url = "https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code"
         openUrl(url)
     }
 
