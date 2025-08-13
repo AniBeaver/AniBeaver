@@ -21,7 +21,6 @@ import anibeaver.composeapp.generated.resources.abvr_icon
 
 import org.anibeaver.anibeaver.NavItemPosition
 import org.anibeaver.anibeaver.Screens
-import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

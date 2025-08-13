@@ -1,4 +1,4 @@
-package org.anibeaver.anibeaver.layout
+package org.anibeaver.anibeaver.ui.layout
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
