@@ -77,11 +77,9 @@ fun App(
                         composable (route = Screens.Settings.name) {
                             SettingsScreen(navController)
                         }
-                        composable (route = Screens.Test.name) {
-                            TestScreen(navController, dataWrapper)
+                        composable (route = Screens.Account.name) {
+                            AccountScreen(navController, dataWrapper)
                         }
-
-
                     }
 
                     if (!showSidebar) {
