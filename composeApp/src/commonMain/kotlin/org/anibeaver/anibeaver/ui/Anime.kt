@@ -22,7 +22,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.max
 
 data class AnimeFilterState(
-    var filterData: FilterData? = null,
+    var filterData: FilterData? = null, // change this to defaultFilterData
     val onFilterChange: (FilterData?) -> Unit
 ) {
     fun clear() = onFilterChange(defaultFilterData)
