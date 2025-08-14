@@ -19,6 +19,7 @@ kotlin {
         }
     }
 
+    /*
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,6 +30,7 @@ kotlin {
             isStatic = true
         }
     }
+     */
 
     jvm("desktop")
 
@@ -77,9 +79,11 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+        /*
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
+         */
     }
 }
 
