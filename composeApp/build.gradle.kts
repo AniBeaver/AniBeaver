@@ -127,5 +127,7 @@ compose.desktop {
             packageName = "org.anibeaver.anibeaver"
             packageVersion = "1.0.0"
         }
+
+        jvmArgs += "-Dapple.awt.application.appearance=NSAppearanceNameDarkAqua"
     }
 }
