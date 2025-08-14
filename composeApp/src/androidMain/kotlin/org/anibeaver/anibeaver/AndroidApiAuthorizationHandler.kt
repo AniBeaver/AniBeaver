@@ -1,13 +1,17 @@
 package org.anibeaver.anibeaver
 
-class AndroidApiAuthorizationHandler : ApiAuthorizationHandler {
+import android.content.Context
+import org.anibeaver.anibeaver.api.ApiAuthorizationHandler
+import androidx.core.net.toUri
+
+
+class AndroidApiAuthorizationHandler(private val context: Context) : ApiAuthorizationHandler() {
     override fun openUrl(url: String) {
         try {
-            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            android.content.ContextCompat.getMainExecutor(android.app.ApplicationProvider.getApplicationContext()).execute {
-                android.app.ApplicationProvider.getApplicationContext<android.content.Context>().startActivity(intent)
-            }
+
+            context.startActivity(intent)
         } catch (e: Exception) {
             println("Failed to open URL: $url with error: ${e.message}")
         }
