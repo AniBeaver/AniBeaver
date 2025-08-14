@@ -1,6 +1,8 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -46,7 +48,11 @@ fun AnimeScreen(
         val columns = max(1, ((totalWidth + cardSpacing) / (cardWidth + cardSpacing)).toInt())
 
         // Buttons
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()) // <-- Add this
+        ) {
             Text("Anime", style = Typography.headlineLarge)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
