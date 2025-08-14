@@ -21,7 +21,6 @@ import anibeaver.composeapp.generated.resources.abvr_icon
 
 import org.anibeaver.anibeaver.NavItemPosition
 import org.anibeaver.anibeaver.Screens
-import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -44,7 +43,7 @@ fun Sidebar(
             Image(
                 painter = painterResource(Res.drawable.abvr_icon),
                 contentDescription = null, // decorative element
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier.size(60.dp)
             )
 
             Column(
@@ -83,7 +82,6 @@ fun Sidebar(
 }
 
 
-
 @Composable
 fun CenterSidebarEntries(
     navController: NavHostController = rememberNavController(),
@@ -91,19 +89,12 @@ fun CenterSidebarEntries(
     setDestination: (String) -> Unit
 ) {
     Screens.entries.filter { s -> s.position == NavItemPosition.Center }
-        .forEachIndexed { index, destination ->
-            NavigationRailItem(
-                selected = destination.name == selectedDestination,
-                onClick = {
-                    navController.navigate(route = destination.name)
-                    setDestination(destination.name)
-                },
-                icon = {
-                    Icon(
-                        destination.icon,
-                        contentDescription = destination.title,
-                    )
-                }
+        .forEach { destination ->
+            SidebarNavItem(
+                navController,
+                destination,
+                selectedDestination,
+                setDestination
             )
         }
 }
@@ -115,19 +106,45 @@ fun BottomSidebarEntries(
     setDestination: (String) -> Unit
 ) {
     Screens.entries.filter { s -> s.position == NavItemPosition.Bottom }
-        .forEachIndexed { index, destination ->
-            NavigationRailItem(
-                selected = destination.name == selectedDestination,
-                onClick = {
-                    navController.navigate(route = destination.name)
-                    setDestination(destination.name)
-                },
-                icon = {
-                    Icon(
-                        destination.icon,
-                        contentDescription = destination.title,
-                    )
-                }
+        .forEach { destination ->
+            SidebarNavItem(
+                navController,
+                destination,
+                selectedDestination,
+                setDestination
             )
         }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SidebarNavItem(
+    navController: NavHostController,
+    destination: Screens,
+    currentlySelectedDestination: String,
+    setDestination: (String) -> Unit
+) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = {
+            PlainTooltip { Text(destination.name) }
+        },
+        state = rememberTooltipState()
+    ) {
+        NavigationRailItem(
+            selected = destination.name == currentlySelectedDestination,
+            onClick = {
+                if (destination.name != currentlySelectedDestination) {
+                    navController.navigate(route = destination.name)
+                    setDestination(destination.name)
+                }
+            },
+            icon = {
+                Icon(
+                    destination.icon,
+                    contentDescription = destination.title,
+                )
+            }
+        )
+    }
 }

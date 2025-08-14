@@ -13,7 +13,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App()
+            App(onCloseRequest = ::exitApplication,
+                title = "AniBeaver",
+                dataWrapper = DataWrapper(
+                    activityKiller = { this.finish() },
+                    apiHandler = ApiHandler(AndroidApiAuthorizationHandler())
+                ),
+            )
         }
     }
 }

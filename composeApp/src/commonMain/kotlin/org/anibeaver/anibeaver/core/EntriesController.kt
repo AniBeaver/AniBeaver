@@ -3,129 +3,128 @@ package org.anibeaver.anibeaver.core
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 
 object EntriesController {
-    private var nextId = 1
-    private val _entries = mutableStateListOf(
-        //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
-        // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
-        Entry(
+    private var lastId = 0
+
+    //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
+    // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
+    private val _entries = HashMap<Int, Entry>()
+    val entries: SnapshotStateList<Entry> = mutableStateListOf()
+    init{
+        addEntry(Entry(EntryData(
             "Fullmetal Alchemist: Brotherhood",
             "2009",
             listOf(18), // Bones studio id
             listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
             "Epic alchemy adventure.",
             9.5f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Sunday,
-            listOf(10, 11), // Shounen, Classic custom tag ids
-            nextId++
-        ),
-        Entry(
+            listOf(10, 11) // Shounen, Classic custom tag ids
+        )))
+        addEntry(Entry(EntryData(
             "Steins;Gate",
             "2011",
             listOf(15), // White Fox studio id
             listOf(12, 13), // Sci-Fi, Thriller genre ids
             "Time travel thriller.",
             9.0f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Wednesday,
-            listOf(14, 13), // Time Travel, Thriller custom tag ids
-            nextId++
-        ),
-        Entry(
+            listOf(14, 13) // Time Travel, Thriller custom tag ids
+            )))
+        addEntry(Entry(EntryData(
             "Your Lie in April",
             "2014",
             listOf(16), // A-1 Pictures studio id
             listOf(5, 6, 1), // Drama, Romance, Music genre ids
             "Emotional music drama.",
             8.8f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Friday,
-            listOf(1, 6), // Music, Romance custom tag ids
-            nextId++
-        ),
-        Entry(
+            listOf(1, 6) // Music, Romance custom tag ids
+            )))
+        addEntry(Entry(EntryData(
             "Attack on Titan",
             "2013",
             listOf(19), // Wit Studio studio id
             listOf(7, 5, 9), // Action, Drama, Fantasy genre ids
             "Humanity vs Titans.",
             9.2f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Sunday,
-            listOf(23), // Dark custom tag id (corrected from 7, 21)
-            nextId++
-        ),
-        Entry(
+            listOf(23) // Dark custom tag id (corrected from 7, 21)
+            )))
+        addEntry(Entry(EntryData(
             "K-On!",
             "2009",
             listOf(20), // Kyoto Animation studio id
             listOf(1, 22, 4), // Music, Slice of Life, Comedy genre ids
             "Cute girls play music.",
             8.0f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Thursday,
-            listOf(22, 1), // Slice of Life, Music custom tag ids
-            nextId++
-        ),
-        Entry(
+            listOf(22, 1) // Slice of Life, Music custom tag ids
+            )))
+        addEntry(Entry(EntryData(
             "Tag Overload!",
             "2022",
             listOf(18, 15, 16, 19, 20, 21, 22, 23, 24, 25),
-            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40 ,41, 42,43,44,45,46,47,48,49,50),
             "An anime with a ridiculous number of tags for testing UI overflow and performance.",
             7.7f,
-            Status.Finished,
+            Status.Completed,
             Schedule.Monday,
-            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
-            nextId++
-        )
-    )
-    val entries: SnapshotStateList<Entry> get() = _entries
-
-    fun packEntry(
-        animeName: String,
-        releaseYear: String,
-        studioIds: List<Int>,
-        genreIds: List<Int>,
-        description: String,
-        rating: Float,
-        status: Status,
-        releasingEvery: Schedule,
-        tagIds: List<Int>
-    ): Entry {
-        return Entry(animeName, releaseYear, studioIds, genreIds, description, rating, status, releasingEvery, tagIds, nextId++)
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
+            )))
     }
 
-    fun addEntry(entry: Entry) {
-        _entries.add(entry)
-        debugPrintIds()
+    fun addEntry(id: Int? = null, entryData: EntryData){
+        addEntry(Entry(entryData, id))
+    }
+    private fun addEntry(entry: Entry) {
+        _entries.put(entry.id, entry)
+        entries.add(entry)
     }
 
-    fun updateEntry(entry: Entry) {
-        val index = _entries.indexOfFirst { it.getId() == entry.getId() }
-        if (index != -1) {
-            _entries[index] = entry
-            debugPrintIds()
-        } else {
-            println("No entry to update with id ${entry.getId()} found")
+    //update Entry and add if non-existing
+    fun updateEntry(id: Int?, entryData: EntryData = EntryData()) {
+        if(_entries.contains(id)){
+            _entries.get(id)!!.entryData = entryData
+
+            val index = entries.indexOfFirst { it.id == id }
+            //add failsafe if necessary to add Entry to entries manually. Should usually never happen
+            require(index != -1){"Failed to find entry in entries but was found in _entries"}
+            entries[index].entryData = entryData
+        }else{
+            addEntry(id, entryData)
         }
+        
     }
 
-    fun removeEntryById(id: Int) {
-        _entries.removeAll { it.getId() == id }
-        debugPrintIds()
+    fun deleteEntry(id: Int?) {
+        if(id == null){
+            return
+        }
+        _entries.remove(id)
+        entries.removeAll {it.id == id}
+        //debugPrintIds()
     }
 
-    fun clear() {
-        _entries.clear()
-        debugPrintIds()
+    fun getValidEntryId() : Int{
+        lastId = lastId+1
+        return lastId
+    }
+
+    fun getEntryDataById(id: Int?): EntryData?{
+        return _entries.get(id)?.entryData ?: null
     }
 
     fun debugPrintIds() {
-        println("[EntriesController] Current entry ids: " + _entries.map { it.getId() })
+        //println("[EntriesController] Current entry ids: " + _entries.map { it.id })
     }
 }

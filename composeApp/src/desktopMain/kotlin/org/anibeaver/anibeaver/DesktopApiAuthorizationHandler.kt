@@ -7,24 +7,11 @@ import java.awt.Desktop
 import java.io.IOException
 
 class DesktopApiAuthorizationHandler : ApiAuthorizationHandler(){
-    //Temporary Test!!! While this solution works, it should be replaced soon, because it is insecure
-    //Also only designed for linux
     override fun openUrl(url : String){
-        val browsers = listOf(
-            "xdg-open",        // Default first
-            "google-chrome",   // Common alternatives
-            "firefox",
-            "chromium",
-            "vivaldi",
-            "/usr/bin/xdg-open"  // Absolute path
-        )
-        browsers.forEach { browser ->
-            try {
-                Runtime.getRuntime().exec(arrayOf(browser, url))
-                return
-            } catch (e: IOException) {
-                println(browser + " didn't work. Trying next Browser.")
-            }
+        try {
+            Desktop.getDesktop().browse(URI(url))
+        } catch (e: Exception) {
+            println("Failed to open URL: $url with error: ${e.message}")
         }
     }
 }
