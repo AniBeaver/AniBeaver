@@ -29,11 +29,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController? = rememberNavController(),
     darkTheme: Boolean = isSystemInDarkTheme(),
     dataWrapper: DataWrapper,
     windowSizeClass: WindowSizeClass
 ) {
+    if (navController == null) {
+        return
+    }
+
     val colors by remember(darkTheme) {
         derivedStateOf {
             getColorScheme(darkTheme)
