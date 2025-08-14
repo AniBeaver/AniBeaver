@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
+            implementation("com.liftric:kvault:1.12.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -78,10 +79,16 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation("org.netbeans.api:org-netbeans-modules-keyring:RELEASE260")
+            implementation("org.netbeans.modules:org-netbeans-modules-keyring-impl:RELEASE260")
+            implementation("org.netbeans.api:org-openide-util-lookup:RELEASE260")
+            implementation("net.java.dev.jna:jna:5.14.0")
+            implementation("net.java.dev.jna:jna-platform:5.14.0")
         }
         /*
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation("com.liftric:kvault:1.12.0")
         }
          */
     }

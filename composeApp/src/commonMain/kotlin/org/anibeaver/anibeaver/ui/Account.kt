@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.Screens
@@ -35,6 +36,7 @@ import coil3.compose.AsyncImage
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.*
+import org.anibeaver.anibeaver.api.tokenStore
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -46,31 +48,6 @@ fun AccountScreen(
     val scope = rememberCoroutineScope()
     var userInfo by remember { mutableStateOf<Profile?>(null) }
 
-    fun makeRandomRequests() {
-        scope.launch{
-            var id: Int = 0
-            dataWrapper.apiHandler.makeRequest(
-                variables = mapOf("search" to "ame to kimi to", "type" to "MANGA"),
-                valueSetter = ValueSetter { mediaQuery: MediaQuery -> id = (mediaQuery.data.media.id) }
-            )
-            var notes: String = ""
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString()),
-                valueSetter = ValueSetter { m: SaveMediaListQuery ->
-                    val savedNotes = m.data.saveMediaListEntry.notes
-                    if (savedNotes != null) {
-                        notes = savedNotes
-                    }
-                }
-            )
-            //text2 = notes
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString(), "status" to "PLANNING", "notes" to notes+"hi from anibeaver"),
-                valueSetter = ValueSetter { m: SaveMediaListQuery -> println("Mutation completed") }
-            )
-        }
-    }
-
     fun getUserProfile() {
         scope.launch {
             dataWrapper.apiHandler.makeAuthorizedRequest(
@@ -79,6 +56,15 @@ fun AccountScreen(
                     userInfo = userProfileQuery.data.profile
                 }
             )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
+        val token = tokenStore.load()
+
+        if (token != null) {
+            getUserProfile()
         }
     }
 

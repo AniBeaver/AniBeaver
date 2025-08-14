@@ -20,7 +20,7 @@ abstract class ApiAuthorizationHandler{
     private suspend fun doAuthorizationRoutine(){
         var oAuthLocalServer: OAuthLocalServer? = null
 
-        if(authCodeStorage.authCode==null){
+        if(authCodeStorage.accessToken==null){
             try {
                 println("Starting local server to get authentication code...")
                 oAuthLocalServer = OAuthLocalServer(authCodeStorage)
@@ -58,6 +58,11 @@ abstract class ApiAuthorizationHandler{
             try {
                 println("Stopping local OAuth callback server...")
                 oAuthLocalServer.stop()
+
+                println("Saving token to keystore...")
+                val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
+                tokenStore.save(authCodeStorage.accessToken ?: "")
+                println("Token saved successfully.")
             }
             catch(e: Exception) {
                 println("Failed stopping local server")

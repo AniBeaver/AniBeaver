@@ -39,7 +39,10 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
             })
         }
     }
-    
+
+    fun isAuthorized(): Boolean {
+        return apiAuthorizationHandler.authCodeStorage.accessToken != null
+    }
 
     inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
         val requestType : RequestType? = getRequestTypeByClass(T::class)
