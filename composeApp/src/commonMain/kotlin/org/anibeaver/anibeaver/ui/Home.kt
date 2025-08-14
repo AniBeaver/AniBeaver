@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -39,8 +40,8 @@ fun HomeScreen(
 ) {
     Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 32.dp).fillMaxSize() ){
         SearchBar(
-            modifier = Modifier.
-                fillMaxSize()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 32.dp)
                 .height(48.dp)
                 .semantics { traversalIndex = 0F },
