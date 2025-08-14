@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun EntryCard(
@@ -54,4 +55,15 @@ fun EntryCard(
 
         }
     }
+}
+
+@Composable
+@Preview
+fun EntryCardPreview() {
+    EntryCard(
+        id = 1,
+        name = "Sample Anime",
+        tags = "Action, Adventure, Fantasy",
+        description = "This is a sample description for the anime entry. It provides an overview of the anime's plot and themes."
+    )
 }
