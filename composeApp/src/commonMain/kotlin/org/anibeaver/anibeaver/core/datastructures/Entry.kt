@@ -48,7 +48,8 @@ class EntryData internal constructor(
     val rating: Float = 0f,
     val status: Status = Status.Watching,
     val releasingEvery: Schedule = Schedule.Irregular,
-    val tagIds: List<Int> = emptyList()
+    val tagIds: List<Int> = emptyList(),
+    val references: List<Reference> = emptyList()
 )
 
 enum class Status {

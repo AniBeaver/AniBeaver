@@ -43,6 +43,7 @@ fun EditEntryPopup(
     var status by remember { mutableStateOf(initialValues?.status ?: Status.Planning) }
     var releasingEvery by remember { mutableStateOf(initialValues?.releasingEvery ?: Schedule.Monday) }
     var tagsIds by remember { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
+    var references by remember { mutableStateOf(initialValues?.references ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -59,6 +60,7 @@ fun EditEntryPopup(
         status = initialValues?.status ?: Status.Planning
         releasingEvery = initialValues?.releasingEvery ?: Schedule.Monday
         tagsIds = initialValues?.tagIds ?: emptyList()
+        references = initialValues?.references ?: emptyList()
     }
 
     //for tab navigation
@@ -76,8 +78,13 @@ fun EditEntryPopup(
         if (showAutofillPopup) {
             ManageAutofillPopup(
                 show = showAutofillPopup,
+                references = references,
+                onAddReference = { newRef -> references = references + newRef },
+                onDeleteReference = { ref -> references = references.filter { it != ref } },
+                onUpdateReference = { oldRef, newRef -> references = references.map { if (it == oldRef) newRef else it } },
                 onDismiss = { showAutofillPopup = false },
-                onConfirm = { showAutofillPopup = false }
+                onConfirm = { showAutofillPopup = false },
+                onConfirmReorder = { newList -> references = newList }
             )
         }
         AlertDialog(
@@ -95,6 +102,7 @@ fun EditEntryPopup(
                             status = status,
                             releasingEvery = releasingEvery,
                             tagIds = tagsIds,
+                            references = references
                         )
                     )
                 }) {

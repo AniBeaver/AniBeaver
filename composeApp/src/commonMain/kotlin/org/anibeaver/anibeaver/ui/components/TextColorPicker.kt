@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 fun ColorPicker(
     hex: String,
     onHexChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -37,7 +37,7 @@ fun ColorPicker(
                 .height(56.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                .background(org.anibeaver.anibeaver.ui.components.parseHexColor(hex))
+                .background(parseHexColor(hex))
         )
     }
 }
