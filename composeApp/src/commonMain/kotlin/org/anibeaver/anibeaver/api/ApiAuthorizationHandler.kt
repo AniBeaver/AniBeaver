@@ -2,10 +2,10 @@ package org.anibeaver.anibeaver.api
 
 import kotlinx.coroutines.*
 
-abstract class ApiAuthorizationHandler{
+abstract class ApiAuthorizationHandler (private val context: Any?){
     abstract fun openUrl (url : String)
 
-    val authCodeStorage: AuthCodeStorage = AuthCodeStorage()
+    val authCodeStorage: AuthCodeStorage = AuthCodeStorage(context)
 
     suspend fun getValidAccessToken(){
         try {
@@ -60,7 +60,7 @@ abstract class ApiAuthorizationHandler{
                 oAuthLocalServer.stop()
 
                 println("Saving token to keystore...")
-                val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
+                val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", context)
                 tokenStore.save(authCodeStorage.accessToken ?: "")
                 println("Token saved successfully.")
             }

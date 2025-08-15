@@ -1,7 +1,7 @@
 package org.anibeaver.anibeaver.api
 
-class AuthCodeStorage{
-    private val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
+class AuthCodeStorage(context: Any?) {
+    private val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", context)
 
     var accessToken: String? = null
 

@@ -2,9 +2,7 @@ package org.anibeaver.anibeaver.api
 
 import org.netbeans.api.keyring.Keyring
 
-actual fun initSecureStorage(platformContext: Any?) { /* no-op on JVM */ }
-
-actual fun tokenStore(service: String, account: String): TokenStore {
+actual fun tokenStore(service: String, account: String, platformContext: Any?): TokenStore {
     val id = "$service:$account"
     return object : TokenStore {
         override fun save(token: String) {
