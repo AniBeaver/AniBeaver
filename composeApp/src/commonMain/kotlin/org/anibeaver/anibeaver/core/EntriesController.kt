@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 
@@ -24,7 +25,11 @@ object EntriesController {
             9.5f,
             Status.Completed,
             Schedule.Sunday,
-            listOf(10, 11) // Shounen, Classic custom tag ids
+            listOf(10, 11), // Shounen, Classic custom tag ids
+            references = listOf(
+                Reference("Season 1", "608150"),
+                Reference("Season 2", "608151")
+            )
         )))
         addEntry(Entry(EntryData(
             "Steins;Gate",
@@ -35,8 +40,11 @@ object EntriesController {
             9.0f,
             Status.Completed,
             Schedule.Wednesday,
-            listOf(14, 13) // Time Travel, Thriller custom tag ids
-            )))
+            listOf(14, 13), // Time Travel, Thriller custom tag ids
+            references = listOf(
+                Reference("Main", "9253")
+            )
+        )))
         addEntry(Entry(EntryData(
             "Your Lie in April",
             "2014",
@@ -46,8 +54,11 @@ object EntriesController {
             8.8f,
             Status.Completed,
             Schedule.Friday,
-            listOf(1, 6) // Music, Romance custom tag ids
-            )))
+            listOf(1, 6), // Music, Romance custom tag ids
+            references = listOf(
+                Reference("Main", "20954")
+            )
+        )))
         addEntry(Entry(EntryData(
             "Attack on Titan",
             "2013",
@@ -57,8 +68,12 @@ object EntriesController {
             9.2f,
             Status.Completed,
             Schedule.Sunday,
-            listOf(23) // Dark custom tag id (corrected from 7, 21)
-            )))
+            listOf(23), // Dark custom tag id (corrected from 7, 21)
+            references = listOf(
+                Reference("Season 1", "16498"),
+                Reference("Season 2", "21519")
+            )
+        )))
         addEntry(Entry(EntryData(
             "K-On!",
             "2009",
@@ -68,8 +83,8 @@ object EntriesController {
             8.0f,
             Status.Completed,
             Schedule.Thursday,
-            listOf(22, 1) // Slice of Life, Music custom tag ids
-            )))
+            listOf(22, 1), // Slice of Life, Music custom tag ids
+        )))
         addEntry(Entry(EntryData(
             "Tag Overload!",
             "2022",
