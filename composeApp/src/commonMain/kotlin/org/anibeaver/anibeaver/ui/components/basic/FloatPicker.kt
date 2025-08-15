@@ -16,8 +16,8 @@ fun FloatPicker(
         onValueChange = { filtered ->
             filtered.toFloatOrNull()?.let { onValueChange(it) }
         },
-        onIncrement = { onValueChange(value + 1f) },
-        onDecrement = { onValueChange(value - 1f) },
+        onIncrement = { onValueChange(value + 0.5f) },
+        onDecrement = { onValueChange(value - 0.5f) },
         modifier = modifier,
         filter = { input ->
             input.filterIndexed { idx, c ->
