@@ -51,7 +51,6 @@ fun AnimeScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()) // <-- Add this
         ) {
             Text("Anime", style = Typography.headlineLarge)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
