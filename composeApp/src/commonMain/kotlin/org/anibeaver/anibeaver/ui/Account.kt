@@ -37,6 +37,7 @@ import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.*
 import org.anibeaver.anibeaver.api.tokenStore
+import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -154,6 +155,29 @@ fun AccountScreen(
                                     color = Color.White
                                 )
                             )
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            // Logout button
+                            Button(
+                                onClick = {
+                                    val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
+                                    tokenStore.clear()
+                                    dataWrapper.apiHandler.logout()
+                                    userInfo = null
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),
+                                modifier = Modifier.padding(top = 10.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Login,
+                                    contentDescription = "Logout Icon",
+                                    modifier = Modifier.size(18.dp),
+                                    tint = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Logout", color = Color.White)
+                            }
                         }
                     }
 
