@@ -56,7 +56,7 @@ fun App(
             if (showSidebar) {
                 PaddingValues(horizontal = 32.dp, vertical = 24.dp)
             } else {
-                PaddingValues(horizontal = 16.dp, vertical = 32.dp)
+                PaddingValues(horizontal = 16.dp, vertical = 24.dp)
             }
         }
     }
@@ -69,10 +69,10 @@ fun App(
                 }
 
                 Column (
-                    modifier = Modifier.fillMaxSize().padding(padding),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(modifier = Modifier.weight(1f).padding(padding)) {
                         NavHost(
                             navController = navController,
                             startDestination = Screens.Home.name,
@@ -81,7 +81,6 @@ fun App(
                             popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                             popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                             modifier = Modifier
-                                .safeContentPadding()
                                 .fillMaxHeight(1f)
                                 .verticalScroll(rememberScrollState())
                         ) {
