@@ -66,8 +66,7 @@ fun AccountScreen(
     }
 
     LaunchedEffect(Unit) {
-        val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
-        val token = tokenStore.load()
+        val token = dataWrapper.tokenStore.load()
 
         if (token != null) {
             getUserProfile()
@@ -173,8 +172,7 @@ fun AccountScreen(
                             if (!isSmallScreen) {
                                 Button(
                                     onClick = {
-                                        val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
-                                        tokenStore.clear()
+                                        dataWrapper.tokenStore.clear()
                                         dataWrapper.apiHandler.logout()
                                         userInfo = null
                                     },
@@ -347,8 +345,7 @@ fun AccountScreen(
                     // Logout button as full-width under stats cards
                     Button(
                         onClick = {
-                            val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist")
-                            tokenStore.clear()
+                            dataWrapper.tokenStore.clear()
                             dataWrapper.apiHandler.logout()
                             userInfo = null
                         },
