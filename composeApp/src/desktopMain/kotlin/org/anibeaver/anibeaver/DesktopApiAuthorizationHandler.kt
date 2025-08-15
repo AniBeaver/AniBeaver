@@ -6,7 +6,7 @@ import java.net.URI
 import java.awt.Desktop
 import java.io.IOException
 
-class DesktopApiAuthorizationHandler : ApiAuthorizationHandler(){
+class DesktopApiAuthorizationHandler : ApiAuthorizationHandler(null) {
     override fun openUrl(url : String){
         try {
             Desktop.getDesktop().browse(URI(url))
