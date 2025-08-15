@@ -9,6 +9,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import org.anibeaver.anibeaver.api.ApiHandler
+import org.anibeaver.anibeaver.api.tokenStore
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -21,7 +22,12 @@ class MainActivity : ComponentActivity() {
                 darkTheme = isSystemInDarkTheme(),
                 dataWrapper = DataWrapper(
                     activityKiller = { finish() },
-                    apiHandler = ApiHandler(AndroidApiAuthorizationHandler(this))
+                    apiHandler = ApiHandler(AndroidApiAuthorizationHandler(this)),
+                    tokenStore = tokenStore(
+                        "org.anibeaver.anibeaver",
+                        "anilist",
+                        platformContext = this
+                    )
                 ),
                 windowSizeClass = androidx.compose.material3.windowsizeclass.calculateWindowSizeClass(this)
             )

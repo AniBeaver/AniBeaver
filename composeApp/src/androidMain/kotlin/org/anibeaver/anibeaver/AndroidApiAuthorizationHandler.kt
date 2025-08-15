@@ -5,7 +5,7 @@ import org.anibeaver.anibeaver.api.ApiAuthorizationHandler
 import androidx.core.net.toUri
 
 
-class AndroidApiAuthorizationHandler(private val context: Context) : ApiAuthorizationHandler() {
+class AndroidApiAuthorizationHandler(private val context: Context) : ApiAuthorizationHandler(context) {
     override fun openUrl(url: String) {
         try {
             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
