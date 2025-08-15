@@ -3,10 +3,8 @@ package org.anibeaver.anibeaver.ui.modals
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +13,8 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.core.datastructures.Status
@@ -75,8 +75,9 @@ fun EditEntryPopup(
     val descriptionRequester = remember { FocusRequester() }
 
     if (show) {
+        val coroutineScope = rememberCoroutineScope()
         if (showAutofillPopup) {
-            ManageAutofillPopup(
+            AutofillPullPopup(
                 show = showAutofillPopup,
                 references = references,
                 onAddReference = { newRef -> references = references + newRef },
@@ -84,7 +85,12 @@ fun EditEntryPopup(
                 onUpdateReference = { oldRef, newRef -> references = references.map { if (it == oldRef) newRef else it } },
                 onDismiss = { showAutofillPopup = false },
                 onConfirm = { showAutofillPopup = false },
-                onConfirmReorder = { newList -> references = newList }
+                onConfirmReorder = { newList -> references = newList },
+                onPullFromAniList = {
+                    coroutineScope.launch {
+                        AutofillController.pullDataFromAniList()
+                    }
+                }
             )
         }
         AlertDialog(
@@ -170,7 +176,7 @@ fun EditEntryPopup(
                             options = Schedule.entries.toList(),
                             selectedOption = releasingEvery,
                             onOptionSelected = { releasingEvery = it },
-                            label = "Releasing Every",
+                            label = "Airing every",
                             modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
                         )
                     }

@@ -14,7 +14,7 @@ import org.anibeaver.anibeaver.ui.components.references.ReferenceRow
 
 
 @Composable
-fun ManageAutofillPopup(
+fun AutofillPullPopup(
     show: Boolean,
     references: List<Reference>,
     onAddReference: (Reference) -> Unit,
@@ -22,7 +22,8 @@ fun ManageAutofillPopup(
     onUpdateReference: (Reference, Reference) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    onConfirmReorder: (List<Reference>) -> Unit
+    onConfirmReorder: (List<Reference>) -> Unit,
+    onPullFromAniList: () -> Unit
 ) {
     if (show) {
         AlertDialog(
@@ -75,6 +76,9 @@ fun ManageAutofillPopup(
                     }
                     Button(onClick = { onAddReference(Reference("", "")) }, modifier = Modifier) {
                         Text("Add Reference")
+                    }
+                    Button(onClick = onPullFromAniList, modifier = Modifier) {
+                        Text("Pull data from AniList")
                     }
                 }
             }
