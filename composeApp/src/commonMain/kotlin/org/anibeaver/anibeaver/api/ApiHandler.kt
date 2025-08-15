@@ -41,7 +41,12 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
     }
 
     fun isAuthorized(): Boolean {
+        // TODO: Also fetch the access token from storage
         return apiAuthorizationHandler.authCodeStorage.accessToken != null
+    }
+
+    fun logout() {
+        apiAuthorizationHandler.authCodeStorage.accessToken = null
     }
 
     inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
