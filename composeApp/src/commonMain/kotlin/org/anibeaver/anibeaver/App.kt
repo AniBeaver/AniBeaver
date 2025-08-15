@@ -15,6 +15,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,6 +51,16 @@ fun App(
         }
     }
 
+    val paddingValues by remember(showSidebar) {
+        derivedStateOf {
+            if (showSidebar) {
+                PaddingValues(horizontal = 32.dp, vertical = 24.dp)
+            } else {
+                PaddingValues(horizontal = 16.dp, vertical = 32.dp)
+            }
+        }
+    }
+
     AniBeaverTheme (darkTheme = true) {
         Scaffold { padding ->
             Row {
@@ -71,6 +82,8 @@ fun App(
                             popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
                             modifier = Modifier
                                 .safeContentPadding()
+                                .fillMaxHeight(1f)
+                                .verticalScroll(rememberScrollState())
                         ) {
                             composable (route = Screens.Home.name) {
                                 HomeScreen(navController)
@@ -85,7 +98,7 @@ fun App(
                                 SettingsScreen(navController)
                             }
                             composable (route = Screens.Account.name) {
-                                AccountScreen(navController, dataWrapper)
+                                AccountScreen(dataWrapper, paddingValues, windowSizeClass)
                             }
                         }
                     }
