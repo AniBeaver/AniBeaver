@@ -28,3 +28,8 @@ data class MediaList(
 data class MediaEntry(
     val media: Media
 )
+
+@Serializable
+data class AutofillMediaQuery(
+    val autofillData: AutofillData
+)

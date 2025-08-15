@@ -23,3 +23,56 @@ data class Media(
 data class Title(
     val english: String?
 )
+
+@Serializable
+data class AutofillData(
+    @SerialName("meanScore") val meanScore: Int? = null,
+    @SerialName("bannerImage") val bannerImage: String? = null,
+    @SerialName("airingSchedule") val airingSchedule: AiringSchedule? = null,
+    @SerialName("seasonYear") val seasonYear: Int? = null,
+    @SerialName("status") val status: String? = null,
+    @SerialName("studios") val studios: Studios? = null,
+    @SerialName("tags") val tags: List<Tag>? = null,
+    @SerialName("coverImage") val coverImage: CoverImage? = null,
+    @SerialName("type") val type: String? = null,
+    @SerialName("title") val title: AutofillTitle? = null
+)
+
+@Serializable
+data class AiringSchedule(
+    val nodes: List<AiringNode>? = null
+)
+
+@Serializable
+data class AiringNode(
+    val airingAt: Long? = null
+)
+
+@Serializable
+data class Studios(
+    val nodes: List<StudioNode>? = null
+)
+
+@Serializable
+data class StudioNode(
+    val name: String? = null
+)
+
+@Serializable
+data class Tag(
+    val name: String? = null,
+    val rank: Int? = null
+)
+
+@Serializable
+data class CoverImage(
+    val medium: String? = null,
+    val color: String? = null
+)
+
+@Serializable
+data class AutofillTitle(
+    val romaji: String? = null,
+    val english: String? = null,
+    val native: String? = null
+)

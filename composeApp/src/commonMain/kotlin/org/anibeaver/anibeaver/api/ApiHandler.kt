@@ -173,6 +173,43 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
             }""",
         associateClass = MediaQuery::class
     ),
+    AUTOFILL_MEDIA(
+        query = """
+            query (${'$'}id: Int) {
+            Media (id: ${'$'}id) {
+                meanScore
+                bannerImage
+                airingSchedule {
+                    nodes {
+                        airingAt
+                    }
+                }
+                seasonYear
+                status
+                studios {
+                    nodes {
+                        name
+                    }
+                }
+                tags {
+                    name,
+                    rank
+                }
+                coverImage {
+                    medium,
+                    color
+                }
+                type
+                title {
+                    romaji
+                    english
+                    native
+                }
+            }
+        }
+        """,
+        associateClass = AutofillMediaQuery::class
+    ),
     SAVE_MEDIA_LIST_ENTRY(
         query = """
             mutation Mutation(${'$'}saveMediaListEntryId: Int, ${'$'}status: MediaListStatus, ${'$'}score: Float, ${'$'}scoreRaw: Int, ${'$'}progress: Int, ${'$'}progressVolumes: Int, ${'$'}private: Boolean, ${'$'}notes: String, ${'$'}mediaId: Int) {
