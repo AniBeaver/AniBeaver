@@ -51,14 +51,14 @@ fun App(
     }
 
     AniBeaverTheme (darkTheme = true) {
-        Scaffold {
+        Scaffold { padding ->
             Row {
                 if (showSidebar) {
                     Sidebar(navController, colors)
                 }
 
                 Column (
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().padding(padding),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
