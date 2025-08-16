@@ -80,7 +80,8 @@ fun AnimeScreen(
                         EntriesController.updateEntry(currentEditedEntryId, entryData)
                         showPopup = false
                     },
-                    initialValues = EntriesController.getEntryDataById(currentEditedEntryId)
+                    initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
+                    dataWrapper
                 )
             }
             ManageTagsModal(

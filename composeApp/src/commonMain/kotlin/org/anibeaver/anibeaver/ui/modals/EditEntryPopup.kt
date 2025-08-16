@@ -13,8 +13,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-import org.anibeaver.anibeaver.api.ApiHandler
+import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.TagType
@@ -32,7 +31,8 @@ fun EditEntryPopup(
     show: Boolean,
     onDismiss: () -> Unit,
     onConfirm: (EntryData) -> Unit,
-    initialValues: EntryData? = null
+    initialValues: EntryData? = null,
+    dataWrapper: DataWrapper
 ) {
 
     var animeName by remember { mutableStateOf(initialValues?.animeName ?: "") }
@@ -88,16 +88,8 @@ fun EditEntryPopup(
                 onConfirm = { showAutofillPopup = false },
                 onConfirmReorder = { newList -> references = newList },
                 onPullFromAniList = {
-                    coroutineScope.launch {
-                        // TODO: Replace with your actual ApiAuthorizationHandler instance
-                        val apiHandler = ApiHandler(/* apiAuthorizationHandler = ... */)
-                        // TODO: Replace with the actual media ID (should be an Int as String)
-                        val mediaId = animeName // This should be the AniList ID, not the name
-                        AutofillController.pullDataFromAniList(mediaId, apiHandler) { result ->
-                            println(result)
-                            // Optionally update UI state with result here
-                        }
-                    }
+                    val referenceIds = references.map { it.alId}
+                    AutofillController.pullParsedAutofill(referenceIds, dataWrapper, coroutineScope)
                 }
             )
         }

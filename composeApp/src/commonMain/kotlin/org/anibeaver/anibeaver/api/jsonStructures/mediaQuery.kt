@@ -24,6 +24,17 @@ data class Title(
     val english: String?
 )
 
+//Autofill FIXME: I'm not sure whether I did this optimally
+@Serializable
+data class AutofillMediaQuery(
+    val data: AutofillMediaQueryData
+)
+
+@Serializable
+data class AutofillMediaQueryData(
+    @SerialName("Media") val media: AutofillData
+)
+
 @Serializable
 data class AutofillData(
     @SerialName("meanScore") val meanScore: Int? = null,

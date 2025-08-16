@@ -3,8 +3,6 @@ package org.anibeaver.anibeaver.api.jsonStructures
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
-import org.anibeaver.anibeaver.api.jsonStructures.Media
-
 @Serializable
 data class MediaListQuery(
     val data: MediaListQueryData
@@ -27,9 +25,4 @@ data class MediaList(
 @Serializable
 data class MediaEntry(
     val media: Media
-)
-
-@Serializable
-data class AutofillMediaQuery(
-    val autofillData: AutofillData
 )
