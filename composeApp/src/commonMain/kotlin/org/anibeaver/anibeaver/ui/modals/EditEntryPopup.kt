@@ -87,9 +87,10 @@ fun EditEntryPopup(
                 onDismiss = { showAutofillPopup = false },
                 onConfirm = { showAutofillPopup = false },
                 onConfirmReorder = { newList -> references = newList },
-                onPullFromAniList = { priorityIndex ->
+                onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
-                    AutofillController.pullParsedAutofill(referenceIds, { result -> println(result) }, dataWrapper, coroutineScope, priorityIndex)
+                    println("[DEBUG] referenceIds: $referenceIds, priorityIndex: $priorityIndex, priorityId: ${referenceIds.getOrNull(priorityIndex)}")
+                    AutofillController.pullParsedAutofill(referenceIds, { result -> onPulled(result) }, dataWrapper, coroutineScope, priorityIndex)
                 }
             )
         }
