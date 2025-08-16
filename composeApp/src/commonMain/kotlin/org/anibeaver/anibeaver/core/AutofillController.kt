@@ -50,10 +50,10 @@ object AutofillController {
         mediaIds: List<String>,
         onResult: (ParsedAutofillData) -> Unit,
         dataWrapper: DataWrapper,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        priorityIndex: Int? = null
     ) {
-        fun inferAiringScheduleWeekday(airingAts: List<Long>): Schedule {
-            val airingScheduleErrorRatio = 0.2f
+        fun inferAiringScheduleWeekday(airingAts: List<Long>, airingScheduleErrorRatio: Float): Schedule {
             val weekdays = Schedule.entries.filter { it != Schedule.Irregular }
             val secondsInDay = 86400L
             val airingWeekdays = airingAts.mapNotNull { ts ->
@@ -93,10 +93,14 @@ object AutofillController {
         }
 
         fun inferCoverLink(autofillDataList: List<AutofillData>): String =
-            autofillDataList.firstNotNullOfOrNull { it.coverImage?.medium } ?: ""
+            priorityIndex?.let { idx ->
+                autofillDataList.getOrNull(idx)?.coverImage?.medium
+            } ?: autofillDataList.firstNotNullOfOrNull { it.coverImage?.medium } ?: ""
 
         fun inferBannerLink(autofillDataList: List<AutofillData>): String =
-            autofillDataList.firstNotNullOfOrNull { it.bannerImage } ?: ""
+            priorityIndex?.let { idx ->
+                autofillDataList.getOrNull(idx)?.bannerImage
+            } ?: autofillDataList.firstNotNullOfOrNull { it.bannerImage } ?: ""
 
         fun inferAvgScore(autofillDataList: List<AutofillData>): Float =
             autofillDataList.mapNotNull { it.meanScore }.let { if (it.isNotEmpty()) it.average().toFloat() else 0f }
@@ -132,37 +136,20 @@ object AutofillController {
         }
 
         fun parseAutofillDataList(autofillDataList: List<AutofillData>): ParsedAutofillData {
-            if (autofillDataList.isEmpty()) {
-                return emptyParsedAutofillData
-            }
-
-            val name_rm_common = inferNames(autofillDataList) { it.romaji }
-            val name_en_common = inferNames(autofillDataList) { it.english }
-            val name_jp_common = inferNames(autofillDataList) { it.native }
-            val (startYear, endYear) = inferYearRange(autofillDataList)
-            val cover_link = inferCoverLink(autofillDataList)
-            val banner_link = inferBannerLink(autofillDataList)
-            val avg_score = inferAvgScore(autofillDataList)
-
-            val studios = inferStudios(autofillDataList)
-            val genres = inferGenres(autofillDataList)
-            val tags = inferTags(autofillDataList)
-            val airingAts = inferAiringAts(autofillDataList)
-            val airingScheduleWeekday = inferAiringScheduleWeekday(airingAts)
-
+            if (autofillDataList.isEmpty()) return emptyParsedAutofillData
             return ParsedAutofillData(
-                name_jp_choices = name_jp_common,
-                name_rm_choices = name_rm_common,
-                name_en_choices = name_en_common,
-                startYear = startYear,
-                endYear = endYear,
-                cover_link = cover_link,
-                banner_link = banner_link,
-                avg_score = avg_score,
-                studios = studios,
-                genres = genres,
-                tags = tags,
-                airingScheduleWeekday = airingScheduleWeekday,
+                name_jp_choices = inferNames(autofillDataList) { it.native },
+                name_rm_choices = inferNames(autofillDataList) { it.romaji },
+                name_en_choices = inferNames(autofillDataList) { it.english },
+                startYear = inferYearRange(autofillDataList).first,
+                endYear = inferYearRange(autofillDataList).second,
+                cover_link = inferCoverLink(autofillDataList),
+                banner_link = inferBannerLink(autofillDataList),
+                avg_score = inferAvgScore(autofillDataList),
+                studios = inferStudios(autofillDataList),
+                genres = inferGenres(autofillDataList),
+                tags = inferTags(autofillDataList),
+                airingScheduleWeekday = inferAiringScheduleWeekday(inferAiringAts(autofillDataList), 0.2f),
             )
         }
         val results = mutableListOf<AutofillData>()

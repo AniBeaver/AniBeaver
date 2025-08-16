@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,9 +34,16 @@ fun ReferenceRow(
     onDelete: () -> Unit,
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
+    isPriority: Boolean = false,
+    onPrioritySelected: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        RadioButton(
+            selected = isPriority,
+            onClick = { onPrioritySelected?.invoke() },
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
         ReorderArrows(
             onUp = onMoveUp,
             onDown = onMoveDown,

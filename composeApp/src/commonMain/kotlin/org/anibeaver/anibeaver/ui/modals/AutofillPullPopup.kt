@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,15 +21,16 @@ fun AutofillPullPopup(
     onDeleteReference: (Reference) -> Unit,
     onUpdateReference: (Reference, Reference) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (priorityReference: Reference?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
-    onPullFromAniList: () -> Unit
+    onPullFromAniList: (priorityIndex: Int) -> Unit
 ) {
     if (show) {
+        var priorityIndex by remember { mutableStateOf(0) }
         AlertDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                Button(onClick = onConfirm) {
+                Button(onClick = { onConfirm(references.getOrNull(priorityIndex)) }) {
                     Text("Autofill")
                 }
             },
@@ -44,10 +45,10 @@ fun AutofillPullPopup(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text("Add any number of references here (e.g a single series or all seasons of a series) to automatically extract (common) data and fill in the selected entry inputs.")
+                    Text("Add any number of references here (e.g a single series or all seasons of a series) to automatically extract (common) data and fill in the selected entry inputs. The radio button selects the priority series.")
                     references.forEachIndexed { idx, ref ->
                         ReferenceRow(
-                            alId = ref.alId, // Use alId as String directly
+                            alId = ref.alId,
                             refNote = ref.note,
                             onAlIdChange = { newAlIdStr ->
                                 onUpdateReference(ref, Reference(ref.note, newAlIdStr))
@@ -71,14 +72,16 @@ fun AutofillPullPopup(
                                     newList.add(idx + 1, ref)
                                     onConfirmReorder(newList)
                                 }
-                            } else null
+                            } else null,
+                            isPriority = idx == priorityIndex,
+                            onPrioritySelected = { priorityIndex = idx }
                         )
                     }
                     Button(onClick = { onAddReference(Reference("", "")) }, modifier = Modifier) {
                         Text("Add Reference")
                     }
-                    Button(onClick = onPullFromAniList, modifier = Modifier) {
-                        Text("Pull data from AniList")
+                    Button(onClick = { onPullFromAniList(priorityIndex) }, modifier = Modifier) {
+                        Text("Pull from AniList")
                     }
                 }
             }
