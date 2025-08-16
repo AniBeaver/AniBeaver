@@ -89,7 +89,7 @@ fun EditEntryPopup(
                 onConfirmReorder = { newList -> references = newList },
                 onPullFromAniList = {
                     val referenceIds = references.map { it.alId}
-                    AutofillController.pullParsedAutofill(referenceIds, dataWrapper, coroutineScope)
+                    AutofillController.pullParsedAutofill(referenceIds, { result -> println(result) }, dataWrapper, coroutineScope)
                 }
             )
         }

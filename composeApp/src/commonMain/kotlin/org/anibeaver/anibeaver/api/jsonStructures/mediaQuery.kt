@@ -61,12 +61,13 @@ data class AiringNode(
 
 @Serializable
 data class Studios(
-    val nodes: List<StudioNode>? = null
+    val nodes: List<StudioNode>? = null,
 )
 
 @Serializable
 data class StudioNode(
-    val name: String? = null
+    val name: String? = null,
+    val isAnimationStudio: Boolean? = null
 )
 
 @Serializable

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import org.anibeaver.anibeaver.core.AutofillController.idIsValid
 import org.anibeaver.anibeaver.ui.components.ColorPicker
 import org.anibeaver.anibeaver.ui.components.abstract.DeleteButton
 import org.anibeaver.anibeaver.ui.components.basic.ReorderArrows
@@ -58,14 +59,13 @@ fun ReferenceRow(
         )
         // Simple status indicator (fixed width, always centered, minimal logic)
         val uriHandler = LocalUriHandler.current
-        val isSixDigits = alId.length == 6 && alId.all { it.isDigit() }
         Box(
             modifier = Modifier.width(56.dp).align(Alignment.CenterVertically),
             contentAlignment = Alignment.Center
         ) {
             when {
                 alId.isBlank() -> {}
-                isSixDigits -> Text(
+                idIsValid(alId) -> Text(
                     text = "Link",
                     color = Color(0xFF1976D2),
                     fontWeight = FontWeight.Bold,

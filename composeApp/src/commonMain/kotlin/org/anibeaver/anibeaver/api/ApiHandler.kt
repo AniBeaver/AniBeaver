@@ -189,6 +189,7 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                 studios {
                     nodes {
                         name
+                        isAnimationStudio
                     }
                 }
                 tags {

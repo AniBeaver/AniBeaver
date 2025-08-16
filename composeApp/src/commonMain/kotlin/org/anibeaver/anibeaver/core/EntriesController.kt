@@ -56,7 +56,7 @@ object EntriesController {
             Schedule.Friday,
             listOf(1, 6), // Music, Romance custom tag ids
             references = listOf(
-                Reference("Main", "20954")
+                Reference("Main", "20665")
             )
         )))
         addEntry(Entry(EntryData(
@@ -71,7 +71,7 @@ object EntriesController {
             listOf(23), // Dark custom tag id (corrected from 7, 21)
             references = listOf(
                 Reference("Season 1", "16498"),
-                Reference("Season 2", "21519")
+                Reference("Season 2", "20958")
             )
         )))
         addEntry(Entry(EntryData(
