@@ -130,6 +130,14 @@ object AutofillController {
             autofillDataList.flatMap { it.airingSchedule?.nodes ?: emptyList() }
                 .mapNotNull { it.airingAt }
 
+        fun inferMostCurrentAiringAts(autofillDataList: List<AutofillData>): List<Long> {
+            val mostCurrentYear = autofillDataList.maxOfOrNull { it.seasonYear ?: Int.MIN_VALUE }
+            val mostCurrent = autofillDataList.filter { it.seasonYear == mostCurrentYear }
+            return mostCurrent.flatMap { it.airingSchedule?.nodes ?: emptyList() }
+                .mapNotNull { it.airingAt }
+            //TODO: Change infer airing and UI so instead of just a checkbox it has a series of radio buttons (just like Sync Name but under Sync Schedule) with an airing date for each reference's note (e.g "Season 1 airing Saturday", "Seasong 2 airing Sunday" etc. Also if the note is "Season" you can automatically shorten it to s. for these ui elements - just maybe, for now this works
+        }
+
         fun inferNames(autofillDataList: List<AutofillData>, selector: (AutofillTitle) -> String?): String {
             val names = autofillDataList.mapNotNull { it.title?.let(selector)?.let { n -> cleanName(n) } }.filter { it.isNotBlank() }
             return if (names.isNotEmpty()) commonPrefix(names) else ""
@@ -149,7 +157,7 @@ object AutofillController {
                 studios = inferStudios(autofillDataList),
                 genres = inferGenres(autofillDataList),
                 tags = inferTags(autofillDataList),
-                airingScheduleWeekday = inferAiringScheduleWeekday(inferAiringAts(autofillDataList), 0.2f),
+                airingScheduleWeekday = inferAiringScheduleWeekday(inferMostCurrentAiringAts(autofillDataList), 0.2f),
             )
         }
         val results = mutableListOf<AutofillData>()

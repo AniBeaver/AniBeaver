@@ -33,6 +33,7 @@ fun AutofillPopup(
     var autofillData by remember { mutableStateOf<ParsedAutofillData?>(null) }
     var showSelector by remember { mutableStateOf(false) }
     var selectedNameIdx by remember { mutableStateOf(0) }
+    var yearRadioIdx by remember { mutableStateOf(0) } // 0 = start, 1 = end
 
     AlertDialog(
         modifier = Modifier.width(600.dp),
@@ -46,7 +47,9 @@ fun AutofillPopup(
                 AutofillConfirmButton(
                     autofillData = autofillData!!,
                     selectedNameIdx = selectedNameIdx,
+                    yearRadioIdx = yearRadioIdx,
                     onSelectedNameIdxChange = { selectedNameIdx = it },
+                    onYearRadioIdxChange = { yearRadioIdx = it },
                     onDone = { selection ->
                         autofillData = null
                         showSelector = false
@@ -103,7 +106,13 @@ fun AutofillPopup(
                     }) { Text("Pull from AniList") }
                 }
                 if (showSelector && autofillData != null) {
-                    AutofillSelectorUI(autofillData!!, selectedNameIdx, onSelectedNameIdxChange = { selectedNameIdx = it })
+                    AutofillSelectorUI(
+                        autofillData!!,
+                        selectedNameIdx,
+                        onSelectedNameIdxChange = { selectedNameIdx = it },
+                        yearRadioIdx = yearRadioIdx,
+                        onYearRadioIdxChange = { yearRadioIdx = it }
+                    )
                 }
             }
         }
@@ -114,12 +123,13 @@ fun AutofillPopup(
 private fun AutofillSelectorUI(
     autofill: ParsedAutofillData,
     selectedNameIdx: Int,
-    onSelectedNameIdxChange: (Int) -> Unit
+    onSelectedNameIdxChange: (Int) -> Unit,
+    yearRadioIdx: Int,
+    onYearRadioIdxChange: (Int) -> Unit
 ) {
     val nameOptions = listOf(autofill.name_en, autofill.name_rm, autofill.name_jp)
         .filter { it.isNotBlank() }
         .distinct()
-    var yearChecked by remember { mutableStateOf(true) }
     var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) }
     val allStudios = autofill.studios
     var selectedGenres by remember { mutableStateOf(autofill.genres.toSet()) }
@@ -155,16 +165,30 @@ private fun AutofillSelectorUI(
                     }
                 }
             }
+            Text("Sync year", style = MaterialTheme.typography.titleMedium)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                RadioButton(
+                    selected = yearRadioIdx == 0,
+                    onClick = { onYearRadioIdxChange(0) }
+                )
+                Text("Start: ${autofill.startYear}")
+                Spacer(modifier = Modifier.width(16.dp))
+                RadioButton(
+                    selected = yearRadioIdx == 1,
+                    onClick = { onYearRadioIdxChange(1) }
+                )
+                Text("End: ${autofill.endYear}")
+            }
             Text("Sync:", style = MaterialTheme.typography.titleMedium)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = yearChecked, onCheckedChange = { yearChecked = it })
-                    Text("Year: ${autofill.startYear}")
-                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = airingChecked, onCheckedChange = { airingChecked = it })
                     Text("Airing ${autofill.airingScheduleWeekday}")
@@ -243,14 +267,14 @@ private fun SectionWithCheckAll(
 private fun AutofillConfirmButton(
     autofillData: ParsedAutofillData,
     selectedNameIdx: Int,
+    yearRadioIdx: Int,
     onSelectedNameIdxChange: (Int) -> Unit,
+    onYearRadioIdxChange: (Int) -> Unit,
     onDone: (AutofillResultSelection) -> Unit
 ) {
     val nameOptions = listOf(autofillData.name_en, autofillData.name_rm, autofillData.name_jp)
         .filter { it.isNotBlank() }
         .distinct()
-
-    var yearChecked by remember { mutableStateOf(true) }
     var selectedStudios by remember { mutableStateOf(autofillData.studios.toSet()) }
     var selectedGenres by remember { mutableStateOf(autofillData.genres.toSet()) }
     var selectedTags by remember { mutableStateOf(autofillData.tags.toSet()) }
@@ -258,9 +282,10 @@ private fun AutofillConfirmButton(
     var bannerChecked by remember { mutableStateOf(true) }
     var airingChecked by remember { mutableStateOf(true) }
     Button(onClick = {
+        val year = if (yearRadioIdx == 0) autofillData.startYear else autofillData.endYear
         val selection = AutofillResultSelection(
             name = nameOptions.getOrNull(selectedNameIdx) ?: "",
-            year = if (yearChecked) autofillData.startYear else null,
+            year = year,
             studios = selectedStudios.toList(),
             genres = selectedGenres.toList(),
             tags = selectedTags.toList(),

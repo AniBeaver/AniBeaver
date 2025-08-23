@@ -183,6 +183,7 @@ fun EditEntryPopup(
                             }
                         }
                     }
+                    //TODO: add smart interactions: e.g setting to Completed should set episode progress to episode count - or maybe not, because of potential rewatches). So maybe not after all.
                     Row(
                         modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                         verticalAlignment = Alignment.CenterVertically,
