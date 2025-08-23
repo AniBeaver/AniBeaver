@@ -23,6 +23,7 @@ data class ParsedAutofillData(
     val genres: List<String>,
     val tags: List<String>,
     val airingScheduleWeekday: Schedule,
+    val eps_total: Int,
 )
 
 val emptyParsedAutofillData =
@@ -39,6 +40,7 @@ val emptyParsedAutofillData =
         genres = emptyList(),
         tags = emptyList(),
         airingScheduleWeekday = Schedule.Irregular,
+        eps_total = 0,
     )
 
 object AutofillController {
@@ -130,6 +132,9 @@ object AutofillController {
             autofillDataList.flatMap { it.airingSchedule?.nodes ?: emptyList() }
                 .mapNotNull { it.airingAt }
 
+        fun inferEpsTotal(autofillDataList: List<AutofillData>): Int =
+            autofillDataList.mapNotNull { it.episodes }.takeIf { it.isNotEmpty() }?.let { it.sum() } ?: 0
+
         fun inferMostCurrentAiringAts(autofillDataList: List<AutofillData>): List<Long> {
             val mostCurrentYear = autofillDataList.maxOfOrNull { it.seasonYear ?: Int.MIN_VALUE }
             val mostCurrent = autofillDataList.filter { it.seasonYear == mostCurrentYear }
@@ -158,6 +163,7 @@ object AutofillController {
                 genres = inferGenres(autofillDataList),
                 tags = inferTags(autofillDataList),
                 airingScheduleWeekday = inferAiringScheduleWeekday(inferMostCurrentAiringAts(autofillDataList), 0.2f),
+                eps_total = inferEpsTotal(autofillDataList),
             )
         }
         val results = mutableListOf<AutofillData>()
@@ -183,4 +189,6 @@ object AutofillController {
             }
         }
     }
+
+
 }

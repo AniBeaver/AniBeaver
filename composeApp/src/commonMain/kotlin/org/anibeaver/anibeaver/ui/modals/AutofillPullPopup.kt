@@ -8,6 +8,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
+import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.ParsedAutofillData
 import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.Schedule
@@ -31,6 +33,7 @@ fun AutofillPopup(
 
     var priorityIndex by remember { mutableStateOf(0) }
     var autofillData by remember { mutableStateOf<ParsedAutofillData?>(null) }
+    var autofillDataList by remember { mutableStateOf<List<AutofillData>>(emptyList()) }
     var showSelector by remember { mutableStateOf(false) }
     var selectedNameIdx by remember { mutableStateOf(0) }
     var yearRadioIdx by remember { mutableStateOf(0) } // 0 = start, 1 = end
@@ -46,12 +49,14 @@ fun AutofillPopup(
             } else {
                 AutofillConfirmButton(
                     autofillData = autofillData!!,
+                    autofillDataList = autofillDataList,
                     selectedNameIdx = selectedNameIdx,
                     yearRadioIdx = yearRadioIdx,
                     onSelectedNameIdxChange = { selectedNameIdx = it },
                     onYearRadioIdxChange = { yearRadioIdx = it },
                     onDone = { selection ->
                         autofillData = null
+                        autofillDataList = emptyList()
                         showSelector = false
                         onConfirm(selection)
                     }
@@ -108,6 +113,7 @@ fun AutofillPopup(
                 if (showSelector && autofillData != null) {
                     AutofillSelectorUI(
                         autofillData!!,
+                        autofillDataList,
                         selectedNameIdx,
                         onSelectedNameIdxChange = { selectedNameIdx = it },
                         yearRadioIdx = yearRadioIdx,
@@ -122,6 +128,7 @@ fun AutofillPopup(
 @Composable
 private fun AutofillSelectorUI(
     autofill: ParsedAutofillData,
+    autofillDataList: List<AutofillData>,
     selectedNameIdx: Int,
     onSelectedNameIdxChange: (Int) -> Unit,
     yearRadioIdx: Int,
@@ -139,6 +146,8 @@ private fun AutofillSelectorUI(
     var coverChecked by remember { mutableStateOf(true) }
     var bannerChecked by remember { mutableStateOf(true) }
     var airingChecked by remember { mutableStateOf(true) }
+    val totalEpisodes by remember { mutableStateOf(autofill.eps_total) }
+    var epsChecked by remember { mutableStateOf(true) }
     val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.heightIn(max = 400.dp)) {
@@ -199,6 +208,10 @@ private fun AutofillSelectorUI(
                     Spacer(modifier = Modifier.width(8.dp))
                     Checkbox(checked = bannerChecked, onCheckedChange = { bannerChecked = it })
                     Text("Banner")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = epsChecked, onCheckedChange = { epsChecked = it })
+                    Text("Eps. Total: $totalEpisodes")
                 }
             }
             SectionWithCheckAll(
@@ -266,6 +279,7 @@ private fun SectionWithCheckAll(
 @Composable
 private fun AutofillConfirmButton(
     autofillData: ParsedAutofillData,
+    autofillDataList: List<AutofillData>,
     selectedNameIdx: Int,
     yearRadioIdx: Int,
     onSelectedNameIdxChange: (Int) -> Unit,
@@ -281,6 +295,8 @@ private fun AutofillConfirmButton(
     var coverChecked by remember { mutableStateOf(true) }
     var bannerChecked by remember { mutableStateOf(true) }
     var airingChecked by remember { mutableStateOf(true) }
+    val totalEpisodes = autofillData.eps_total
+    var epsChecked by remember { mutableStateOf(true) }
     Button(onClick = {
         val year = if (yearRadioIdx == 0) autofillData.startYear else autofillData.endYear
         val selection = AutofillResultSelection(
@@ -291,7 +307,8 @@ private fun AutofillConfirmButton(
             tags = selectedTags.toList(),
             cover = if (coverChecked) autofillData.cover_link else null,
             banner = if (bannerChecked) autofillData.banner_link else null,
-            airingSchedule = if (airingChecked) autofillData.airingScheduleWeekday else Schedule.Monday
+            airingSchedule = if (airingChecked) autofillData.airingScheduleWeekday else Schedule.Monday,
+            episodes = if (epsChecked) totalEpisodes else null
         )
         onDone(selection)
     }) {

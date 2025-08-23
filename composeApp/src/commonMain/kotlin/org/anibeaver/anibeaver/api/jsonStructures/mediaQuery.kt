@@ -46,7 +46,9 @@ data class AutofillData(
     @SerialName("tags") val tags: List<Tag>? = null,
     @SerialName("coverImage") val coverImage: CoverImage? = null,
     @SerialName("type") val type: String? = null,
-    @SerialName("title") val title: AutofillTitle? = null
+    @SerialName("title") val title: AutofillTitle? = null,
+    @SerialName("duration") val duration: Int? = null,
+    @SerialName("episodes") val episodes: Int? = null
 )
 
 @Serializable
