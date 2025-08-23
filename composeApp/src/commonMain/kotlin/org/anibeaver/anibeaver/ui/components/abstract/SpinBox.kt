@@ -35,7 +35,9 @@ fun SpinBox(
                 onValueChange(filtered)
             },
             singleLine = true,
-            modifier = Modifier.widthIn(min = 48.dp, max = 72.dp),
+            modifier = Modifier
+                .weight(1f)
+                .widthIn(min = 48.dp, max = 72.dp),
             label = if (label.isNotEmpty()) { { Text(label) } } else null
         )
         UpDownButtons(

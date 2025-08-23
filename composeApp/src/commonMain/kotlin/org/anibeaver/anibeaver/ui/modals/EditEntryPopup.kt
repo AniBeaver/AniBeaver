@@ -15,18 +15,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
-import org.anibeaver.anibeaver.core.ParsedAutofillData
-import org.anibeaver.anibeaver.core.datastructures.Art
-import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
-import org.anibeaver.anibeaver.core.datastructures.EntryData
-import org.anibeaver.anibeaver.core.datastructures.TagType
-import org.anibeaver.anibeaver.core.datastructures.Status
-import org.anibeaver.anibeaver.core.datastructures.Schedule
-import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
-import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
+import org.anibeaver.anibeaver.core.datastructures.*
+import org.anibeaver.anibeaver.ui.components.basic.*
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
-import org.anibeaver.anibeaver.ui.components.basic.ImageInput
-import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 
 //TODO: tiny windows not supported still
 @Composable
@@ -52,6 +43,8 @@ fun EditEntryPopup(
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
     var showAutofillPopup by remember { mutableStateOf(false) }
     val onManageAutofillClicked = { showAutofillPopup = true }
+    var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 0) }
+    var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
 
     // Reset fields when initialValues changes (for editing)
     LaunchedEffect(initialValues) {
@@ -65,6 +58,8 @@ fun EditEntryPopup(
         releasingEvery = initialValues?.releasingEvery ?: Schedule.Monday
         tagsIds = initialValues?.tagIds ?: emptyList()
         references = initialValues?.references ?: emptyList()
+        episodesTotal = initialValues?.episodesTotal ?: 0
+        episodesProgress = initialValues?.episodesProgress ?: 0
     }
 
     //for tab navigation
@@ -130,9 +125,9 @@ fun EditEntryPopup(
                             references = references,
                             coverArt = Art("", ""),
                             bannerArt = Art("", ""),
-                            episodesTotal = 0,
-                            episodesProgress = 0,
-                            rewatches = 0
+                            episodesTotal = episodesTotal,
+                            episodesProgress = episodesProgress,
+                            rewatches = 1
                         )
                     )
                 }) {
@@ -148,30 +143,64 @@ fun EditEntryPopup(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ImageInput(
-                            modifier = Modifier.size(96.dp).padding(end = 24.dp),
-                            onClick = { /* TODO: Handle image selection */ }
-                        )
-                        FloatPicker(
-                            value = rating,
-                            onValueChange = { rating = it },
-                            label = "Rating"
-                        )
-                        Spacer(modifier = Modifier.width(50.dp))
-                        Button(onClick = onManageAutofillClicked) {
-                            Text("Manage AL Autofill")
+                        Column(modifier = Modifier.padding(end = 24.dp)) {
+                            ImageInput(
+                                modifier = Modifier.size(width = 96.dp, height = 96.dp),
+                                onClick = { /* TODO: Handle image selection */ }
+                            )
+                            ImageInput(
+                                modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
+                                onClick = { /* TODO: Handle image selection */ }
+                            )
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            OutlinedTextField(
+                                value = animeName,
+                                onValueChange = { animeName = it },
+                                label = { Text("Anime Name") },
+                                modifier = Modifier.fillMaxWidth(),
+                                singleLine = true
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FloatPicker(
+                                    value = rating,
+                                    onValueChange = { rating = it },
+                                    label = "Rating",
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Button(onClick = onManageAutofillClicked, modifier = Modifier.weight(1f)) {
+                                    Text("Manage AL Autofill")
+                                }
+                            }
                         }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        OutlinedTextField(
-                            value = animeName,
-                            onValueChange = { animeName = it },
-                            label = { Text("Anime Name") },
-                            modifier = Modifier.weight(1f).focusRequester(animeNameRequester).focusProperties { next = releaseYearRequester },
-                            singleLine = true
+                    Row(
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        IntPicker(
+                            value = episodesProgress,
+                            onValueChange = { episodesProgress = it },
+                            onIncrement = { episodesProgress += 1 },
+                            onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
+                            label = "Episode Progress",
+                            modifier = Modifier.weight(1f)
+                        )
+                        IntPicker(
+                            value = episodesTotal,
+                            onValueChange = { episodesTotal = it },
+                            onIncrement = { episodesTotal += 1 },
+                            onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
+                            label = "Episodes Total",
+                            modifier = Modifier.weight(1f)
                         )
                         YearPicker(
                             value = releaseYear,
@@ -184,18 +213,11 @@ fun EditEntryPopup(
                                 val year = releaseYear.toIntOrNull() ?: 0
                                 if (year > 0) releaseYear = (year - 1).toString()
                             },
-                            modifier = Modifier.weight(1f).focusRequester(releaseYearRequester).focusProperties { next = genreRequester },
+                            modifier = Modifier.weight(1f),
                             label = "Year"
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        SimpleDropdown(
-                            options = Status.entries.toList(),
-                            selectedOption = status,
-                            onOptionSelected = { status = it },
-                            label = "Status",
-                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
-                        )
                         SimpleDropdown(
                             options = Schedule.entries.toList(),
                             selectedOption = releasingEvery,
@@ -203,6 +225,14 @@ fun EditEntryPopup(
                             label = "Airing every",
                             modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
                         )
+                        SimpleDropdown(
+                            options = Status.entries.toList(),
+                            selectedOption = status,
+                            onOptionSelected = { status = it },
+                            label = "Status",
+                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
+                        )
+
                     }
                     TagChipInput(
                         tags = genreIds,
