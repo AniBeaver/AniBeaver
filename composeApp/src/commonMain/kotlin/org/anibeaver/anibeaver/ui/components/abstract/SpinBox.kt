@@ -1,7 +1,8 @@
 package org.anibeaver.anibeaver.ui.components.abstract
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
+import UpDownButtons
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,7 +26,6 @@ fun SpinBox(
         if (textValue != value) textValue = value
     }
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
-        Button(onClick = onDecrement) { Text("-") }
         OutlinedTextField(
             value = textValue,
             onValueChange = {
@@ -38,6 +38,9 @@ fun SpinBox(
             modifier = Modifier.widthIn(min = 48.dp, max = 72.dp),
             label = if (label.isNotEmpty()) { { Text(label) } } else null
         )
-        Button(onClick = onIncrement) { Text("+") }
+        UpDownButtons(
+            onIncrement = onIncrement,
+            onDecrement = onDecrement
+        )
     }
 }
