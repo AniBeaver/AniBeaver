@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
+import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.FilterData
@@ -67,11 +68,12 @@ fun AnimeScreen(
                         status = Status.Completed, // Use enum value
                         releasingEvery = Schedule.Irregular, // Use enum value
                         tagIds = listOf(10, 11), // Shounen, Classic custom tag ids
-                        coverArt = org.anibeaver.anibeaver.core.datastructures.Art("", ""),
-                        bannerArt = org.anibeaver.anibeaver.core.datastructures.Art("", ""),
-                        episodesTotal = 0,
-                        episodesProgress = 0,
-                        rewatches = 0
+                        coverArt = Art("", ""),
+                        bannerArt = Art("", ""),
+                        episodesTotal = 13,
+                        episodesProgress = 13,
+                        rewatches = 1
+                        //references: e.g 179966
                     )
                     EntriesController.addEntry(entryData = entryData)
                 }) { Text("Add Placeholder Entry") }

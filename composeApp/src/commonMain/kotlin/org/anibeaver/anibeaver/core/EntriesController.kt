@@ -28,14 +28,13 @@ object EntriesController {
             Schedule.Sunday,
             listOf(10, 11), // Shounen, Classic custom tag ids
             references = listOf(
-                Reference("Season 1", "608150"),
-                Reference("Season 2", "608151")
+                Reference("Season 1", "5114")
             ),
             coverArt = Art("", ""),
             bannerArt = Art("", ""),
-            episodesTotal = 0,
-            episodesProgress = 0,
-            rewatches = 0
+            episodesTotal = 64,
+            episodesProgress = 64,
+            rewatches = 1
         )))
         addEntry(Entry(EntryData(
             "Steins;Gate",
@@ -52,9 +51,9 @@ object EntriesController {
             ),
             coverArt = Art("", ""),
             bannerArt = Art("", ""),
-            episodesTotal = 0,
-            episodesProgress = 0,
-            rewatches = 0
+            episodesTotal = 24,
+            episodesProgress = 24,
+            rewatches = 1
         )))
         addEntry(Entry(EntryData(
             "Your Lie in April",
@@ -67,13 +66,13 @@ object EntriesController {
             Schedule.Friday,
             listOf(1, 6), // Music, Romance custom tag ids
             references = listOf(
-                Reference("Main", "20665")
+                Reference("Main", "20954")
             ),
             coverArt = Art("", ""),
             bannerArt = Art("", ""),
-            episodesTotal = 0,
-            episodesProgress = 0,
-            rewatches = 0
+            episodesTotal = 22,
+            episodesProgress = 22,
+            rewatches = 1
         )))
         addEntry(Entry(EntryData(
             "Attack on Titan",

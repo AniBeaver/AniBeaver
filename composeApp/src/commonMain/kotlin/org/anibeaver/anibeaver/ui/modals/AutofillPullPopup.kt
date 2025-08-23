@@ -137,9 +137,9 @@ private fun AutofillSelectorUI(
         .distinct()
     var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) }
     val allStudios = autofill.studios
-    var selectedGenres by remember { mutableStateOf(autofill.genres.toSet()) }
+    var selectedGenres by remember { mutableStateOf(emptySet<String>()) } // Unchecked by default
     val allGenres = autofill.genres
-    var selectedTags by remember { mutableStateOf(autofill.tags.toSet()) }
+    var selectedTags by remember { mutableStateOf(emptySet<String>()) } // Unchecked by default
     val allTags = autofill.tags
     var coverChecked by remember { mutableStateOf(true) }
     var bannerChecked by remember { mutableStateOf(true) }
@@ -236,7 +236,7 @@ private fun AutofillSelectorUI(
                 onSelectionChange = { selectedTags = it }
             )
             Text(
-                "Note: the community score is: ${autofill.avg_score}%. The series has a runtime of ${
+                "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The series has a total runtime of ${
                     formatMinutes(
                         autofill.runtime
                     )
@@ -254,6 +254,15 @@ fun formatMinutes(minutes: Int): String {
     }
 
     return ("$hours:$minutes")
+}
+
+fun formatOneDecimal(value: Float): String {
+    val rounded = (value * 10).toInt() / 10.0
+    return if (rounded % 1.0 == 0.0) {
+        "${rounded.toInt()}.0"
+    } else {
+        rounded.toString()
+    }
 }
 
 @Composable
