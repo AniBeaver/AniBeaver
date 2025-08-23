@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
+import org.anibeaver.anibeaver.core.ParsedAutofillData
+import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.core.datastructures.Status
@@ -75,21 +77,36 @@ fun EditEntryPopup(
     val releasingEveryRequester = remember { FocusRequester() }
     val descriptionRequester = remember { FocusRequester() }
 
+
+    // Autofill selection application logic
+    fun applyAutofillSelection(selection: AutofillResultSelection) {
+        println(selection)
+        // Simulate user input by calling the same lambdas as the UI fields
+        // For animeName
+        animeName = selection.name
+        // For releaseYear
+        releaseYear = selection.year?.toString() ?: ""
+        // For releasingEvery
+        releasingEvery = selection.airingSchedule
+    }
+
     if (show) {
         val coroutineScope = rememberCoroutineScope()
         if (showAutofillPopup) {
-            AutofillPullPopup(
+            AutofillPopup(
                 show = showAutofillPopup,
                 references = references,
                 onAddReference = { newRef -> references = references + newRef },
                 onDeleteReference = { ref -> references = references.filter { it != ref } },
                 onUpdateReference = { oldRef, newRef -> references = references.map { if (it == oldRef) newRef else it } },
                 onDismiss = { showAutofillPopup = false },
-                onConfirm = { showAutofillPopup = false },
+                onConfirm = { selection ->
+                    showAutofillPopup = false
+                    selection?.let { applyAutofillSelection(it) }
+                },
                 onConfirmReorder = { newList -> references = newList },
                 onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
-                    println("[DEBUG] referenceIds: $referenceIds, priorityIndex: $priorityIndex, priorityId: ${referenceIds.getOrNull(priorityIndex)}")
                     AutofillController.pullParsedAutofill(referenceIds, { result -> onPulled(result) }, dataWrapper, coroutineScope, priorityIndex)
                 }
             )

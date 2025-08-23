@@ -13,16 +13,17 @@ import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 import org.anibeaver.anibeaver.ui.components.references.ReferenceRow
 import androidx.compose.foundation.layout.FlowRow
+import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 
 @Composable
-fun AutofillPullPopup(
+fun AutofillPopup(
     show: Boolean,
     references: List<Reference>,
     onAddReference: (Reference) -> Unit,
     onDeleteReference: (Reference) -> Unit,
     onUpdateReference: (Reference, Reference) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: (priorityReference: Reference?) -> Unit,
+    onConfirm: (AutofillResultSelection?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
     onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit
 ) {
@@ -31,21 +32,25 @@ fun AutofillPullPopup(
     var priorityIndex by remember { mutableStateOf(0) }
     var autofillData by remember { mutableStateOf<ParsedAutofillData?>(null) }
     var showSelector by remember { mutableStateOf(false) }
+    var selectedNameIdx by remember { mutableStateOf(0) }
 
     AlertDialog(
         modifier = Modifier.width(600.dp),
         onDismissRequest = onDismiss,
         confirmButton = {
             if (autofillData == null) {
-                Button(onClick = { onConfirm(references.getOrNull(priorityIndex)) }) {
+                Button(onClick = { onConfirm(null) }) {
                     Text("Autofill")
                 }
             } else {
                 AutofillConfirmButton(
                     autofillData = autofillData!!,
-                    onDone = {
+                    selectedNameIdx = selectedNameIdx,
+                    onSelectedNameIdxChange = { selectedNameIdx = it },
+                    onDone = { selection ->
                         autofillData = null
                         showSelector = false
+                        onConfirm(selection)
                     }
                 )
             }
@@ -98,7 +103,7 @@ fun AutofillPullPopup(
                     }) { Text("Pull from AniList") }
                 }
                 if (showSelector && autofillData != null) {
-                    AutofillSelectorUI(autofillData!!)
+                    AutofillSelectorUI(autofillData!!, selectedNameIdx, onSelectedNameIdxChange = { selectedNameIdx = it })
                 }
             }
         }
@@ -106,13 +111,14 @@ fun AutofillPullPopup(
 }
 
 @Composable
-private fun AutofillSelectorUI(autofill: ParsedAutofillData) {
-    val nameOptions = listOfNotNull(
-        autofill.name_en_choices.firstOrNull(),
-        autofill.name_rm_choices.firstOrNull(),
-        autofill.name_jp_choices.firstOrNull()
-    )
-    var selectedNameIdx by remember { mutableStateOf(0) }
+private fun AutofillSelectorUI(
+    autofill: ParsedAutofillData,
+    selectedNameIdx: Int,
+    onSelectedNameIdxChange: (Int) -> Unit
+) {
+    val nameOptions = listOf(autofill.name_en, autofill.name_rm, autofill.name_jp)
+        .filter { it.isNotBlank() }
+        .distinct()
     var yearChecked by remember { mutableStateOf(true) }
     var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) }
     val allStudios = autofill.studios
@@ -143,7 +149,7 @@ private fun AutofillSelectorUI(autofill: ParsedAutofillData) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = selectedNameIdx == idx,
-                            onClick = { selectedNameIdx = idx }
+                            onClick = { onSelectedNameIdxChange(idx) }
                         )
                         Text(value)
                     }
@@ -236,14 +242,14 @@ private fun SectionWithCheckAll(
 @Composable
 private fun AutofillConfirmButton(
     autofillData: ParsedAutofillData,
-    onDone: () -> Unit
+    selectedNameIdx: Int,
+    onSelectedNameIdxChange: (Int) -> Unit,
+    onDone: (AutofillResultSelection) -> Unit
 ) {
-    val nameOptions = listOfNotNull(
-        autofillData.name_en_choices.firstOrNull(),
-        autofillData.name_rm_choices.firstOrNull(),
-        autofillData.name_jp_choices.firstOrNull()
-    )
-    var selectedNameIdx by remember { mutableStateOf(0) }
+    val nameOptions = listOf(autofillData.name_en, autofillData.name_rm, autofillData.name_jp)
+        .filter { it.isNotBlank() }
+        .distinct()
+
     var yearChecked by remember { mutableStateOf(true) }
     var selectedStudios by remember { mutableStateOf(autofillData.studios.toSet()) }
     var selectedGenres by remember { mutableStateOf(autofillData.genres.toSet()) }
@@ -253,7 +259,7 @@ private fun AutofillConfirmButton(
     var airingChecked by remember { mutableStateOf(true) }
     Button(onClick = {
         val selection = AutofillResultSelection(
-            selectedName = nameOptions.getOrNull(selectedNameIdx) ?: "",
+            name = nameOptions.getOrNull(selectedNameIdx) ?: "",
             year = if (yearChecked) autofillData.startYear else null,
             studios = selectedStudios.toList(),
             genres = selectedGenres.toList(),
@@ -262,20 +268,8 @@ private fun AutofillConfirmButton(
             banner = if (bannerChecked) autofillData.banner_link else null,
             airingSchedule = if (airingChecked) autofillData.airingScheduleWeekday else Schedule.Monday
         )
-        onDone()
-        // TODO: Call a parent callback with selection - to fill in in the edit entry dialogue (main thing)
+        onDone(selection)
     }) {
         Text("Update Entry With These")
     }
 }
-
-data class AutofillResultSelection(
-    val selectedName: String,
-    val year: Int?,
-    val studios: List<String>,
-    val genres: List<String>,
-    val tags: List<String>,
-    val cover: String?,
-    val banner: String?,
-    val airingSchedule: Schedule
-)

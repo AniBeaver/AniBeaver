@@ -11,9 +11,9 @@ import org.anibeaver.anibeaver.api.jsonStructures.AutofillTitle
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 
 data class ParsedAutofillData(
-    val name_jp_choices: List<String>,
-    val name_rm_choices: List<String>,
-    val name_en_choices: List<String>,
+    val name_jp: String,
+    val name_rm: String,
+    val name_en: String,
     val startYear: Int,
     val endYear: Int,
     val cover_link: String,
@@ -27,9 +27,9 @@ data class ParsedAutofillData(
 
 val emptyParsedAutofillData =
     ParsedAutofillData(
-        name_jp_choices = emptyList(),
-        name_rm_choices = emptyList(),
-        name_en_choices = emptyList(),
+        name_jp = "",
+        name_rm = "",
+        name_en = "",
         startYear = 0,
         endYear = 0,
         cover_link = "",
@@ -130,17 +130,17 @@ object AutofillController {
             autofillDataList.flatMap { it.airingSchedule?.nodes ?: emptyList() }
                 .mapNotNull { it.airingAt }
 
-        fun inferNames(autofillDataList: List<AutofillData>, selector: (AutofillTitle) -> String?): List<String> {
+        fun inferNames(autofillDataList: List<AutofillData>, selector: (AutofillTitle) -> String?): String {
             val names = autofillDataList.mapNotNull { it.title?.let(selector)?.let { n -> cleanName(n) } }.filter { it.isNotBlank() }
-            return if (names.isNotEmpty()) listOf(commonPrefix(names)) else emptyList()
+            return if (names.isNotEmpty()) commonPrefix(names) else ""
         }
 
         fun parseAutofillDataList(autofillDataList: List<AutofillData>): ParsedAutofillData {
             if (autofillDataList.isEmpty()) return emptyParsedAutofillData
             return ParsedAutofillData(
-                name_jp_choices = inferNames(autofillDataList) { it.native },
-                name_rm_choices = inferNames(autofillDataList) { it.romaji },
-                name_en_choices = inferNames(autofillDataList) { it.english },
+                name_jp = inferNames(autofillDataList) { it.native },
+                name_rm = inferNames(autofillDataList) { it.romaji },
+                name_en = inferNames(autofillDataList) { it.english },
                 startYear = inferYearRange(autofillDataList).first,
                 endYear = inferYearRange(autofillDataList).second,
                 cover_link = inferCoverLink(autofillDataList),
