@@ -45,6 +45,7 @@ fun EditEntryPopup(
     val onManageAutofillClicked = { showAutofillPopup = true }
     var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 0) }
     var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
+    var rewatches by remember { mutableStateOf(initialValues?.rewatches ?: 1) }
 
     // Reset fields when initialValues changes (for editing)
     LaunchedEffect(initialValues) {
@@ -60,6 +61,7 @@ fun EditEntryPopup(
         references = initialValues?.references ?: emptyList()
         episodesTotal = initialValues?.episodesTotal ?: 0
         episodesProgress = initialValues?.episodesProgress ?: 0
+        rewatches = initialValues?.rewatches ?: 1
     }
 
     //for tab navigation
@@ -127,7 +129,7 @@ fun EditEntryPopup(
                             bannerArt = Art("", ""),
                             episodesTotal = episodesTotal,
                             episodesProgress = episodesProgress,
-                            rewatches = 1
+                            rewatches = rewatches
                         )
                     )
                 }) {
@@ -191,7 +193,7 @@ fun EditEntryPopup(
                             onValueChange = { episodesProgress = it },
                             onIncrement = { episodesProgress += 1 },
                             onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
-                            label = "Episode Progress",
+                            label = "Ep. Progress",
                             modifier = Modifier.weight(1f)
                         )
                         IntPicker(
@@ -199,9 +201,35 @@ fun EditEntryPopup(
                             onValueChange = { episodesTotal = it },
                             onIncrement = { episodesTotal += 1 },
                             onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
-                            label = "Episodes Total",
+                            label = "Eps Total",
                             modifier = Modifier.weight(1f)
                         )
+                        IntPicker(
+                            value = rewatches,
+                            onValueChange = { rewatches = it },
+                            onIncrement = { rewatches += 1 },
+                            onDecrement = { rewatches = (rewatches - 1).coerceAtLeast(0) },
+                            label = "Rewatches",
+                            modifier = Modifier.weight(1f)
+                        )
+
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        SimpleDropdown(
+                            options = Status.entries.toList(),
+                            selectedOption = status,
+                            onOptionSelected = { status = it },
+                            label = "Status",
+                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
+                        )
+                        SimpleDropdown(
+                            options = Schedule.entries.toList(),
+                            selectedOption = releasingEvery,
+                            onOptionSelected = { releasingEvery = it },
+                            label = "Airing every",
+                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
+                        )
+
                         YearPicker(
                             value = releaseYear,
                             onValueChange = { releaseYear = it },
@@ -215,22 +243,6 @@ fun EditEntryPopup(
                             },
                             modifier = Modifier.weight(1f),
                             label = "Year"
-                        )
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                        SimpleDropdown(
-                            options = Schedule.entries.toList(),
-                            selectedOption = releasingEvery,
-                            onOptionSelected = { releasingEvery = it },
-                            label = "Airing every",
-                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester).focusProperties { next = descriptionRequester }
-                        )
-                        SimpleDropdown(
-                            options = Status.entries.toList(),
-                            selectedOption = status,
-                            onOptionSelected = { status = it },
-                            label = "Status",
-                            modifier = Modifier.weight(1f).focusRequester(statusRequester).focusProperties { next = releasingEveryRequester }
                         )
 
                     }
