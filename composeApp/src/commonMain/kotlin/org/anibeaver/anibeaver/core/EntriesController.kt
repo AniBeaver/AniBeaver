@@ -2,6 +2,7 @@ package org.anibeaver.anibeaver.core
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.Reference
@@ -29,7 +30,12 @@ object EntriesController {
             references = listOf(
                 Reference("Season 1", "608150"),
                 Reference("Season 2", "608151")
-            )
+            ),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
         )))
         addEntry(Entry(EntryData(
             "Steins;Gate",
@@ -43,7 +49,12 @@ object EntriesController {
             listOf(14, 13), // Time Travel, Thriller custom tag ids
             references = listOf(
                 Reference("Main", "9253")
-            )
+            ),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
         )))
         addEntry(Entry(EntryData(
             "Your Lie in April",
@@ -57,7 +68,12 @@ object EntriesController {
             listOf(1, 6), // Music, Romance custom tag ids
             references = listOf(
                 Reference("Main", "20665")
-            )
+            ),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
         )))
         addEntry(Entry(EntryData(
             "Attack on Titan",
@@ -72,7 +88,12 @@ object EntriesController {
             references = listOf(
                 Reference("Season 1", "16498"),
                 Reference("Season 2", "20958")
-            )
+            ),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
         )))
         addEntry(Entry(EntryData(
             "K-On!",
@@ -84,6 +105,12 @@ object EntriesController {
             Status.Completed,
             Schedule.Thursday,
             listOf(22, 1), // Slice of Life, Music custom tag ids
+            references = emptyList(),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
         )))
         addEntry(Entry(EntryData(
             "Tag Overload!",
@@ -94,8 +121,14 @@ object EntriesController {
             7.7f,
             Status.Completed,
             Schedule.Monday,
-            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
-            )))
+            listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25),
+            references = emptyList(),
+            coverArt = Art("", ""),
+            bannerArt = Art("", ""),
+            episodesTotal = 0,
+            episodesProgress = 0,
+            rewatches = 0
+        )))
     }
 
     fun addEntry(id: Int? = null, entryData: EntryData){

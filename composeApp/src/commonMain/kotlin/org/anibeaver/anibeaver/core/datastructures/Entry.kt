@@ -49,7 +49,12 @@ class EntryData internal constructor(
     val status: Status = Status.Watching,
     val releasingEvery: Schedule = Schedule.Irregular,
     val tagIds: List<Int> = emptyList(),
-    val references: List<Reference> = emptyList()
+    val references: List<Reference> = emptyList(),
+    val coverArt: Art = Art("", ""),
+    val bannerArt: Art = Art("", ""),
+    val episodesTotal: Int = 0,
+    val episodesProgress: Int = 0,
+    val rewatches: Int = 0
 )
 
 enum class Status {
@@ -85,4 +90,9 @@ data class FilterData(
     val minRating: Float?,
     val maxRating: Float?,
     val selectedTagIds: List<Int>
+)
+
+data class Art(
+    val source: String, //either link or "custom"
+    val local_path: String //if empty TODO: download image from link and save local_path maybe
 )

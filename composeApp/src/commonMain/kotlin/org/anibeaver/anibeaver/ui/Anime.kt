@@ -66,7 +66,12 @@ fun AnimeScreen(
                         rating = 8.5f,
                         status = Status.Completed, // Use enum value
                         releasingEvery = Schedule.Irregular, // Use enum value
-                        tagIds = listOf(10, 11) // Shounen, Classic custom tag ids
+                        tagIds = listOf(10, 11), // Shounen, Classic custom tag ids
+                        coverArt = org.anibeaver.anibeaver.core.datastructures.Art("", ""),
+                        bannerArt = org.anibeaver.anibeaver.core.datastructures.Art("", ""),
+                        episodesTotal = 0,
+                        episodesProgress = 0,
+                        rewatches = 0
                     )
                     EntriesController.addEntry(entryData = entryData)
                 }) { Text("Add Placeholder Entry") }

@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.ParsedAutofillData
+import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.TagType
@@ -126,7 +127,12 @@ fun EditEntryPopup(
                             status = status,
                             releasingEvery = releasingEvery,
                             tagIds = tagsIds,
-                            references = references
+                            references = references,
+                            coverArt = Art("", ""),
+                            bannerArt = Art("", ""),
+                            episodesTotal = 0,
+                            episodesProgress = 0,
+                            rewatches = 0
                         )
                     )
                 }) {
