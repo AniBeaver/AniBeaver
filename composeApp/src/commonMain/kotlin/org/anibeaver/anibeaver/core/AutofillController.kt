@@ -24,6 +24,7 @@ data class ParsedAutofillData(
     val tags: List<String>,
     val airingScheduleWeekday: Schedule,
     val eps_total: Int,
+    val runtime: Int
 )
 
 val emptyParsedAutofillData =
@@ -41,6 +42,7 @@ val emptyParsedAutofillData =
         tags = emptyList(),
         airingScheduleWeekday = Schedule.Irregular,
         eps_total = 0,
+        runtime = 0
     )
 
 object AutofillController {
@@ -67,10 +69,11 @@ object AutofillController {
             }
             val mostCommonWeekday = airingWeekdays.groupingBy { it }.eachCount().maxByOrNull { it.value }?.key
             val mismatchCount = airingWeekdays.count { it != mostCommonWeekday }
-            val irregular = airingWeekdays.isNotEmpty() && mismatchCount > airingWeekdays.size * airingScheduleErrorRatio
+            val irregular =
+                airingWeekdays.isNotEmpty() && mismatchCount > airingWeekdays.size * airingScheduleErrorRatio
             return if (airingWeekdays.isEmpty() || mostCommonWeekday == null) Schedule.Irregular
-                   else if (irregular) Schedule.Irregular
-                   else mostCommonWeekday
+            else if (irregular) Schedule.Irregular
+            else mostCommonWeekday
         }
 
         fun cleanName(name: String?): String? {
@@ -144,9 +147,17 @@ object AutofillController {
         }
 
         fun inferNames(autofillDataList: List<AutofillData>, selector: (AutofillTitle) -> String?): String {
-            val names = autofillDataList.mapNotNull { it.title?.let(selector)?.let { n -> cleanName(n) } }.filter { it.isNotBlank() }
+            val names = autofillDataList.mapNotNull { it.title?.let(selector)?.let { n -> cleanName(n) } }
+                .filter { it.isNotBlank() }
             return if (names.isNotEmpty()) commonPrefix(names) else ""
         }
+
+        fun inferRuntime(autofillDataList: List<AutofillData>): Int =
+            autofillDataList.mapNotNull { data ->
+                val eps = data.episodes ?: 0
+                val dur = data.duration ?: 0
+                if (eps > 0 && dur > 0) eps * dur else null
+            }.sum()
 
         fun parseAutofillDataList(autofillDataList: List<AutofillData>): ParsedAutofillData {
             if (autofillDataList.isEmpty()) return emptyParsedAutofillData
@@ -164,8 +175,10 @@ object AutofillController {
                 tags = inferTags(autofillDataList),
                 airingScheduleWeekday = inferAiringScheduleWeekday(inferMostCurrentAiringAts(autofillDataList), 0.2f),
                 eps_total = inferEpsTotal(autofillDataList),
+                runtime = inferRuntime(autofillDataList)
             )
         }
+
         val results = mutableListOf<AutofillData>()
         var completed = 0
         val validIds = mediaIds.filter { idIsValid(it) }

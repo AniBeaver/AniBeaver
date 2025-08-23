@@ -9,13 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
-import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.ParsedAutofillData
+import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.Schedule
 import org.anibeaver.anibeaver.ui.components.references.ReferenceRow
-import androidx.compose.foundation.layout.FlowRow
-import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 
 @Composable
 fun AutofillPopup(
@@ -148,7 +146,9 @@ private fun AutofillSelectorUI(
     var airingChecked by remember { mutableStateOf(true) }
     val totalEpisodes by remember { mutableStateOf(autofill.eps_total) }
     var epsChecked by remember { mutableStateOf(true) }
+    var runtime by remember { mutableStateOf(autofill.runtime) }
     val scrollState = rememberScrollState()
+
 
     Box(modifier = Modifier.heightIn(max = 400.dp)) {
         Column(
@@ -235,9 +235,25 @@ private fun AutofillSelectorUI(
                 selectedItems = selectedTags,
                 onSelectionChange = { selectedTags = it }
             )
-            Text("Note: the community score is: ${autofill.avg_score}. This series finished airing at ${autofill.endYear}")
+            Text(
+                "Note: the community score is: ${autofill.avg_score}%. The series has a runtime of ${
+                    formatMinutes(
+                        autofill.runtime
+                    )
+                }h."
+            )
         }
     }
+}
+
+fun formatMinutes(minutes: Int): String {
+    val hours = minutes / 60 // since both are ints, you get an int
+    var minutes = (minutes % 60).toString()
+    if (minutes.length < 2) {
+        minutes = "0$minutes"
+    }
+
+    return ("$hours:$minutes")
 }
 
 @Composable
@@ -251,8 +267,14 @@ private fun SectionWithCheckAll(
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Button(onClick = { onSelectionChange(emptySet()) }, modifier = Modifier.height(32.dp)) { Text("Uncheck all") }
-            Button(onClick = { onSelectionChange(allItems.toSet()) }, modifier = Modifier.height(32.dp)) { Text("Check all") }
+            Button(
+                onClick = { onSelectionChange(emptySet()) },
+                modifier = Modifier.height(32.dp)
+            ) { Text("Uncheck all") }
+            Button(
+                onClick = { onSelectionChange(allItems.toSet()) },
+                modifier = Modifier.height(32.dp)
+            ) { Text("Check all") }
         }
     }
     FlowRow(
@@ -315,4 +337,3 @@ private fun AutofillConfirmButton(
         Text("Update Entry With These")
     }
 }
-
