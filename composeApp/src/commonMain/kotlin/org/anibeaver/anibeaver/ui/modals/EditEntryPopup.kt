@@ -43,7 +43,7 @@ fun EditEntryPopup(
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
     var showAutofillPopup by remember { mutableStateOf(false) }
     val onManageAutofillClicked = { showAutofillPopup = true }
-    var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 0) }
+    var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 1) }
     var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
     var rewatches by remember { mutableStateOf(initialValues?.rewatches ?: 1) }
 
@@ -79,13 +79,12 @@ fun EditEntryPopup(
     // Autofill selection application logic
     fun applyAutofillSelection(selection: AutofillResultSelection) {
         println(selection)
-        // Simulate user input by calling the same lambdas as the UI fields
-        // For animeName
         animeName = selection.name
-        // For releaseYear
         releaseYear = selection.year?.toString() ?: ""
-        // For releasingEvery
         releasingEvery = selection.airingSchedule
+        if (selection.episodes != null) {
+            episodesTotal = selection.episodes
+        }
     }
 
     if (show) {

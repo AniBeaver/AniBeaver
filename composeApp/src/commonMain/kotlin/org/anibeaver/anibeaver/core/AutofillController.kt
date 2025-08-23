@@ -169,7 +169,7 @@ object AutofillController {
         val results = mutableListOf<AutofillData>()
         var completed = 0
         val validIds = mediaIds.filter { idIsValid(it) }
-        if (validIds.isEmpty()) { //for efficiency's sake
+        if (validIds.isEmpty()) { //for efficiency's sake, not to launch unneeded coroutines
             onResult(parseAutofillDataList(results))
             return
         }
