@@ -153,7 +153,7 @@ class ValueSetter<T>(val callValueSet : (T) -> Unit)
 enum class RequestType(val query : String, val associateClass : KClass<*>){
     MEDIA_LIST_COLLECTION(
         query = """
-            query (${'$'}userName: String, ${'$'}type: MediaType) {
+            query (${'$'}userName: String, ${'$'}type: MediaType, ${'$'}status: MediaListStatus, ${'$'}userId: Int, ${'$'}chunk: Int, ${'$'}perChunk: Int) {
                 MediaListCollection(userName: ${'$'}userName, type: ${'$'}type) {
                     lists {
                         entries {
@@ -161,6 +161,9 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                                 id
                                 title {
                                     english
+                                }
+                                coverImage {
+                                    medium
                                 }
                             }
                         }
@@ -176,6 +179,9 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                     id
                     title {
                         english
+                    }
+                    coverImage {
+                        medium
                     }
                 }
             }""",

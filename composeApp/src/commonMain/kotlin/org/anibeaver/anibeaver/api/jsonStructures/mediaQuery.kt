@@ -16,10 +16,16 @@ data class MediaQueryData(
 @Serializable
 data class Media(
     val id: Int,
-    val title: Title
+    val title: Title,
+    val coverImage: CoverImage
 )
 
 @Serializable
 data class Title(
     val english: String?
+)
+
+@Serializable
+data class CoverImage(
+    val medium: String?
 )
