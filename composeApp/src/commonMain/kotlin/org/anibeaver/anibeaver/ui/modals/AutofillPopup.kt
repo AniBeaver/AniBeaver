@@ -5,9 +5,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.selects.select
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.core.ParsedAutofillData
 import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
@@ -36,26 +38,54 @@ fun AutofillPopup(
     var selectedNameIdx by remember { mutableStateOf(0) }
     var yearRadioIdx by remember { mutableStateOf(0) } // 0 = start, 1 = end
 
+    var selectedStudios by remember { mutableStateOf(emptySet<String>()) }
+    var selectedGenres by remember { mutableStateOf(emptySet<String>()) }
+    var selectedTags by remember { mutableStateOf(emptySet<String>()) }
+    var coverChecked by remember { mutableStateOf(true) }
+    var bannerChecked by remember { mutableStateOf(true) }
+    var airingChecked by remember { mutableStateOf(true) }
+    var epsChecked by remember { mutableStateOf(true) }
+    val totalEpisodes = autofillData?.eps_total ?: 0
+    val runtime = autofillData?.runtime ?: 0
+
+    // Update checkboxes and selection state when autofillData changes
+    LaunchedEffect(autofillData) {
+        if (autofillData != null) {
+            selectedStudios = autofillData!!.studios.filter { it.isNotBlank() }.toSet()
+            selectedGenres = emptySet()
+            selectedTags = emptySet()
+            coverChecked = true
+            bannerChecked = true
+            airingChecked = true
+            epsChecked = true
+        }
+    }
+
+    val nameOptions = autofillData?.let { listOf(it.name_en, it.name_rm, it.name_jp).filter { name -> name.isNotBlank() }.distinct() } ?: emptyList()
+
     AlertDialog(
         modifier = Modifier.width(600.dp),
         onDismissRequest = onDismiss,
         confirmButton = {
 
             if (autofillData != null) {
-                AutofillConfirmButton(
-                    autofillData = autofillData!!,
-                    autofillDataList = autofillDataList,
-                    selectedNameIdx = selectedNameIdx,
-                    yearRadioIdx = yearRadioIdx,
-                    onSelectedNameIdxChange = { selectedNameIdx = it },
-                    onYearRadioIdxChange = { yearRadioIdx = it },
-                    onDone = { selection ->
-                        autofillData = null
-                        autofillDataList = emptyList()
-                        showSelector = false
-                        onConfirm(selection)
-                    }
-                )
+                Button(onClick = {
+                    val year = if (yearRadioIdx == 0) autofillData!!.startYear else autofillData!!.endYear
+                    val selection = AutofillResultSelection(
+                        name = nameOptions.getOrNull(selectedNameIdx) ?: "",
+                        year = year,
+                        studios = selectedStudios.toList(),
+                        genres = selectedGenres.toList(),
+                        tags = selectedTags.toList(),
+                        cover = if (coverChecked) autofillData!!.cover_link else null,
+                        banner = if (bannerChecked) autofillData!!.banner_link else null,
+                        airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else Schedule.Monday,
+                        episodes = if (epsChecked) totalEpisodes else null
+                    )
+                    onConfirm(selection)
+                }) {
+                    Text("Update Entry With These")
+                }
             }
         },
         dismissButton = {
@@ -112,7 +142,23 @@ fun AutofillPopup(
                         selectedNameIdx,
                         onSelectedNameIdxChange = { selectedNameIdx = it },
                         yearRadioIdx = yearRadioIdx,
-                        onYearRadioIdxChange = { yearRadioIdx = it }
+                        onYearRadioIdxChange = { yearRadioIdx = it },
+                        nameOptions = nameOptions,
+                        selectedStudios = selectedStudios,
+                        onSelectedStudiosChange = { selectedStudios = it },
+                        selectedGenres = selectedGenres,
+                        onSelectedGenresChange = { selectedGenres = it },
+                        selectedTags = selectedTags,
+                        onSelectedTagsChange = { selectedTags = it },
+                        coverChecked = coverChecked,
+                        onCoverCheckedChange = { coverChecked = it },
+                        bannerChecked = bannerChecked,
+                        onBannerCheckedChange = { bannerChecked = it },
+                        airingChecked = airingChecked,
+                        onAiringCheckedChange = { airingChecked = it },
+                        epsChecked = epsChecked,
+                        onEpsCheckedChange = { epsChecked = it },
+                        totalEpisodes = totalEpisodes
                     )
                 }
             }
@@ -127,25 +173,26 @@ private fun AutofillSelectorUI(
     selectedNameIdx: Int,
     onSelectedNameIdxChange: (Int) -> Unit,
     yearRadioIdx: Int,
-    onYearRadioIdxChange: (Int) -> Unit
+    onYearRadioIdxChange: (Int) -> Unit,
+    nameOptions: List<String>,
+    selectedStudios: Set<String>,
+    onSelectedStudiosChange: (Set<String>) -> Unit,
+    selectedGenres: Set<String>,
+    onSelectedGenresChange: (Set<String>) -> Unit,
+    selectedTags: Set<String>,
+    onSelectedTagsChange: (Set<String>) -> Unit,
+    coverChecked: Boolean,
+    onCoverCheckedChange: (Boolean) -> Unit,
+    bannerChecked: Boolean,
+    onBannerCheckedChange: (Boolean) -> Unit,
+    airingChecked: Boolean,
+    onAiringCheckedChange: (Boolean) -> Unit,
+    epsChecked: Boolean,
+    onEpsCheckedChange: (Boolean) -> Unit,
+    totalEpisodes: Int
 ) {
-    val nameOptions = listOf(autofill.name_en, autofill.name_rm, autofill.name_jp)
-        .filter { it.isNotBlank() }
-        .distinct()
-    var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) } //Checked by default
-    val allStudios = autofill.studios
-    var selectedGenres by remember { mutableStateOf(emptySet<String>()) } // Unchecked by default
-    val allGenres = autofill.genres
-    var selectedTags by remember { mutableStateOf(emptySet<String>()) } // Unchecked by default
-    val allTags = autofill.tags
-    var coverChecked by remember { mutableStateOf(true) }
-    var bannerChecked by remember { mutableStateOf(true) }
-    var airingChecked by remember { mutableStateOf(true) }
-    val totalEpisodes by remember { mutableStateOf(autofill.eps_total) }
-    var epsChecked by remember { mutableStateOf(true) }
-    var runtime by remember { mutableStateOf(autofill.runtime) }
-    val scrollState = rememberScrollState()
 
+    val scrollState = rememberScrollState()
 
     Box(modifier = Modifier.heightIn(max = 400.dp)) {
         Column(
@@ -196,41 +243,41 @@ private fun AutofillSelectorUI(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = airingChecked, onCheckedChange = { airingChecked = it })
+                    Checkbox(checked = airingChecked, onCheckedChange = { checked -> onAiringCheckedChange(checked) })
                     Text("Airing ${autofill.airingScheduleWeekday}")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = coverChecked, onCheckedChange = { coverChecked = it })
+                    Checkbox(checked = coverChecked, onCheckedChange = { checked -> onCoverCheckedChange(checked) })
                     Text("Cover")
                     Spacer(modifier = Modifier.width(8.dp))
-                    Checkbox(checked = bannerChecked, onCheckedChange = { bannerChecked = it })
+                    Checkbox(checked = bannerChecked, onCheckedChange = { checked -> onBannerCheckedChange(checked) })
                     Text("Banner")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = epsChecked, onCheckedChange = { epsChecked = it })
+                    Checkbox(checked = epsChecked, onCheckedChange = { checked -> onEpsCheckedChange(checked) })
                     Text("Eps. Total: $totalEpisodes")
                 }
             }
             SectionWithCheckAll(
                 label = "Studios",
                 labelBold = true,
-                allItems = allStudios,
+                allItems = autofill.studios,
                 selectedItems = selectedStudios,
-                onSelectionChange = { selectedStudios = it }
+                onSelectionChange = onSelectedStudiosChange
             )
             SectionWithCheckAll(
                 label = "Genres",
                 labelBold = true,
-                allItems = allGenres,
+                allItems = autofill.genres,
                 selectedItems = selectedGenres,
-                onSelectionChange = { selectedGenres = it }
+                onSelectionChange = onSelectedGenresChange
             )
             SectionWithCheckAll(
                 label = "Suggested tags",
                 labelBold = true,
-                allItems = allTags,
+                allItems = autofill.tags,
                 selectedItems = selectedTags,
-                onSelectionChange = { selectedTags = it }
+                onSelectionChange = onSelectedTagsChange
             )
             Text(
                 "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The series has a total runtime of ${
@@ -304,42 +351,3 @@ private fun SectionWithCheckAll(
     }
 }
 
-@Composable
-private fun AutofillConfirmButton(
-    autofillData: ParsedAutofillData,
-    autofillDataList: List<AutofillData>,
-    selectedNameIdx: Int,
-    yearRadioIdx: Int,
-    onSelectedNameIdxChange: (Int) -> Unit,
-    onYearRadioIdxChange: (Int) -> Unit,
-    onDone: (AutofillResultSelection) -> Unit
-) {
-    val nameOptions = listOf(autofillData.name_en, autofillData.name_rm, autofillData.name_jp)
-        .filter { it.isNotBlank() }
-        .distinct()
-    var selectedStudios by remember { mutableStateOf(autofillData.studios.toSet()) } // TODO - only if checked
-    var selectedGenres by remember { mutableStateOf(autofillData.genres.toSet()) }
-    var selectedTags by remember { mutableStateOf(autofillData.tags.toSet()) }
-    var coverChecked by remember { mutableStateOf(true) }
-    var bannerChecked by remember { mutableStateOf(true) }
-    var airingChecked by remember { mutableStateOf(true) }
-    val totalEpisodes = autofillData.eps_total
-    var epsChecked by remember { mutableStateOf(true) }
-    Button(onClick = {
-        val year = if (yearRadioIdx == 0) autofillData.startYear else autofillData.endYear
-        val selection = AutofillResultSelection(
-            name = nameOptions.getOrNull(selectedNameIdx) ?: "",
-            year = year,
-            studios = selectedStudios.toList(),
-            genres = selectedGenres.toList(),
-            tags = selectedTags.toList(),
-            cover = if (coverChecked) autofillData.cover_link else null,
-            banner = if (bannerChecked) autofillData.banner_link else null,
-            airingSchedule = if (airingChecked) autofillData.airingScheduleWeekday else Schedule.Monday,
-            episodes = if (epsChecked) totalEpisodes else null
-        )
-        onDone(selection)
-    }) {
-        Text("Update Entry With These")
-    }
-}
