@@ -132,7 +132,7 @@ private fun AutofillSelectorUI(
     val nameOptions = listOf(autofill.name_en, autofill.name_rm, autofill.name_jp)
         .filter { it.isNotBlank() }
         .distinct()
-    var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) }
+    var selectedStudios by remember { mutableStateOf(autofill.studios.toSet()) } //Checked by default
     val allStudios = autofill.studios
     var selectedGenres by remember { mutableStateOf(emptySet<String>()) } // Unchecked by default
     val allGenres = autofill.genres
@@ -317,7 +317,7 @@ private fun AutofillConfirmButton(
     val nameOptions = listOf(autofillData.name_en, autofillData.name_rm, autofillData.name_jp)
         .filter { it.isNotBlank() }
         .distinct()
-    var selectedStudios by remember { mutableStateOf(autofillData.studios.toSet()) }
+    var selectedStudios by remember { mutableStateOf(autofillData.studios.toSet()) } // TODO - only if checked
     var selectedGenres by remember { mutableStateOf(autofillData.genres.toSet()) }
     var selectedTags by remember { mutableStateOf(autofillData.tags.toSet()) }
     var coverChecked by remember { mutableStateOf(true) }
