@@ -5,18 +5,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
-import org.anibeaver.anibeaver.core.datastructures.Art
-import org.anibeaver.anibeaver.core.datastructures.Entry
-import org.anibeaver.anibeaver.core.datastructures.EntryData
-import org.anibeaver.anibeaver.core.datastructures.FilterData
-import org.anibeaver.anibeaver.core.datastructures.Schedule
-import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.modals.*
 import org.anibeaver.anibeaver.ui.theme.Typography
@@ -110,7 +107,7 @@ fun AnimeScreen(
                 show = showNewTagPopupFromManage,
                 onDismiss = { showNewTagPopupFromManage = false },
                 onConfirm = { name, color, type ->
-                    org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
+                    TagsController.addTag(name, color, type)
                     showNewTagPopupFromManage = false
                 }
             )
@@ -169,8 +166,8 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
 private fun EntryGrid(
     entriesToShow: List<Entry>,
     columns: Int,
-    cardWidth: androidx.compose.ui.unit.Dp,
-    cardSpacing: androidx.compose.ui.unit.Dp,
+    cardWidth: Dp,
+    cardSpacing: Dp,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
@@ -178,9 +175,9 @@ private fun EntryGrid(
         Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
             Spacer(Modifier.width(cardSpacing))
             rowEntries.forEach { entry ->
-                val studioTags = entry.entryData.studioIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
-                val genreTags = entry.entryData.genreIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
-                val customTags = entry.entryData.tagIds.mapNotNull { id -> org.anibeaver.anibeaver.core.TagsController.tags.find { it.id == id }?.name }
+                val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+                val genreTags = entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+                val customTags = entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
                 EntryCard(
                     id = entry.id,
                     name = entry.entryData.animeName,

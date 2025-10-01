@@ -40,11 +40,8 @@ fun AutofillPopup(
         modifier = Modifier.width(600.dp),
         onDismissRequest = onDismiss,
         confirmButton = {
-            if (autofillData == null) {
-                Button(onClick = { onConfirm(null) }) {
-                    Text("Autofill")
-                }
-            } else {
+
+            if (autofillData != null) {
                 AutofillConfirmButton(
                     autofillData = autofillData!!,
                     autofillDataList = autofillDataList,
@@ -99,7 +96,7 @@ fun AutofillPopup(
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = { onAddReference(Reference("", "")) }) { Text("Add Reference") }
+                    Button(onClick = { onAddReference(Reference("", "")) }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
                     Spacer(modifier = Modifier.weight(1f))
                     Button(onClick = {
                         onPullFromAniList(priorityIndex) { data ->

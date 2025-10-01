@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
+import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.basic.*
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
@@ -76,8 +77,23 @@ fun EditEntryPopup(
     val descriptionRequester = remember { FocusRequester() }
 
 
+    fun applyTagToThisEntry(tagId: Int, tagType: TagType) {
+        when (tagType) {
+            TagType.GENRE -> genreIds = genreIds + tagId
+            TagType.STUDIO -> studioIds = studioIds + tagId
+            TagType.CUSTOM -> tagsIds = tagsIds + tagId
+        }
+    }
+
     // Autofill selection application logic
     fun applyAutofillSelection(selection: AutofillResultSelection) {
+        fun massCreateAndApplyTags(tagList: List<String>, newTagType: TagType) {
+            for (newTagName in tagList) {
+                val newTagId = TagsController.addTag(newTagName, "#ffffff", newTagType)
+                applyTagToThisEntry(newTagId, newTagType)
+            }
+        }
+
         println(selection)
         animeName = selection.name
         releaseYear = selection.year?.toString() ?: ""
@@ -85,7 +101,14 @@ fun EditEntryPopup(
         if (selection.episodes != null) {
             episodesTotal = selection.episodes
         }
+        //TODO: banner and cover
+        //TODO: Studio, genre and custom tag creation
+        massCreateAndApplyTags(selection.genres, TagType.GENRE)
+        massCreateAndApplyTags(selection.studios, TagType.STUDIO)
+        massCreateAndApplyTags(selection.tags, TagType.CUSTOM)
+
     }
+
 
     if (show) {
         val coroutineScope = rememberCoroutineScope()
@@ -287,12 +310,8 @@ fun EditEntryPopup(
                         show = showNewTagPopup,
                         onDismiss = { showNewTagPopup = false },
                         onConfirm = { name, color, type ->
-                            val newId = org.anibeaver.anibeaver.core.TagsController.addTag(name, color, type)
-                            when (type) {
-                                TagType.GENRE -> genreIds = genreIds + newId
-                                TagType.STUDIO -> studioIds = studioIds + newId
-                                TagType.CUSTOM -> tagsIds = tagsIds + newId
-                            }
+                            val newId = TagsController.addTag(name, color, type)
+                            applyTagToThisEntry(newId, type)
                             showNewTagPopup = false
                         },
                         initialType = newTagInitialType
