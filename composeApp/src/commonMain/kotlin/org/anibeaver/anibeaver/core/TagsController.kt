@@ -47,11 +47,27 @@ object TagsController {
         //println("[TagsController] Current tag ids: " + _tags.map { it.id })
     }
 
+    fun getTagIdByNameAndType(name: String, type: TagType): Int {
+        return _tags.find { it.name == name && it.type == type }?.id ?: -1
+    }
+
+
     fun addTag(name: String, color: String, type: TagType): Int {
         val tag = Tag(name, color, type, nextId++)
         _tags.add(tag)
         debugPrint()
         return tag.id
+    }
+
+    fun safeCreateTagByName(name: String, color: String, type: TagType): Int {
+        val potentialId = getTagIdByNameAndType(name, type)
+        if (potentialId > -1) {
+            return potentialId
+
+        } else {
+            return addTag(name, color, type)
+
+        }
     }
 
     fun removeTagById(id: Int) {

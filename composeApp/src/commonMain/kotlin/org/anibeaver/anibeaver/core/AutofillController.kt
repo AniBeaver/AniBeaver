@@ -117,7 +117,7 @@ object AutofillController {
 
         fun inferGenres(autofillDataList: List<AutofillData>): List<String> =
             autofillDataList.flatMap { it.tags ?: emptyList() }
-                .filter { it.name != null && it.rank != null }
+                .filter { it.name != null && it.rank != null } //FIXME: here genres are missing
                 .sortedByDescending { it.rank }
                 .map { it.name!! }
                 .distinct()

@@ -275,7 +275,7 @@ private fun AutofillSelectorUI(
             SectionWithCheckAll(
                 label = "Suggested tags",
                 labelBold = true,
-                allItems = autofill.tags,
+                allItems = autofill.tags, //TODO genres = suggested tags for some reason FIXME !!!
                 selectedItems = selectedTags,
                 onSelectionChange = onSelectedTagsChange
             )

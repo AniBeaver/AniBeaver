@@ -81,17 +81,18 @@ fun EditEntryPopup(
 
     fun applyTagToThisEntry(tagId: Int, tagType: TagType) {
         when (tagType) {
-            TagType.GENRE -> genreIds = genreIds + tagId
-            TagType.STUDIO -> studioIds = studioIds + tagId
-            TagType.CUSTOM -> tagsIds = tagsIds + tagId
+            TagType.GENRE -> if (tagId !in genreIds) genreIds = genreIds + tagId
+            TagType.STUDIO -> if (tagId !in studioIds) studioIds = studioIds + tagId
+            TagType.CUSTOM -> if (tagId !in tagsIds) tagsIds = tagsIds + tagId
         }
     }
 
-    // Autofill selection application logic
     fun applyAutofillSelection(selection: AutofillResultSelection) {
         fun massCreateAndApplyTags(tagList: List<String>, newTagType: TagType) {
             for (newTagName in tagList) {
-                val newTagId = TagsController.addTag(newTagName, "#ffffff", newTagType)
+                //TODO: in other places: maybe don't allow creating a tag by the same name as an existing one; Also add tag searching/sorting in tag menu (UI)
+
+                val newTagId = TagsController.safeCreateTagByName(newTagName, "#ffffff", newTagType)
                 applyTagToThisEntry(newTagId, newTagType)
             }
         }
@@ -175,10 +176,12 @@ fun EditEntryPopup(
             },
             title = { Text("Edit Entry") },
             text = {
-                Column (Modifier.fillMaxSize()
-                    .verticalScroll(
-                        rememberScrollState()
-                    )) {
+                Column(
+                    Modifier.fillMaxSize()
+                        .verticalScroll(
+                            rememberScrollState()
+                        )
+                ) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
