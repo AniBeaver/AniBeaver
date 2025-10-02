@@ -43,7 +43,8 @@ data class AutofillData(
     @SerialName("seasonYear") val seasonYear: Int? = null,
     @SerialName("status") val status: String? = null,
     @SerialName("studios") val studios: Studios? = null,
-    @SerialName("tags") val tags: List<Tag>? = null, //FIXME: here genres are missing
+    @SerialName("tags") val tags: List<Tag>? = null,
+    @SerialName("genres") val genres: List<String>? = null,
     @SerialName("coverImage") val coverImage: CoverImage? = null,
     @SerialName("type") val type: String? = null,
     @SerialName("title") val title: AutofillTitle? = null,

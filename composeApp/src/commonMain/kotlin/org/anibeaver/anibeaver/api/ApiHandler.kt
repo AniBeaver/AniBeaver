@@ -194,6 +194,7 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                         isAnimationStudio
                     }
                 }
+                genres
                 tags {
                     name,
                     rank
