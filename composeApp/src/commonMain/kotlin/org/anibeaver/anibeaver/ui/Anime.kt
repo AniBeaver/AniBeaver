@@ -34,7 +34,7 @@ fun AnimeScreen(
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
     val filterState = rememberAnimeFilterState()
-    var quickAlId by remember { mutableStateOf("80145") } //default value set here for debug (Citrus)
+    var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here

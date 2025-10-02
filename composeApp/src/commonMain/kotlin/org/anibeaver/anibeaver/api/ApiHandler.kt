@@ -173,6 +173,7 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
             }""",
         associateClass = MediaQuery::class
     ),
+    //TODO: filter manga away from anime and such! Autofill doesn't recognize difference between the ids
     AUTOFILL_MEDIA(
         query = """
             query (${'$'}id: Int) {
