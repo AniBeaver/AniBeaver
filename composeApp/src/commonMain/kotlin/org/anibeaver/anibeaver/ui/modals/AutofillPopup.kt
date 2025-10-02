@@ -137,7 +137,7 @@ fun AutofillPopup(
                     Button(onClick = { onAddReference(Reference("", "")) }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
                     Spacer(modifier = Modifier.weight(1f))
                     Button(onClick = {
-                        onPullFromAniList(priorityIndex) { data -> onPull(data) }
+                        onPullFromAniList(priorityIndex) { data -> onPull(data) } //TODO: If anilist id illegal or no references, forbid pull from anilist
                     }) { Text("Pull from AniList") }
                 }
                 if (showSelector && autofillData != null) {
