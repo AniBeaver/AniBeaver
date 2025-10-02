@@ -137,6 +137,7 @@ fun EditEntryPopup(
                     selection?.let { applyAutofillSelection(it) }
                 },
                 onConfirmReorder = { newList -> references = newList },
+                autoTriggerPull = forceShowAutofillPopup,
                 onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
                     AutofillController.pullParsedAutofill(

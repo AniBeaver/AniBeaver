@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.selects.select
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.core.ParsedAutofillData
 import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
@@ -27,8 +26,11 @@ fun AutofillPopup(
     onDismiss: () -> Unit,
     onConfirm: (AutofillResultSelection?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
+    autoTriggerPull: Boolean,
     onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit
 ) {
+
+
     if (!show) return
 
     var priorityIndex by remember { mutableStateOf(0) }
@@ -46,7 +48,12 @@ fun AutofillPopup(
     var airingChecked by remember { mutableStateOf(true) }
     var epsChecked by remember { mutableStateOf(true) }
     val totalEpisodes = autofillData?.eps_total ?: 0
-    val runtime = autofillData?.runtime ?: 0
+//    val runtime = autofillData?.runtime ?: 0 // FIXME: why this unused?
+
+    fun onPull(data: ParsedAutofillData) {
+        autofillData = data
+        showSelector = true
+    }
 
     // Update checkboxes and selection state when autofillData changes
     LaunchedEffect(autofillData) {
@@ -59,6 +66,7 @@ fun AutofillPopup(
             airingChecked = true
             epsChecked = true
         }
+        if (autoTriggerPull) onPullFromAniList(0, { data -> onPull(data) })
     }
 
     val nameOptions = autofillData?.let { listOf(it.name_en, it.name_rm, it.name_jp).filter { name -> name.isNotBlank() }.distinct() } ?: emptyList()
@@ -129,10 +137,7 @@ fun AutofillPopup(
                     Button(onClick = { onAddReference(Reference("", "")) }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
                     Spacer(modifier = Modifier.weight(1f))
                     Button(onClick = {
-                        onPullFromAniList(priorityIndex) { data ->
-                            autofillData = data
-                            showSelector = true
-                        }
+                        onPullFromAniList(priorityIndex) { data -> onPull(data) }
                     }) { Text("Pull from AniList") }
                 }
                 if (showSelector && autofillData != null) {
