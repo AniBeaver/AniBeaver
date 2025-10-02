@@ -17,7 +17,6 @@ fun QuickCreateEntryFromAl (
             AniListSearchBar(quickAlId, setQuickAlId)
             Button(onClick = {
                 println("$quickAlId getting fetched.")
-                setQuickAlId("")
                 openQuickEntryCreation()
             }) { Text("Quick add from AL") }
         }

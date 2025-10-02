@@ -28,6 +28,8 @@ fun EditEntryPopup(
     show: Boolean,
     onDismiss: () -> Unit,
     onConfirm: (EntryData) -> Unit,
+    forceShowAutofillPopup: Boolean,
+    alIdToBePassed: String, //only if forceShowAutofillPopup
     initialValues: EntryData? = null,
     dataWrapper: DataWrapper
 ) {
@@ -65,6 +67,11 @@ fun EditEntryPopup(
         episodesTotal = initialValues?.episodesTotal ?: 0
         episodesProgress = initialValues?.episodesProgress ?: 0
         rewatches = initialValues?.rewatches ?: 1
+        println("?" + alIdToBePassed)
+        if (forceShowAutofillPopup) {
+            showAutofillPopup = true
+            if (references.isEmpty()) references = listOf(Reference("Se1", alIdToBePassed))
+        }
     }
 
     //for tab navigation

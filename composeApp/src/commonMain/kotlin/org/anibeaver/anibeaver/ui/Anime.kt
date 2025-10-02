@@ -27,13 +27,14 @@ fun AnimeScreen(
     navController: NavHostController = rememberNavController(),
     dataWrapper: DataWrapper
 ) {
-    var showPopup by remember { mutableStateOf(false) }
+    var showEditEntryPopup by remember { mutableStateOf(false) }
+    var showAutofillPopup by remember { mutableStateOf(false) }
     var currentEditedEntryId by remember { mutableStateOf<Int?>(null) }
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
     val filterState = rememberAnimeFilterState()
-    var quickAlId by remember { mutableStateOf("34382") } //default value set here for debug
+    var quickAlId by remember { mutableStateOf("80145") } //default value set here for debug (Citrus)
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -45,14 +46,10 @@ fun AnimeScreen(
         val totalWidth = maxWidth
         val columns = max(1, ((totalWidth + cardSpacing) / (cardWidth + cardSpacing)).toInt())
 
-        fun showEntryPopup(id: Int?, alsoShowAutofillPopup: Boolean = false, quickAlId: String = "") { //id = null for empty
+        fun showEntryPopup(id: Int?, alsoShowAutofillPopup: Boolean = false) { //id = null for empty
             currentEditedEntryId = id
-            showPopup = true
-
-            if (alsoShowAutofillPopup) {
-
-            }
-
+            showAutofillPopup = alsoShowAutofillPopup
+            showEditEntryPopup = true
         }
 
         // Buttons
@@ -89,18 +86,22 @@ fun AnimeScreen(
                 quickAlId,
                 { newQuickAlId -> quickAlId = newQuickAlId },
                 {
-                    showEntryPopup(null, true, quickAlId)
+                    showEntryPopup(null, true)
                 }
             )
             Spacer(Modifier.height(16.dp))
-            if (showPopup) {
+            if (showEditEntryPopup) {
                 EditEntryPopup(
-                    show = showPopup,
-                    onDismiss = { showPopup = false },
+                    show = showEditEntryPopup,
+                    onDismiss = { showEditEntryPopup = false },
                     onConfirm = { entryData ->
                         EntriesController.updateEntry(currentEditedEntryId, entryData)
-                        showPopup = false
+                        showEditEntryPopup = false
+
+                        if (showAutofillPopup) quickAlId = ""
                     },
+                    forceShowAutofillPopup = showAutofillPopup,
+                    alIdToBePassed = quickAlId,
                     initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
                     dataWrapper
                 )
