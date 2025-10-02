@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.AutofillController.idIsValid
+import org.anibeaver.anibeaver.ui.components.anilist_searchbar.AniListSearchBar
 import org.anibeaver.anibeaver.ui.components.abstract.DeleteButton
 
 @Composable
@@ -48,12 +49,12 @@ fun ReferenceRow(
             placeholder = { Text("(optional)") },
             modifier = Modifier.weight(1f)
         )
+        val uriHandler = LocalUriHandler.current
+
         AniListSearchBar(
             alId,
             onAlIdChange
         )
-        // Simple status indicator (fixed width, always centered, minimal logic)
-        val uriHandler = LocalUriHandler.current
         Box(
             modifier = Modifier.width(56.dp).align(Alignment.CenterVertically),
             contentAlignment = Alignment.Center

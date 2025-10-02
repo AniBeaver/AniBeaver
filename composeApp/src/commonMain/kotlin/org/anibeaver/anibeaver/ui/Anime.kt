@@ -15,6 +15,7 @@ import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.EntryCard
+import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.modals.*
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -32,6 +33,7 @@ fun AnimeScreen(
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
     val filterState = rememberAnimeFilterState()
+    var quickAlId by remember { mutableStateOf("34382") } //default value set here for debug
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -43,15 +45,23 @@ fun AnimeScreen(
         val totalWidth = maxWidth
         val columns = max(1, ((totalWidth + cardSpacing) / (cardWidth + cardSpacing)).toInt())
 
+        fun showEntryPopup(id: Int?, alsoShowAutofillPopup: Boolean = false, quickAlId: String = "") { //id = null for empty
+            currentEditedEntryId = id
+            showPopup = true
+
+            if (alsoShowAutofillPopup) {
+
+            }
+
+        }
+
         // Buttons
         Column(Modifier.fillMaxSize()) {
             Text("Anime", style = Typography.headlineLarge)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
-                Button(onClick = {
-                    currentEditedEntryId = null
-                    showPopup = true
-                }) { Text("New Entry") }
+
+                Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
                 Button(onClick = { showManageTags = true }) { Text("Manage tags") }
                 Button(onClick = { showFilter = true }) { Text("Filter entries") }
                 Button(onClick = {
@@ -75,6 +85,13 @@ fun AnimeScreen(
                     EntriesController.addEntry(entryData = entryData)
                 }) { Text("Add Placeholder Entry") }
             }
+            QuickCreateEntryFromAl(
+                quickAlId,
+                { newQuickAlId -> quickAlId = newQuickAlId },
+                {
+                    showEntryPopup(null, true, quickAlId)
+                }
+            )
             Spacer(Modifier.height(16.dp))
             if (showPopup) {
                 EditEntryPopup(
@@ -120,10 +137,7 @@ fun AnimeScreen(
                 columns = columns,
                 cardWidth = cardWidth,
                 cardSpacing = cardSpacing,
-                onEdit = { entryId ->
-                    currentEditedEntryId = entryId
-                    showPopup = true
-                },
+                onEdit = { entryId -> showEntryPopup(entryId) },
                 onDelete = { entryId ->
                     EntriesController.deleteEntry(entryId)
                 }
@@ -153,7 +167,11 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
         val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
         val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            Text("Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.", color = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.padding(bottom = 8.dp))
+            Text(
+                "Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.",
+                color = androidx.compose.ui.graphics.Color.Gray,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
             Spacer(Modifier.width(12.dp))
             Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
                 Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified)
@@ -175,9 +193,12 @@ private fun EntryGrid(
         Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
             Spacer(Modifier.width(cardSpacing))
             rowEntries.forEach { entry ->
-                val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
-                val genreTags = entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
-                val customTags = entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+                val studioTags =
+                    entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+                val genreTags =
+                    entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+                val customTags =
+                    entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
                 EntryCard(
                     id = entry.id,
                     name = entry.entryData.animeName,
