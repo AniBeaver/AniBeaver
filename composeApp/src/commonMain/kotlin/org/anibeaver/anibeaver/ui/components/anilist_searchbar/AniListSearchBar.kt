@@ -16,9 +16,6 @@ fun AniListSearchBar(
     alId: String,
     onAlIdChange: (String) -> Unit
 ) {
-
-
-
     OutlinedTextField(
     value = alId,
     onValueChange = onAlIdChange,

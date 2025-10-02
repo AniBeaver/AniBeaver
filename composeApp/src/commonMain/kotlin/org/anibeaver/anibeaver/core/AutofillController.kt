@@ -48,6 +48,7 @@ val emptyParsedAutofillData =
 object AutofillController {
     fun idIsValid(mediaId: String): Boolean {
         return mediaId.isNotBlank() && mediaId.toIntOrNull() != null && mediaId.all { it.isDigit() }
+        //TODO: actually check if an id like this exists
     }
 
     fun pullParsedAutofill(
