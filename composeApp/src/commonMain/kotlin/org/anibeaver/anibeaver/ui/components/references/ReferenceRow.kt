@@ -48,13 +48,9 @@ fun ReferenceRow(
             placeholder = { Text("(optional)") },
             modifier = Modifier.weight(1f)
         )
-        OutlinedTextField(
-            value = alId,
-            onValueChange = onAlIdChange,
-            singleLine = true,
-            placeholder = { Text("000000") },
-            label = { Text("AniList ID") },
-            modifier = Modifier.width(110.dp)
+        AniListSearchBar(
+            alId,
+            onAlIdChange
         )
         // Simple status indicator (fixed width, always centered, minimal logic)
         val uriHandler = LocalUriHandler.current
