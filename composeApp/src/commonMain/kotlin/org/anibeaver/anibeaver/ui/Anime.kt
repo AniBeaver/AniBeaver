@@ -194,17 +194,8 @@ private fun EntryGrid(
         Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
             Spacer(Modifier.width(cardSpacing))
             rowEntries.forEach { entry ->
-                val studioTags =
-                    entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
-                val genreTags =
-                    entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
-                val customTags =
-                    entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
                 EntryCard(
-                    id = entry.id,
-                    name = entry.entryData.animeName,
-                    tags = (genreTags + entry.entryData.releaseYear + studioTags + customTags).joinToString(", "),
-                    description = entry.entryData.description,
+                    entry = entry,
                     onEdit = { onEdit(entry.id) },
                     onDelete = { onDelete(entry.id) }
                 )

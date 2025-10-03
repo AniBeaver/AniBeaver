@@ -11,16 +11,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.Entry
 
 @Composable
 fun EntryCard(
-    id: Int,
-    name: String,
-    tags: String,
-    description: String,
+    entry: Entry,
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
+    // Build display strings from the entry data so callers don't need to compute them
+    val name = entry.entryData.animeName
+    val description = entry.entryData.description
+
+    val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+    val genreTags = entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+    val customTags = entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+    val tags = (genreTags + listOf(entry.entryData.releaseYear) + studioTags + customTags).joinToString(", ")
+
     Card(shape = RoundedCornerShape(6.dp)) {
         Row(
             Modifier

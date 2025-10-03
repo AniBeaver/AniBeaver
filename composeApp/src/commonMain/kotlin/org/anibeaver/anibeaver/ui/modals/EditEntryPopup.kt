@@ -220,7 +220,7 @@ fun EditEntryPopup(
                                     FloatPicker(
                                         value = rating,
                                         onValueChange = { rating = it },
-                                        label = "Rating",
+                                        label = "Rating/Priority",
                                         modifier = Modifier.weight(1f)
                                     )
                                     Spacer(modifier = Modifier.width(16.dp))
@@ -266,7 +266,9 @@ fun EditEntryPopup(
                             SimpleDropdown(
                                 options = Status.entries.toList(),
                                 selectedOption = status,
-                                onOptionSelected = { status = it },
+                                onOptionSelected = {
+                                    status = it
+                                },
                                 label = "Status",
                                 modifier = Modifier.weight(1f).focusRequester(statusRequester)
                                     .focusProperties { next = releasingEveryRequester }
