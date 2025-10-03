@@ -8,11 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import kotlin.math.round
 
 @Composable
 fun EntryCard(
@@ -20,7 +23,6 @@ fun EntryCard(
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
-    // Build display strings from the entry data so callers don't need to compute them
     val name = entry.entryData.animeName
     val description = entry.entryData.description
 
@@ -32,7 +34,7 @@ fun EntryCard(
     Card(shape = RoundedCornerShape(6.dp)) {
         Row(
             Modifier
-                .height(200.dp)
+                .height(160.dp)
                 .width(380.dp)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -45,12 +47,42 @@ fun EntryCard(
                 Text("IMG", fontSize = 14.sp)
             }
             Spacer(Modifier.width(12.dp))
+
             Column(Modifier.weight(1f)) {
-                Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(tags, maxLines = 8, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
-                Text(description, maxLines = 2, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                // Name (as originally)
+                Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+
+                // Single info line with year, rating, status, eps, schedule, rewatches
+                val year = entry.entryData.releaseYear
+                val rating = entry.entryData.rating
+                val status = entry.entryData.status.toString()
+                val schedule = entry.entryData.releasingEvery.toString()
+                val epsProgress = entry.entryData.episodesProgress
+                val epsTotal = entry.entryData.episodesTotal
+                val rewatches = entry.entryData.rewatches
+
+                val ratingText = if (rating > 0f) {
+                    val rounded = (round(rating * 10f) / 10f)
+                    if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
+                } else "-"
+
+                Text("$year, Rating: $ratingText, Status: $status, Eps: ${epsProgress}/${epsTotal} (rewatches: $rewatches), Schedule: $schedule", fontSize = 12.sp)
+
+                Spacer(Modifier.height(6.dp))
+
+                val tagsLine = listOf(genreTags.joinToString(", "), studioTags.joinToString(", "), customTags.joinToString(", ")).filter { it.isNotBlank() }.joinToString(", ")
+                if (tagsLine.isNotBlank()) {
+                    Text(tagsLine, fontSize = 12.sp)
+                }
+
+                Spacer(Modifier.height(6.dp))
+
+                Text(description, fontSize = 13.sp)
             }
+
             Spacer(Modifier.width(12.dp))
+
+            // Buttons on the right (as originally)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
                 Button(onClick = onEdit, modifier = Modifier.height(32.dp)) {
                     Text("Edit", fontSize = 12.sp)
