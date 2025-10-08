@@ -174,7 +174,8 @@ fun AnimeScreen(
             )
 
             val allEntries = EntriesController.entries
-            val entriesToShow = allEntries.filter { it.matchesFilter(filterState.filterData) }
+            val filteredEntries = allEntries.filter { it.matchesFilter(filterState.filterData) }
+            val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
             FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
             EntryGrid(
                 entriesToShow = entriesToShow,
@@ -202,6 +203,21 @@ data class AnimeFilterState(
 fun rememberAnimeFilterState(): AnimeFilterState {
     var filterData by remember { mutableStateOf<FilterData?>(null) }
     return AnimeFilterState(filterData) { filterData = it }
+}
+
+private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: SortingType): List<Entry> {
+    val comparator = when (sortBy) {
+        SortingBy.Rating -> compareBy<Entry> { it.entryData.rating }
+        SortingBy.Status -> compareBy<Entry> { it.entryData.status.ordinal }
+        SortingBy.Rewatches -> compareBy<Entry> { it.entryData.rewatches }
+        SortingBy.Year -> compareBy<Entry> { it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }
+        SortingBy.Length -> compareBy<Entry> { it.entryData.episodesTotal }
+    }
+    
+    return when (sortType) {
+        SortingType.Ascending -> entries.sortedWith(comparator)
+        SortingType.Descending -> entries.sortedWith(comparator.reversed())
+    }
 }
 
 @Composable
