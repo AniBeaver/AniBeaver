@@ -88,18 +88,18 @@ fun AnimeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         SimpleDropdown(
-                            options = SortingBy.values().toList(),
+                            options = SortingBy.entries,
                             selectedOption = sortBy,
                             onOptionSelected = { sortBy = it },
                             label = "Sort by",
-                            modifier = Modifier.width(120.dp)
+                            modifier = Modifier.width(160.dp)
                         )
                         SimpleDropdown(
-                            options = SortingType.values().toList(),
+                            options = SortingType.entries,
                             selectedOption = sortOrder,
                             onOptionSelected = { sortOrder = it },
                             label = "Sort order",
-                            modifier = Modifier.width(120.dp)
+                            modifier = Modifier.width(160.dp)
                         )
                     }
                 }
