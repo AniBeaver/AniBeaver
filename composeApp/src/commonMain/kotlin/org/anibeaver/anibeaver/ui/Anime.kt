@@ -1,10 +1,16 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -16,6 +22,7 @@ import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
+import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.modals.*
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -35,6 +42,8 @@ fun AnimeScreen(
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
     val filterState = rememberAnimeFilterState()
     var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
+    var sortBy by remember { mutableStateOf(SortingBy.Rating) }
+    var sortOrder by remember { mutableStateOf(SortingType.Descending) }
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -55,12 +64,52 @@ fun AnimeScreen(
         // Buttons
         Column(Modifier.fillMaxSize()) {
             Text("Anime", style = Typography.headlineLarge)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.wrapContentWidth()
+            ) {
                 Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
 
                 Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
                 Button(onClick = { showManageTags = true }) { Text("Manage tags") }
                 Button(onClick = { showFilter = true }) { Text("Filter entries") }
+
+                Card(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .height(72.dp)
+                ) {
+                    Row(
+                        Modifier
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .fillMaxHeight(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SimpleDropdown(
+                            options = SortingBy.values().toList(),
+                            selectedOption = sortBy,
+                            onOptionSelected = { sortBy = it },
+                            label = "Sort by",
+                            modifier = Modifier.width(120.dp)
+                        )
+                        SimpleDropdown(
+                            options = SortingType.values().toList(),
+                            selectedOption = sortOrder,
+                            onOptionSelected = { sortOrder = it },
+                            label = "Sort order",
+                            modifier = Modifier.width(120.dp)
+                        )
+                    }
+                }
+                QuickCreateEntryFromAl(
+                    quickAlId,
+                    { newQuickAlId -> quickAlId = newQuickAlId },
+                    {
+                        showEntryPopup(null, true)
+                    }
+                )
                 Button(onClick = {
                     val entryData = EntryData(
                         animeName = "Placeholder Anime",
@@ -82,13 +131,7 @@ fun AnimeScreen(
                     EntriesController.addEntry(entryData = entryData)
                 }) { Text("Add Placeholder Entry") }
             }
-            QuickCreateEntryFromAl(
-                quickAlId,
-                { newQuickAlId -> quickAlId = newQuickAlId },
-                {
-                    showEntryPopup(null, true)
-                }
-            )
+
             Spacer(Modifier.height(16.dp))
             if (showEditEntryPopup) {
                 EditEntryPopup(

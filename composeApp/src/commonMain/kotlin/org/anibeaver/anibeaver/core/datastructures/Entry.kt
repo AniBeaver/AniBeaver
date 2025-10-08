@@ -92,6 +92,31 @@ data class FilterData(
     val selectedTagIds: List<Int>
 )
 
+// Make SortingBy and SortingType format the same way as `Schedule` (readable toString)
+enum class SortingBy {
+    Rating,
+    Status, //watching, on hold, planning, completed, dropped
+    Rewatches,
+    Year,
+    Length;
+    override fun toString(): String = when (this) {
+        Rating -> "Rating"
+        Status -> "Status"
+        Rewatches -> "Rewatches"
+        Year -> "Year"
+        Length -> "Length"
+    }
+}
+
+enum class SortingType {
+    Ascending,
+    Descending;
+    override fun toString(): String = when (this) {
+        Ascending -> "Ascending"
+        Descending -> "Descending"
+    }
+}
+
 data class Art(
     val source: String, //either link or "custom"
     val local_path: String //if empty TODO: download image from link and save local_path maybe
