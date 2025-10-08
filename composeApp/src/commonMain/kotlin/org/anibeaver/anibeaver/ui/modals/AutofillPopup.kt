@@ -29,6 +29,7 @@ fun AutofillPopup(
     autoTriggerPull: Boolean,
     onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit
 ) {
+    var _autoTriggerPull = autoTriggerPull
 
 
     if (!show) return
@@ -70,7 +71,7 @@ fun AutofillPopup(
             nameChecked = true
             yearChecked = true
         }
-        if (autoTriggerPull) onPullFromAniList(0, { data -> onPull(data) })
+        if (_autoTriggerPull) onPullFromAniList(0, { data -> _autoTriggerPull=false; onPull(data)  }) //FIXME: here, auto trigger pull doesn't work
     }
 
     val nameOptions = autofillData?.let { listOf(it.name_en, it.name_rm, it.name_jp).filter { name -> name.isNotBlank() }.distinct() } ?: emptyList()
