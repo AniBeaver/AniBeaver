@@ -2,10 +2,10 @@ package org.anibeaver.anibeaver.api
 
 import kotlinx.coroutines.*
 
-abstract class ApiAuthorizationHandler{
+abstract class ApiAuthorizationHandler (private val context: Any?){
     abstract fun openUrl (url : String)
 
-    val authCodeStorage: AuthCodeStorage = AuthCodeStorage()
+    val authCodeStorage: AuthCodeStorage = AuthCodeStorage(context)
 
     suspend fun getValidAccessToken(){
         try {
@@ -18,13 +18,13 @@ abstract class ApiAuthorizationHandler{
     }
 
     private suspend fun doAuthorizationRoutine(){
-        var localOauthServer: OAuthLocalServer? = null
+        var oAuthLocalServer: OAuthLocalServer? = null
 
-        if(authCodeStorage.authCode==null){
+        if(authCodeStorage.accessToken==null){
             try {
                 println("Starting local server to get authentication code...")
-                localOauthServer = OAuthLocalServer(authCodeStorage)
-                localOauthServer.start()
+                oAuthLocalServer = OAuthLocalServer(authCodeStorage)
+                oAuthLocalServer.start()
                 println("Server started successfully. Waiting for authorization...")
                 // Keep the server running until we get the access token
                 // The server will be stopped after the access token is received
@@ -48,16 +48,21 @@ abstract class ApiAuthorizationHandler{
             catch(e: Exception) {
                 println("Acquiring authorisation code failed.")
                 println("Stopping local OAuth callback server...")
-                localOauthServer.stop()
+                oAuthLocalServer.stop()
                 throw(e)
             }
         }
 
         // After getting the access token, we can stop the local server
-        if (localOauthServer != null) {
+        if (oAuthLocalServer != null) {
             try {
                 println("Stopping local OAuth callback server...")
-                localOauthServer.stop()
+                oAuthLocalServer.stop()
+
+                println("Saving token to keystore...")
+                val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", context)
+                tokenStore.save(authCodeStorage.accessToken ?: "")
+                println("Token saved successfully.")
             }
             catch(e: Exception) {
                 println("Failed stopping local server")

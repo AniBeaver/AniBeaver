@@ -39,7 +39,15 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
             })
         }
     }
-    
+
+    fun isAuthorized(): Boolean {
+        // TODO: Also fetch the access token from storage
+        return apiAuthorizationHandler.authCodeStorage.accessToken != null
+    }
+
+    fun logout() {
+        apiAuthorizationHandler.authCodeStorage.accessToken = null
+    }
 
     inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
         val requestType : RequestType? = getRequestTypeByClass(T::class)
@@ -145,7 +153,7 @@ class ValueSetter<T>(val callValueSet : (T) -> Unit)
 enum class RequestType(val query : String, val associateClass : KClass<*>){
     MEDIA_LIST_COLLECTION(
         query = """
-            query (${'$'}userName: String, ${'$'}type: MediaType) {
+            query (${'$'}userName: String, ${'$'}type: MediaType, ${'$'}status: MediaListStatus, ${'$'}userId: Int, ${'$'}chunk: Int, ${'$'}perChunk: Int) {
                 MediaListCollection(userName: ${'$'}userName, type: ${'$'}type) {
                     lists {
                         entries {
@@ -153,6 +161,9 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                                 id
                                 title {
                                     english
+                                }
+                                coverImage {
+                                    medium
                                 }
                             }
                         }
@@ -168,6 +179,9 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                     id
                     title {
                         english
+                    }
+                    coverImage {
+                        medium
                     }
                 }
             }""",

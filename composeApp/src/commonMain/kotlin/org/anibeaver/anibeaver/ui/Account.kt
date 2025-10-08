@@ -2,15 +2,20 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Login
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.Screens
@@ -35,41 +40,19 @@ import coil3.compose.AsyncImage
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.*
+import org.anibeaver.anibeaver.api.tokenStore
+import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 @Preview
 fun AccountScreen(
-    navController: NavHostController = rememberNavController(),
     dataWrapper: DataWrapper,
+    pagePadding: PaddingValues,
+    windowSizeClass: WindowSizeClass,
 ) {
     val scope = rememberCoroutineScope()
     var userInfo by remember { mutableStateOf<Profile?>(null) }
-
-    fun makeRandomRequests() {
-        scope.launch{
-            var id: Int = 0
-            dataWrapper.apiHandler.makeRequest(
-                variables = mapOf("search" to "ame to kimi to", "type" to "MANGA"),
-                valueSetter = ValueSetter { mediaQuery: MediaQuery -> id = (mediaQuery.data.media.id) }
-            )
-            var notes: String = ""
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString()),
-                valueSetter = ValueSetter { m: SaveMediaListQuery ->
-                    val savedNotes = m.data.saveMediaListEntry.notes
-                    if (savedNotes != null) {
-                        notes = savedNotes
-                    }
-                }
-            )
-            //text2 = notes
-            dataWrapper.apiHandler.makeAuthorizedRequest(
-                variables = mapOf("mediaId" to id.toString(), "status" to "PLANNING", "notes" to notes+"hi from anibeaver"),
-                valueSetter = ValueSetter { m: SaveMediaListQuery -> println("Mutation completed") }
-            )
-        }
-    }
 
     fun getUserProfile() {
         scope.launch {
@@ -82,8 +65,23 @@ fun AccountScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        val token = dataWrapper.tokenStore.load()
+
+        if (token != null) {
+            getUserProfile()
+        }
+    }
+
+    // Determine if the screen is small based on width size class
+    val isSmallScreen = windowSizeClass.widthSizeClass <= WindowWidthSizeClass.Compact
+
     // Header
-    Column (modifier = Modifier.padding(horizontal = 32.dp, vertical = 24.dp).fillMaxSize()) {
+    Column (
+        modifier = Modifier
+            .padding(pagePadding)
+            .fillMaxSize()
+    ) {
         Text(
             "Account",
             style = Typography.headlineLarge,
@@ -168,61 +166,202 @@ fun AccountScreen(
                                     color = Color.White
                                 )
                             )
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            if (!isSmallScreen) {
+                                Button(
+                                    onClick = {
+                                        dataWrapper.tokenStore.clear()
+                                        dataWrapper.apiHandler.logout()
+                                        userInfo = null
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),
+                                    modifier = Modifier.padding(top = 12.dp)
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.Login,
+                                        contentDescription = "Logout Icon",
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Logout", color = Color.White)
+                                }
+                            }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(60.dp))
                 }
 
-                // Statistics Cards
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Anime Statistics Card
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                if (isSmallScreen) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        // Anime Statistics Card
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(
-                                "Anime",
-                                style = Typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = userInfo?.statistics?.anime?.count?.toString() ?: "0",
-                                style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    "Anime",
+                                    style = Typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = (userInfo?.statistics?.anime?.count ?: 0).toString() + "x watched",
+                                    style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "Hours watched: " + (userInfo?.statistics?.anime?.minutesWatched?.div(60)
+                                        ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
+
+                        // Manga Statistics Card
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    "Manga",
+                                    style = Typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = (userInfo?.statistics?.manga?.count ?: 0).toString() + "x read",
+                                    style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
                     }
-
-                    // Manga Statistics Card
-                    Card(
-                        modifier = Modifier.weight(1f),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        shape = RoundedCornerShape(12.dp)
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        // Anime Statistics Card
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(
-                                "Manga",
-                                style = Typography.titleMedium,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                            Text(
-                                text = userInfo?.statistics?.manga?.count?.toString() ?: "0",
-                                style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    "Anime",
+                                    style = Typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = (userInfo?.statistics?.anime?.count ?: 0).toString() + "x watched",
+                                    style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "Hours watched: " + (userInfo?.statistics?.anime?.minutesWatched?.div(60)
+                                        ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
+
+                        // Manga Statistics Card
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Text(
+                                    "Manga",
+                                    style = Typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                                Text(
+                                    text = (userInfo?.statistics?.manga?.count ?: 0).toString() + "x read",
+                                    style = Typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                                Text(
+                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead ?: 0).toString(),
+                                    style = Typography.bodyMedium,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (isSmallScreen) {
+                    // Logout button as full-width under stats cards
+                    Button(
+                        onClick = {
+                            dataWrapper.tokenStore.clear()
+                            dataWrapper.apiHandler.logout()
+                            userInfo = null
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 24.dp),
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Login,
+                            contentDescription = "Logout Icon",
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Logout", color = Color.White)
                     }
                 }
             } else {

@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -19,6 +21,7 @@ kotlin {
         }
     }
 
+    /*
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,6 +32,7 @@ kotlin {
             isStatic = true
         }
     }
+     */
 
     jvm("desktop")
 
@@ -41,6 +45,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.kotlinx.coroutines.android)
+            implementation("com.liftric:kvault:1.12.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -64,6 +69,9 @@ kotlin {
             implementation("io.coil-kt.coil3:coil-compose:3.3.0")
             implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")
@@ -76,10 +84,18 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation("org.netbeans.api:org-netbeans-modules-keyring:RELEASE260")
+            implementation("org.netbeans.modules:org-netbeans-modules-keyring-impl:RELEASE260")
+            implementation("org.netbeans.api:org-openide-util-lookup:RELEASE260")
+            implementation("net.java.dev.jna:jna:5.14.0")
+            implementation("net.java.dev.jna:jna-platform:5.14.0")
         }
+        /*
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation("com.liftric:kvault:1.12.0")
         }
+         */
     }
 }
 
@@ -116,6 +132,18 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspDesktop", libs.androidx.room.compiler)
+
+    //add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    // FIXME: add back when re-enabling iOS target
+    // add("kspIosX64", libs.androidx.room.compiler)
+    // add("kspIosArm64", libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 compose.desktop {
@@ -127,5 +155,7 @@ compose.desktop {
             packageName = "org.anibeaver.anibeaver"
             packageVersion = "1.0.0"
         }
+
+        jvmArgs += "-Dapple.awt.application.appearance=NSAppearanceNameDarkAqua"
     }
 }

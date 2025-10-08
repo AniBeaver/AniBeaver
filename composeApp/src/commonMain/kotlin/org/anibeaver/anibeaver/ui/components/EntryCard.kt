@@ -13,9 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.anibeaver.anibeaver.core.TagsController
-import org.anibeaver.anibeaver.core.datastructures.Entry
-import kotlin.math.round
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun EntryCard(
@@ -49,10 +47,8 @@ fun EntryCard(
             Spacer(Modifier.width(12.dp))
 
             Column(Modifier.weight(1f)) {
-                // Name (as originally)
                 Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
-                // Single info line with year, rating, status, eps, schedule, rewatches
                 val year = entry.entryData.releaseYear
                 val rating = entry.entryData.rating
                 val status = entry.entryData.status.toString()
@@ -79,10 +75,7 @@ fun EntryCard(
 
                 Text(description, fontSize = 13.sp)
             }
-
             Spacer(Modifier.width(12.dp))
-
-            // Buttons on the right (as originally)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.End) {
                 Button(onClick = onEdit, modifier = Modifier.height(32.dp)) {
                     Text("Edit", fontSize = 12.sp)
@@ -94,4 +87,15 @@ fun EntryCard(
 
         }
     }
+}
+
+@Composable
+@Preview
+fun EntryCardPreview() {
+    EntryCard(
+        id = 1,
+        name = "Sample Anime",
+        tags = "Action, Adventure, Fantasy",
+        description = "This is a sample description for the anime entry. It provides an overview of the anime's plot and themes."
+    )
 }

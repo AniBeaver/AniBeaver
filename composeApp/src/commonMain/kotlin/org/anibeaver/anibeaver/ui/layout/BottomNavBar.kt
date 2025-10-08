@@ -17,13 +17,21 @@ fun BottomNavBar(
     val startDestination = Screens.Home
     var selectedDestination by rememberSaveable { mutableStateOf(startDestination.name) }
 
+    // Update bottom bar when destination changes
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        if (destination.route == selectedDestination) return@addOnDestinationChangedListener
+        selectedDestination = destination.route ?: startDestination.name
+    }
+
     NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
         Screens.entries.forEachIndexed { index, destination ->
             NavigationBarItem(
                 selected = selectedDestination == destination.name,
                 onClick = {
-                    navController.navigate(route = destination.name)
-                    selectedDestination = destination.name
+                    if (selectedDestination != destination.name) {
+                        navController.navigate(route = destination.name)
+                        selectedDestination = destination.name
+                    }
                 },
                 icon = {
                     Icon(

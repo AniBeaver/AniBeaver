@@ -31,6 +31,12 @@ fun Sidebar(
     val startDestination = Screens.Home
     var selectedDestination by rememberSaveable { mutableStateOf(startDestination.name) }
 
+    // Update bottom bar when destination changes
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        if (destination.route == selectedDestination) return@addOnDestinationChangedListener
+        selectedDestination = destination.route ?: startDestination.name
+    }
+
     NavigationRail(
         containerColor = colors.surfaceContainer,
         modifier = Modifier.zIndex(1f).fillMaxHeight()
@@ -53,9 +59,8 @@ fun Sidebar(
             ) {
                 CenterSidebarEntries(
                     navController,
-                    selectedDestination,
-                    {newDest -> selectedDestination = newDest }
-                )
+                    selectedDestination
+                ) { newDest -> selectedDestination = newDest }
 
                 FilledIconButton(
                     onClick = {},
@@ -73,9 +78,8 @@ fun Sidebar(
             Column() {
                 BottomSidebarEntries(
                     navController,
-                    selectedDestination,
-                    {newDest -> selectedDestination = newDest }
-                )
+                    selectedDestination
+                ) { newDest -> selectedDestination = newDest }
             }
         }
     }

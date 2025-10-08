@@ -1,6 +1,8 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -58,7 +60,10 @@ fun AnimeScreen(
         }
 
         // Buttons
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxSize()
+        ) {
             Text("Anime", style = Typography.headlineLarge)
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
