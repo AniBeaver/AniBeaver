@@ -208,7 +208,15 @@ fun rememberAnimeFilterState(): AnimeFilterState {
 private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: SortingType): List<Entry> {
     val comparator = when (sortBy) {
         SortingBy.Rating -> compareBy<Entry> { it.entryData.rating }
-        SortingBy.Status -> compareBy<Entry> { it.entryData.status.ordinal }
+        SortingBy.Status -> compareBy<Entry> { entry ->
+            when (entry.entryData.status) {
+                Status.Watching -> 10
+                Status.Paused -> 5
+                Status.Planning -> 4
+                Status.Completed -> 2
+                Status.Dropped -> 0
+            }
+        }
         SortingBy.Rewatches -> compareBy<Entry> { it.entryData.rewatches }
         SortingBy.Year -> compareBy<Entry> { it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }
         SortingBy.Length -> compareBy<Entry> { it.entryData.episodesTotal }
