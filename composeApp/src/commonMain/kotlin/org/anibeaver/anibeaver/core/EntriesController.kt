@@ -140,17 +140,28 @@ object EntriesController {
 
     //update Entry and add if non-existing
     fun updateEntry(id: Int?, entryData: EntryData = EntryData()) {
-        if(_entries.contains(id)){
-            _entries.get(id)!!.entryData = entryData
+        // if id is null, treat as a new entry
+        if (id == null) {
+            addEntry(null, entryData)
+            return
+        }
+
+        if (_entries.containsKey(id)) {
+            // create a fresh Entry instance and replace it in both the map and the SnapshotStateList
+            val newEntry = Entry(entryData, id)
+            _entries[id] = newEntry
 
             val index = entries.indexOfFirst { it.id == id }
-            //add failsafe if necessary to add Entry to entries manually. Should usually never happen
-            require(index != -1){"Failed to find entry in entries but was found in _entries"}
-            entries[index].entryData = entryData
-        }else{
+            if (index == -1) {
+                // fallback: add to list if missing
+                entries.add(newEntry)
+            } else {
+                // replace element so SnapshotStateList notifies Compose observers
+                entries[index] = newEntry
+            }
+        } else {
             addEntry(id, entryData)
         }
-        
     }
 
     fun deleteEntry(id: Int?) {
