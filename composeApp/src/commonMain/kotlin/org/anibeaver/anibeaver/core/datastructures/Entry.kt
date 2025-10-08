@@ -92,13 +92,12 @@ data class FilterData(
     val selectedTagIds: List<Int>
 )
 
-// Make SortingBy and SortingType format the same way as `Schedule` (readable toString)
 enum class SortingBy {
     Rating,
     Status, //watching, on hold, planning, completed, dropped
     Rewatches,
-    Year,
-    Length;
+    Length,
+    Year;
     override fun toString(): String = when (this) {
         Rating -> "Rating"
         Status -> "Status"
