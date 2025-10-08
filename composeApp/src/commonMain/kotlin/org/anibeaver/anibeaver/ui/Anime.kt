@@ -277,7 +277,7 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
             )
             Spacer(Modifier.width(12.dp))
             Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
-                Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified)
+                Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
             }
         }
     }
