@@ -61,42 +61,49 @@ fun App(
         }
     }
 
-    AniBeaverTheme (darkTheme = true) {
+    AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
             Row {
                 if (showSidebar) {
                     Sidebar(navController, colors)
                 }
 
-                Column (
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Box(modifier = Modifier.weight(1f).padding(padding)) {
                         NavHost(
-                            navController = navController,
-                            startDestination = Screens.Home.name,
-                            enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-                            exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
-                            popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
-                            popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
-                            modifier = Modifier
-                                .fillMaxHeight(1f)
-                                .verticalScroll(rememberScrollState())
+                            navController = navController, startDestination = Screens.Home.name, enterTransition = {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                            )
+                        }, exitTransition = {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                            )
+                        }, popEnterTransition = {
+                            slideIntoContainer(
+                                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                            )
+                        }, popExitTransition = {
+                            slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                            )
+                        }, modifier = Modifier.fillMaxHeight(1f).verticalScroll(rememberScrollState())
                         ) {
-                            composable (route = Screens.Home.name) {
+                            composable(route = Screens.Home.name) {
                                 HomeScreen(navController)
                             }
-                            composable (route = Screens.Anime.name) {
+                            composable(route = Screens.Anime.name) {
                                 AnimeScreen(navController, dataWrapper)
                             }
-                            composable (route = Screens.Manga.name) {
+                            composable(route = Screens.Manga.name) {
                                 MangaScreen(navController)
                             }
-                            composable (route = Screens.Settings.name) {
+                            composable(route = Screens.Settings.name) {
                                 SettingsScreen(navController)
                             }
-                            composable (route = Screens.Account.name) {
+                            composable(route = Screens.Account.name) {
                                 AccountScreen(dataWrapper, paddingValues, windowSizeClass)
                             }
                         }
@@ -104,8 +111,7 @@ fun App(
 
                     if (!showSidebar) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             BottomNavBar(navController)
                         }

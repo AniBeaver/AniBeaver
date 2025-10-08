@@ -141,226 +141,203 @@ fun EditEntryPopup(
                 onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
                     AutofillController.pullParsedAutofill(
-                        referenceIds,
-                        { result -> onPulled(result) },
-                        dataWrapper,
-                        coroutineScope,
-                        priorityIndex
+                        referenceIds, { result -> onPulled(result) }, dataWrapper, coroutineScope, priorityIndex
                     )
-                }
-            )
+                })
         }
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                Button(onClick = {
-                    onConfirm(
-                        EntryData(
-                            animeName = animeName,
-                            releaseYear = releaseYear,
-                            studioIds = studioIds,
-                            genreIds = genreIds,
-                            description = description,
-                            rating = rating,
-                            status = status,
-                            releasingEvery = releasingEvery,
-                            tagIds = tagsIds,
-                            references = references,
-                            coverArt = Art("", ""),
-                            bannerArt = Art("", ""),
-                            episodesTotal = episodesTotal,
-                            episodesProgress = episodesProgress,
-                            rewatches = rewatches,
-                            type = EntryType.Anime
-                        )
+        AlertDialog(onDismissRequest = onDismiss, confirmButton = {
+            Button(onClick = {
+                onConfirm(
+                    EntryData(
+                        animeName = animeName,
+                        releaseYear = releaseYear,
+                        studioIds = studioIds,
+                        genreIds = genreIds,
+                        description = description,
+                        rating = rating,
+                        status = status,
+                        releasingEvery = releasingEvery,
+                        tagIds = tagsIds,
+                        references = references,
+                        coverArt = Art("", ""),
+                        bannerArt = Art("", ""),
+                        episodesTotal = episodesTotal,
+                        episodesProgress = episodesProgress,
+                        rewatches = rewatches,
+                        type = EntryType.Anime
                     )
-                }) {
-                    Text("Confirm/Create")
-                }
-            },
-            dismissButton = {
-                Button(onClick = onDismiss) {
-                    Text("Dismiss/Close")
-                }
-            },
-            title = { Text("Edit Entry") },
-            text = {
-                Column(
-                    Modifier.fillMaxSize()
-                        .verticalScroll(
-                            rememberScrollState()
-                        )
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.padding(end = 24.dp)) {
-                                ImageInput(
-                                    modifier = Modifier.size(width = 96.dp, height = 96.dp),
-                                    onClick = { /* TODO: Handle image selection */ }
-                                )
-                                ImageInput(
-                                    modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
-                                    onClick = { /* TODO: Handle image selection */ }
+                )
+            }) {
+                Text("Confirm/Create")
+            }
+        }, dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Dismiss/Close")
+            }
+        }, title = { Text("Edit Entry") }, text = {
+            Column(
+                Modifier.fillMaxSize().verticalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.padding(end = 24.dp)) {
+                            ImageInput(
+                                modifier = Modifier.size(width = 96.dp, height = 96.dp),
+                                onClick = { /* TODO: Handle image selection */ })
+                            ImageInput(
+                                modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
+                                onClick = { /* TODO: Handle image selection */ })
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            animeName?.let { it1 ->
+                                OutlinedTextField(
+                                    value = it1,
+                                    onValueChange = { animeName = it },
+                                    label = { Text("Anime Name") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    singleLine = true
                                 )
                             }
-                            Column(modifier = Modifier.weight(1f)) {
-                                animeName?.let { it1 ->
-                                    OutlinedTextField(
-                                        value = it1,
-                                        onValueChange = { animeName = it },
-                                        label = { Text("Anime Name") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        singleLine = true
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    FloatPicker(
-                                        value = rating,
-                                        onValueChange = { rating = it },
-                                        label = "Rating/Priority",
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Button(onClick = onManageAutofillClicked, modifier = Modifier.weight(1f)) {
-                                        Text("Manage AL Autofill")
-                                    }
+                            Row(
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FloatPicker(
+                                    value = rating,
+                                    onValueChange = { rating = it },
+                                    label = "Rating/Priority",
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Button(onClick = onManageAutofillClicked, modifier = Modifier.weight(1f)) {
+                                    Text("Manage AL Autofill")
                                 }
                             }
                         }
-                        //TODO: add smart interactions: e.g setting to Completed should set episode progress to episode count - or maybe not, because of potential rewatches). So maybe not after all.
-                        Row(
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            IntPicker(
-                                value = episodesProgress,
-                                onValueChange = { episodesProgress = it },
-                                onIncrement = { episodesProgress += 1 },
-                                onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
-                                label = "Ep. Progress",
-                                modifier = Modifier.weight(1f)
-                            )
-                            IntPicker(
-                                value = episodesTotal,
-                                onValueChange = { episodesTotal = it },
-                                onIncrement = { episodesTotal += 1 },
-                                onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
-                                label = "Eps Total",
-                                modifier = Modifier.weight(1f)
-                            )
-                            IntPicker(
-                                value = rewatches,
-                                onValueChange = { rewatches = it },
-                                onIncrement = { rewatches += 1 },
-                                onDecrement = { rewatches = (rewatches - 1).coerceAtLeast(0) },
-                                label = "Rewatches",
-                                modifier = Modifier.weight(1f)
-                            )
-
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                            SimpleDropdown(
-                                options = Status.entries.toList(),
-                                selectedOption = status,
-                                onOptionSelected = {
-                                    status = it
-                                },
-                                label = "Status",
-                                modifier = Modifier.weight(1f).focusRequester(statusRequester)
-                                    .focusProperties { next = releasingEveryRequester }
-                            )
-                            SimpleDropdown(
-                                options = Schedule.entries.toList(),
-                                selectedOption = releasingEvery,
-                                onOptionSelected = { releasingEvery = it },
-                                label = "Airing every",
-                                modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester)
-                                    .focusProperties { next = descriptionRequester }
-                            )
-
-                            YearPicker(
-                                value = releaseYear,
-                                onValueChange = { releaseYear = it },
-                                onIncrement = {
-                                    val year = releaseYear.toIntOrNull() ?: 0
-                                    if (year < 9999) releaseYear = (year + 1).toString()
-                                },
-                                onDecrement = {
-                                    val year = releaseYear.toIntOrNull() ?: 0
-                                    if (year > 0) releaseYear = (year - 1).toString()
-                                },
-                                modifier = Modifier.weight(1f),
-                                label = "Year"
-                            )
-
-                        }
-                        TagChipInput(
-                            tags = genreIds,
-                            onTagsChange = { genreIds = it },
-                            tagType = TagType.GENRE,
-                            label = "Genre",
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(genreRequester),
-                            onCreateTagClick = {
-                                newTagInitialType = TagType.GENRE
-                                showNewTagPopup = true
-                            },
-                            surfaceColor = null
-                        )
-                        TagChipInput(
-                            tags = studioIds,
-                            onTagsChange = { studioIds = it },
-                            tagType = TagType.STUDIO,
-                            label = "Studio",
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                                .focusRequester(studioNameRequester),
-                            onCreateTagClick = {
-                                newTagInitialType = TagType.STUDIO
-                                showNewTagPopup = true
-                            },
-                            surfaceColor = null
-                        )
-                        // Custom Tag Input
-                        TagChipInput(
-                            tags = tagsIds,
-                            onTagsChange = { tagsIds = it },
-                            tagType = TagType.CUSTOM,
-                            label = "Tags",
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(tagsRequester),
-                            onCreateTagClick = {
-                                newTagInitialType = TagType.CUSTOM
-                                showNewTagPopup = true
-                            },
-                            surfaceColor = null
-                        )
-                        NewTagPopup(
-                            show = showNewTagPopup,
-                            onDismiss = { showNewTagPopup = false },
-                            onConfirm = { name, color, type ->
-                                val newId = TagsController.addTag(name, color, type)
-                                applyTagToThisEntry(newId, type)
-                                showNewTagPopup = false
-                            },
-                            initialType = newTagInitialType
-                        )
-
-                        OutlinedTextField(
-                            value = description,
-                            onValueChange = { description = it },
-                            label = { Text("Description") },
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp).height(120.dp)
-                                .focusRequester(descriptionRequester),
-                            maxLines = 5
-                        )
                     }
+                    //TODO: add smart interactions: e.g setting to Completed should set episode progress to episode count - or maybe not, because of potential rewatches). So maybe not after all.
+                    Row(
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        IntPicker(
+                            value = episodesProgress,
+                            onValueChange = { episodesProgress = it },
+                            onIncrement = { episodesProgress += 1 },
+                            onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
+                            label = "Ep. Progress",
+                            modifier = Modifier.weight(1f)
+                        )
+                        IntPicker(
+                            value = episodesTotal,
+                            onValueChange = { episodesTotal = it },
+                            onIncrement = { episodesTotal += 1 },
+                            onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
+                            label = "Eps Total",
+                            modifier = Modifier.weight(1f)
+                        )
+                        IntPicker(
+                            value = rewatches,
+                            onValueChange = { rewatches = it },
+                            onIncrement = { rewatches += 1 },
+                            onDecrement = { rewatches = (rewatches - 1).coerceAtLeast(0) },
+                            label = "Rewatches",
+                            modifier = Modifier.weight(1f)
+                        )
+
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        SimpleDropdown(
+                            options = Status.entries.toList(),
+                            selectedOption = status,
+                            onOptionSelected = {
+                                status = it
+                            },
+                            label = "Status",
+                            modifier = Modifier.weight(1f).focusRequester(statusRequester)
+                                .focusProperties { next = releasingEveryRequester })
+                        SimpleDropdown(
+                            options = Schedule.entries.toList(),
+                            selectedOption = releasingEvery,
+                            onOptionSelected = { releasingEvery = it },
+                            label = "Airing every",
+                            modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester)
+                                .focusProperties { next = descriptionRequester })
+
+                        YearPicker(
+                            value = releaseYear, onValueChange = { releaseYear = it }, onIncrement = {
+                            val year = releaseYear.toIntOrNull() ?: 0
+                            if (year < 9999) releaseYear = (year + 1).toString()
+                        }, onDecrement = {
+                            val year = releaseYear.toIntOrNull() ?: 0
+                            if (year > 0) releaseYear = (year - 1).toString()
+                        }, modifier = Modifier.weight(1f), label = "Year"
+                        )
+
+                    }
+                    TagChipInput(
+                        tags = genreIds,
+                        onTagsChange = { genreIds = it },
+                        tagType = TagType.GENRE,
+                        label = "Genre",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(genreRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.GENRE
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
+                    TagChipInput(
+                        tags = studioIds,
+                        onTagsChange = { studioIds = it },
+                        tagType = TagType.STUDIO,
+                        label = "Studio",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(studioNameRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.STUDIO
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
+                    TagChipInput(
+                        tags = tagsIds,
+                        onTagsChange = { tagsIds = it },
+                        tagType = TagType.CUSTOM,
+                        label = "Tags",
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(tagsRequester),
+                        onCreateTagClick = {
+                            newTagInitialType = TagType.CUSTOM
+                            showNewTagPopup = true
+                        },
+                        surfaceColor = null
+                    )
+                    NewTagPopup(
+                        show = showNewTagPopup,
+                        onDismiss = { showNewTagPopup = false },
+                        onConfirm = { name, color, type ->
+                            val newId = TagsController.addTag(name, color, type)
+                            applyTagToThisEntry(newId, type)
+                            showNewTagPopup = false
+                        },
+                        initialType = newTagInitialType
+                    )
+
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Description") },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp).height(120.dp)
+                            .focusRequester(descriptionRequester),
+                        maxLines = 5
+                    )
                 }
             }
-        )
+        })
     }
 }

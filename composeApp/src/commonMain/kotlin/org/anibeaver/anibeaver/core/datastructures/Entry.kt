@@ -3,13 +3,12 @@ package org.anibeaver.anibeaver.core.datastructures
 import org.anibeaver.anibeaver.core.EntriesController
 
 class Entry internal constructor(
-    var entryData: EntryData = EntryData(),
-    id: Int? = null
+    var entryData: EntryData = EntryData(), id: Int? = null
 ) {
     internal val id: Int = id ?: retrieveValidId()
         get() = field
 
-    private fun retrieveValidId(): Int{
+    private fun retrieveValidId(): Int {
         return EntriesController.getValidEntryId()
     }
 
@@ -64,7 +63,8 @@ enum class EntryType {
 
 enum class Status {
     Planning, Watching, Paused, Completed, Dropped;
-    override fun toString(): String = when(this) {
+
+    override fun toString(): String = when (this) {
         Planning -> "Planning"
         Watching -> "Watching"
         Paused -> "On Hold"
@@ -75,7 +75,8 @@ enum class Status {
 
 enum class Schedule {
     Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Irregular;
-    override fun toString(): String = when(this) {
+
+    override fun toString(): String = when (this) {
         Monday -> "Monday"
         Tuesday -> "Tuesday"
         Wednesday -> "Wednesday"
@@ -98,11 +99,9 @@ data class FilterData(
 )
 
 enum class SortingBy {
-    Rating,
-    Status, //watching, on hold, planning, completed, dropped
-    Rewatches,
-    Length,
-    Year;
+    Rating, Status, //watching, on hold, planning, completed, dropped
+    Rewatches, Length, Year;
+
     override fun toString(): String = when (this) {
         Rating -> "Rating"
         Status -> "Status"
@@ -113,8 +112,8 @@ enum class SortingBy {
 }
 
 enum class SortingType {
-    Ascending,
-    Descending;
+    Ascending, Descending;
+
     override fun toString(): String = when (this) {
         Ascending -> "Ascending"
         Descending -> "Descending"

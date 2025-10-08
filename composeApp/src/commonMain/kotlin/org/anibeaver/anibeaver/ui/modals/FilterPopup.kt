@@ -30,7 +30,7 @@ object FilterDefaults {
     fun defaultStatus() = Status.entries.toList()
     fun defaultSchedule() = Schedule.entries.toList()
     fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.id }
-    // Move all reset logic to FilterDefaults
+
     fun resetFilter(onChange: (FilterData) -> Unit) {
         onChange(
             FilterData(
@@ -65,6 +65,7 @@ fun FilterPopup(
         var selectedTagIds: List<Int>,
         var selectedTab: Int
     )
+
     val allTags = remember { TagsController.tags.sortedBy { it.name } }
     var state by remember {
         mutableStateOf(
@@ -83,11 +84,8 @@ fun FilterPopup(
     val tabTitles = listOf("General", "Tags")
 
     AlertDialog(
-        modifier = Modifier
-            .width(700.dp)
-            .height(800.dp), // Make the popup taller like EditEntry
-        onDismissRequest = onDismiss,
-        confirmButton = {
+        modifier = Modifier.width(700.dp).height(800.dp),
+        onDismissRequest = onDismiss, confirmButton = {
             Button(
                 onClick = {
                     onConfirm(
@@ -101,12 +99,10 @@ fun FilterPopup(
                             state.selectedTagIds
                         )
                     )
-                }
-            ) {
+                }) {
                 Text("Filter")
             }
-        },
-        dismissButton = {
+        }, dismissButton = {
             Button(
                 onClick = {
                     state = state.copy(
@@ -118,26 +114,19 @@ fun FilterPopup(
                         maxRating = FilterDefaults.DEFAULT_MAX_RATING,
                         selectedTagIds = FilterDefaults.defaultTagIds()
                     )
-                }
-            ) {
+                }) {
                 Text("Reset all filters")
             }
-        },
-        title = { Text("Filter Entries") },
-        text = {
+        }, title = { Text("Filter Entries") }, text = {
             Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Surface(
-                    tonalElevation = 2.dp,
-                    modifier = Modifier.fillMaxWidth()
+                    tonalElevation = 2.dp, modifier = Modifier.fillMaxWidth()
                 ) {
                     TabRow(
                         selectedTabIndex = state.selectedTab,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ) {
@@ -174,18 +163,16 @@ fun FilterPopup(
                                     minRating = FilterDefaults.DEFAULT_MIN_RATING,
                                     maxRating = FilterDefaults.DEFAULT_MAX_RATING
                                 )
-                            }
-                        )
+                            })
+
                         1 -> TagCheckboxRow(
                             allTags = allTags,
                             selectedTagIds = state.selectedTagIds,
-                            onChange = { state = state.copy(selectedTagIds = it) }
-                        )
+                            onChange = { state = state.copy(selectedTagIds = it) })
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -206,10 +193,7 @@ private fun FilterGeneralTab(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
+        verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
     ) {
         RatingFilterRow(
             minRating = minRating,
@@ -218,17 +202,11 @@ private fun FilterGeneralTab(
             onMaxRatingChange = onMaxRatingChange
         )
         YearFilterRow(
-            minYear = minYear,
-            onMinYearChange = onMinYearChange,
-            maxYear = maxYear,
-            onMaxYearChange = onMaxYearChange
+            minYear = minYear, onMinYearChange = onMinYearChange, maxYear = maxYear, onMaxYearChange = onMaxYearChange
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
         FilterCheckboxRow(
-            label = "Status",
-            entries = Status.entries.toList(),
-            selected = selectedStatus,
-            onChange = onStatusChange
+            label = "Status", entries = Status.entries.toList(), selected = selectedStatus, onChange = onStatusChange
         )
         FilterCheckboxRow(
             label = "Schedule",
@@ -241,10 +219,7 @@ private fun FilterGeneralTab(
 
 @Composable
 private fun RatingFilterRow(
-    minRating: Float?,
-    onMinRatingChange: (Float?) -> Unit,
-    maxRating: Float?,
-    onMaxRatingChange: (Float?) -> Unit
+    minRating: Float?, onMinRatingChange: (Float?) -> Unit, maxRating: Float?, onMaxRatingChange: (Float?) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.width(100.dp)) {
@@ -274,10 +249,7 @@ private fun RatingFilterRow(
 
 @Composable
 private fun YearFilterRow(
-    minYear: String?,
-    onMinYearChange: (String?) -> Unit,
-    maxYear: String?,
-    onMaxYearChange: (String?) -> Unit
+    minYear: String?, onMinYearChange: (String?) -> Unit, maxYear: String?, onMaxYearChange: (String?) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.width(100.dp)) {
@@ -290,43 +262,30 @@ private fun YearFilterRow(
             }
         }
         YearPicker(
-            value = minYear ?: "",
-            onValueChange = { onMinYearChange(it.ifBlank { null }) },
-            onIncrement = {
+            value = minYear ?: "", onValueChange = { onMinYearChange(it.ifBlank { null }) }, onIncrement = {
                 val year = (minYear?.toIntOrNull() ?: MIN_YEAR) + 1
                 onMinYearChange(year.coerceAtMost((maxYear?.toIntOrNull() ?: MAX_YEAR)).toString())
-            },
-            onDecrement = {
+            }, onDecrement = {
                 val year = (minYear?.toIntOrNull() ?: MIN_YEAR) - 1
                 onMinYearChange(year.coerceAtLeast(MIN_YEAR).toString())
-            },
-            modifier = Modifier.weight(1f),
-            label = "Min"
+            }, modifier = Modifier.weight(1f), label = "Min"
         )
         Spacer(Modifier.width(16.dp))
         YearPicker(
-            value = maxYear ?: "",
-            onValueChange = { onMaxYearChange(it.ifBlank { null }) },
-            onIncrement = {
+            value = maxYear ?: "", onValueChange = { onMaxYearChange(it.ifBlank { null }) }, onIncrement = {
                 val year = (maxYear?.toIntOrNull() ?: MAX_YEAR) + 1
                 onMaxYearChange(year.coerceAtMost(MAX_YEAR).toString())
-            },
-            onDecrement = {
+            }, onDecrement = {
                 val year = (maxYear?.toIntOrNull() ?: MAX_YEAR) - 1
                 onMaxYearChange(year.coerceAtLeast((minYear?.toIntOrNull() ?: MIN_YEAR)).toString())
-            },
-            modifier = Modifier.weight(1f),
-            label = "Max"
+            }, modifier = Modifier.weight(1f), label = "Max"
         )
     }
 }
 
 @Composable
 private fun <T> FilterCheckboxRow(
-    label: String,
-    entries: List<T>,
-    selected: List<T>,
-    onChange: (List<T>) -> Unit
+    label: String, entries: List<T>, selected: List<T>, onChange: (List<T>) -> Unit
 ) where T : Enum<T> {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
@@ -353,13 +312,11 @@ private fun <T> FilterCheckboxRow(
             entries.forEach { entry ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
-                        checked = selected.contains(entry),
-                        onCheckedChange = { checked ->
+                        checked = selected.contains(entry), onCheckedChange = { checked ->
                             onChange(
                                 if (checked) selected + entry else selected - entry
                             )
-                        }
-                    )
+                        })
                     Text(entry.toString())
                 }
             }
@@ -387,16 +344,14 @@ private fun TagCheckboxSection(
                 Button(
                     onClick = {
                         onChange(selectedTagIds - sectionTagIds)
-                    },
-                    modifier = Modifier.height(32.dp)
+                    }, modifier = Modifier.height(32.dp)
                 ) {
                     Text("Uncheck all")
                 }
                 Button(
                     onClick = {
                         onChange((selectedTagIds - sectionTagIds) + sectionTagIds)
-                    },
-                    modifier = Modifier.height(32.dp)
+                    }, modifier = Modifier.height(32.dp)
                 ) {
                     Text("Check all")
                 }
@@ -410,16 +365,13 @@ private fun TagCheckboxSection(
             tags.forEach { tag ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(
-                        checked = selectedTagIds.contains(tag.id),
-                        onCheckedChange = { checked ->
+                        checked = selectedTagIds.contains(tag.id), onCheckedChange = { checked ->
                             onChange(
                                 if (checked) selectedTagIds + tag.id else selectedTagIds - tag.id
                             )
-                        }
-                    )
+                        })
                     Text(
-                        tag.name,
-                        color = try {
+                        tag.name, color = try {
                             Color(tag.color.removePrefix("#").toLong(16) or 0xFF000000)
                         } catch (_: Exception) {
                             Color.Unspecified
@@ -437,9 +389,9 @@ private fun TagCheckboxRow(
     selectedTagIds: List<Int>,
     onChange: (List<Int>) -> Unit
 ) {
-  val genres = allTags.filter { it.type == TagType.GENRE }
-  val customs = allTags.filter { it.type == TagType.CUSTOM }
-  val studios = allTags.filter { it.type == TagType.STUDIO }
+    val genres = allTags.filter { it.type == TagType.GENRE }
+    val customs = allTags.filter { it.type == TagType.CUSTOM }
+    val studios = allTags.filter { it.type == TagType.STUDIO }
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         TagCheckboxSection("Genres", genres, selectedTagIds, onChange)
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))

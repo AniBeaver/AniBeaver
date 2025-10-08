@@ -8,18 +8,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.Entry
+import kotlin.math.round
 
 @Composable
 fun EntryCard(
-    entry: Entry,
-    onEdit: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    entry: Entry, onEdit: () -> Unit = {}, onDelete: () -> Unit = {}
 ) {
     val name: String = entry.entryData.animeName.toString()
     val description = entry.entryData.description
@@ -31,23 +30,20 @@ fun EntryCard(
 
     Card(shape = RoundedCornerShape(6.dp)) {
         Row(
-            Modifier
-                .height(160.dp)
-                .width(380.dp)
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier.height(160.dp).width(380.dp).padding(8.dp), verticalAlignment = Alignment.CenterVertically
         ) {
 
             Box(
-                Modifier.size(64.dp),
-                contentAlignment = Alignment.Center
+                Modifier.size(64.dp), contentAlignment = Alignment.Center
             ) {
                 Text("IMG", fontSize = 14.sp)
             }
             Spacer(Modifier.width(12.dp))
 
             Column(Modifier.weight(1f)) {
-                Text(name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    name, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Bold, fontSize = 16.sp
+                )
 
                 val year = entry.entryData.releaseYear
                 val rating = entry.entryData.rating
@@ -62,11 +58,16 @@ fun EntryCard(
                     if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
                 } else "-"
 
-                Text("$year, Rating: $ratingText, Status: $status, Eps: ${epsProgress}/${epsTotal} (rewatches: $rewatches), Schedule: $schedule", fontSize = 12.sp)
+                Text(
+                    "$year, Rating: $ratingText, Status: $status, Eps: ${epsProgress}/${epsTotal} (rewatches: $rewatches), Schedule: $schedule",
+                    fontSize = 12.sp
+                )
 
                 Spacer(Modifier.height(6.dp))
 
-                val tagsLine = listOf(genreTags.joinToString(", "), studioTags.joinToString(", "), customTags.joinToString(", ")).filter { it.isNotBlank() }.joinToString(", ")
+                val tagsLine = listOf(
+                    genreTags.joinToString(", "), studioTags.joinToString(", "), customTags.joinToString(", ")
+                ).filter { it.isNotBlank() }.joinToString(", ")
                 if (tagsLine.isNotBlank()) {
                     Text(tagsLine, fontSize = 12.sp)
                 }
@@ -89,13 +90,14 @@ fun EntryCard(
     }
 }
 
-@Composable
-@Preview
-fun EntryCardPreview() {
-    EntryCard(
-        id = 1,
-        name = "Sample Anime",
-        tags = "Action, Adventure, Fantasy",
-        description = "This is a sample description for the anime entry. It provides an overview of the anime's plot and themes."
-    )
-}
+//FIXME: yeah something else will have to be done here
+//@Composable
+//@Preview
+//fun EntryCardPreview() {
+//    EntryCard(
+//        id = 1,
+//        name = "Sample Anime",
+//        tags = "Action, Adventure, Fantasy",
+//        description = "This is a sample description for the anime entry. It provides an overview of the anime's plot and themes."
+//    )
+//}

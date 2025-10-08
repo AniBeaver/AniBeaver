@@ -5,7 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -58,7 +57,7 @@ fun AutofillPopup(
         showSelector = true
     }
 
-    // Update checkboxes and selection state when autofillData changes
+    // update when autofillData changes
     LaunchedEffect(autofillData) {
         if (autofillData != null) {
             selectedStudios = autofillData!!.studios.filter { it.isNotBlank() }.toSet()
@@ -71,10 +70,14 @@ fun AutofillPopup(
             nameChecked = true
             yearChecked = true
         }
-        if (_autoTriggerPull) onPullFromAniList(0, { data -> _autoTriggerPull=false; onPull(data)  }) //FIXME: here, auto trigger pull doesn't work
+        if (_autoTriggerPull) onPullFromAniList(
+            0,
+            { data -> _autoTriggerPull = false; onPull(data) }) //FIXME: here, auto trigger pull doesn't work
     }
 
-    val nameOptions = autofillData?.let { listOf(it.name_en, it.name_rm, it.name_jp).filter { name -> name.isNotBlank() }.distinct() } ?: emptyList()
+    val nameOptions =
+        autofillData?.let { listOf(it.name_en, it.name_rm, it.name_jp).filter { name -> name.isNotBlank() }.distinct() }
+            ?: emptyList()
 
     AlertDialog(
         modifier = Modifier.width(600.dp),
@@ -140,7 +143,14 @@ fun AutofillPopup(
                     )
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = { onAddReference(Reference("", "")) }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
+                    Button(onClick = {
+                        onAddReference(
+                            Reference(
+                                "",
+                                ""
+                            )
+                        )
+                    }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
                     Spacer(modifier = Modifier.weight(1f))
                     Button(onClick = {
                         onPullFromAniList(priorityIndex) { data -> onPull(data) } //TODO: If anilist id illegal or no references, forbid pull from anilist
@@ -346,7 +356,7 @@ private fun AutofillSelectorUI(
 }
 
 fun formatMinutes(minutes: Int): String {
-    val hours = minutes / 60 // since both are ints, you get an int
+    val hours = minutes / 60
     var minutes = (minutes % 60).toString()
     if (minutes.length < 2) {
         minutes = "0$minutes"

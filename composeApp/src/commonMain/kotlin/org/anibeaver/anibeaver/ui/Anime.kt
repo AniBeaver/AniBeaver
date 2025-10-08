@@ -1,8 +1,6 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -29,8 +27,7 @@ import kotlin.math.max
 @Composable
 @Preview
 fun AnimeScreen(
-    navController: NavHostController = rememberNavController(),
-    dataWrapper: DataWrapper
+    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -59,10 +56,8 @@ fun AnimeScreen(
             showEditEntryPopup = true
         }
 
-        // Buttons
         Column(
-            Modifier
-                .fillMaxSize()
+            Modifier.fillMaxSize()
         ) {
             Text("Anime", style = Typography.headlineLarge)
             FlowRow(
@@ -77,14 +72,10 @@ fun AnimeScreen(
                 Button(onClick = { showFilter = true }) { Text("Filter entries") }
 
                 Card(
-                    modifier = Modifier
-                        .padding(end = 4.dp)
-                        .height(72.dp)
+                    modifier = Modifier.padding(end = 4.dp).height(72.dp)
                 ) {
                     Row(
-                        Modifier
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                            .fillMaxHeight(),
+                        Modifier.padding(horizontal = 8.dp, vertical = 4.dp).fillMaxHeight(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -104,13 +95,9 @@ fun AnimeScreen(
                         )
                     }
                 }
-                QuickCreateEntryFromAl(
-                    quickAlId,
-                    { newQuickAlId -> quickAlId = newQuickAlId },
-                    {
-                        showEntryPopup(null, true)
-                    }
-                )
+                QuickCreateEntryFromAl(quickAlId, { newQuickAlId -> quickAlId = newQuickAlId }, {
+                    showEntryPopup(null, true)
+                })
                 Button(onClick = {
                     val entryData = EntryData(
                         animeName = "Placeholder Anime",
@@ -155,16 +142,12 @@ fun AnimeScreen(
                 show = showManageTags,
                 onDismiss = { showManageTags = false },
                 onConfirm = { showManageTags = false },
-                onCreateTag = { showNewTagPopupFromManage = true }
-            )
+                onCreateTag = { showNewTagPopupFromManage = true })
             FilterPopup(
-                show = showFilter,
-                onDismiss = { showFilter = false },
-                onConfirm = { data ->
-                    filterState.onFilterChange(data)
-                    showFilter = false
-                },
-                initialFilter = filterState.filterData
+                show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
+                filterState.onFilterChange(data)
+                showFilter = false
+            }, initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -172,8 +155,7 @@ fun AnimeScreen(
                 onConfirm = { name, color, type ->
                     TagsController.addTag(name, color, type)
                     showNewTagPopupFromManage = false
-                }
-            )
+                })
 
             val allEntries = EntriesController.entries
             val observedVersion = EntriesController.entriesVersion // for resorting
@@ -188,16 +170,14 @@ fun AnimeScreen(
                 onEdit = { entryId -> showEntryPopup(entryId) },
                 onDelete = { entryId ->
                     EntriesController.deleteEntry(entryId)
-                }
-            )
+                })
         }
     }
 }
 
 
 data class AnimeFilterState(
-    var filterData: FilterData? = null,
-    val onFilterChange: (FilterData?) -> Unit
+    var filterData: FilterData? = null, val onFilterChange: (FilterData?) -> Unit
 ) {
     fun clear() = onFilterChange(defaultFilterData)
 }
@@ -233,49 +213,49 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
     val comparator = Comparator<Entry> { a, b -> //FIXME: goddamn redo this bs
         when (sortBy) {
             SortingBy.Rating -> chainCompare(
-                a, b,
+                a,
+                b,
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) }
-            )
+                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) })
 
             SortingBy.Status -> chainCompare(
-                a, b,
+                a,
+                b,
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) }
-            )
+                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) })
 
             SortingBy.Rewatches -> chainCompare(
-                a, b,
+                a,
+                b,
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) }
-            )
+                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) })
 
             SortingBy.Year -> chainCompare(
-                a, b,
+                a,
+                b,
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) }
-            )
+                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) })
 
             SortingBy.Length -> chainCompare(
-                a, b,
+                a,
+                b,
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) }
-            )
+                { x, y -> cmpInt(yearValue(x), yearValue(y)) })
         }
     }
 
@@ -316,11 +296,7 @@ private fun EntryGrid(
         Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
             Spacer(Modifier.width(cardSpacing))
             rowEntries.forEach { entry ->
-                EntryCard(
-                    entry = entry,
-                    onEdit = { onEdit(entry.id) },
-                    onDelete = { onDelete(entry.id) }
-                )
+                EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
                 Spacer(Modifier.width(cardSpacing))
             }
             repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }

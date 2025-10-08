@@ -8,12 +8,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.ColorPicker
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.parseHexColor
-import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun NewTagPopup(
