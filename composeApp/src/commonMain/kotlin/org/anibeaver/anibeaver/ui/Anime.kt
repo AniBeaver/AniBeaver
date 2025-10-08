@@ -139,6 +139,7 @@ fun AnimeScreen(
                     onDismiss = { showEditEntryPopup = false },
                     onConfirm = { entryData ->
                         EntriesController.updateEntry(currentEditedEntryId, entryData)
+                        EntriesController.entriesVersion++ // resort
                         showEditEntryPopup = false
 
                         if (showAutofillPopup) quickAlId = ""
@@ -174,6 +175,7 @@ fun AnimeScreen(
             )
 
             val allEntries = EntriesController.entries
+            val observedVersion = EntriesController.entriesVersion // for resorting
             val filteredEntries = allEntries.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
             FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }

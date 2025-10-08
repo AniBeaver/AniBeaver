@@ -1,6 +1,9 @@
 package org.anibeaver.anibeaver.core
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
@@ -11,6 +14,7 @@ import org.anibeaver.anibeaver.core.datastructures.Schedule
 
 object EntriesController {
     private var lastId = 0
+    var entriesVersion by mutableStateOf(0) //updating forces resort/recomposition
 
     //TODO: if some tag doesn't exist in tagscontroller, remove its id from all entries
     // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
@@ -136,6 +140,7 @@ object EntriesController {
     private fun addEntry(entry: Entry) {
         _entries.put(entry.id, entry)
         entries.add(entry)
+        entriesVersion++
     }
 
     //update Entry and add if non-existing
@@ -170,6 +175,7 @@ object EntriesController {
         }
         _entries.remove(id)
         entries.removeAll {it.id == id}
+        entriesVersion++
         //debugPrintIds()
     }
 
