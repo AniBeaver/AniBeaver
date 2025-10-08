@@ -170,7 +170,8 @@ fun EditEntryPopup(
                             bannerArt = Art("", ""),
                             episodesTotal = episodesTotal,
                             episodesProgress = episodesProgress,
-                            rewatches = rewatches
+                            rewatches = rewatches,
+                            type = EntryType.Anime
                         )
                     )
                 }) {

@@ -8,6 +8,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.EntryType
 import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.Schedule
@@ -38,7 +39,8 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 64,
             episodesProgress = 64,
-            rewatches = 1
+            rewatches = 1,
+            type = EntryType.Anime
         )))
         addEntry(Entry(EntryData(
             "Steins;Gate",
@@ -57,7 +59,9 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 24,
             episodesProgress = 24,
-            rewatches = 1
+            rewatches = 1,
+            type = EntryType.Anime
+
         )))
         addEntry(Entry(EntryData(
             "Your Lie in April",
@@ -76,7 +80,9 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 22,
             episodesProgress = 22,
-            rewatches = 1
+            rewatches = 1,
+            type = EntryType.Anime
+
         )))
         addEntry(Entry(EntryData(
             "Attack on Titan",
@@ -96,7 +102,9 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 0,
             episodesProgress = 0,
-            rewatches = 0
+            rewatches = 0,
+            type = EntryType.Anime
+
         )))
         addEntry(Entry(EntryData(
             "K-On!",
@@ -113,7 +121,9 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 0,
             episodesProgress = 0,
-            rewatches = 0
+            rewatches = 0,
+            type = EntryType.Anime
+
         )))
         addEntry(Entry(EntryData(
             "Tag Overload!",
@@ -130,7 +140,9 @@ object EntriesController {
             bannerArt = Art("", ""),
             episodesTotal = 0,
             episodesProgress = 0,
-            rewatches = 0
+            rewatches = 0,
+            type = EntryType.Anime
+
         )))
     }
 

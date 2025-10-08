@@ -54,8 +54,13 @@ class EntryData internal constructor(
     val bannerArt: Art = Art("", ""),
     val episodesTotal: Int = 0,
     val episodesProgress: Int = 0,
-    val rewatches: Int = 0
+    val rewatches: Int = 0,
+    val type: EntryType = EntryType.Anime
 )
+
+enum class EntryType {
+    Anime, Manga
+}
 
 enum class Status {
     Planning, Watching, Paused, Completed, Dropped;

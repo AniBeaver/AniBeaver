@@ -1,16 +1,12 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.material3.Card
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -231,7 +227,8 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
 
     val comparator = Comparator<Entry> { a, b -> //FIXME: goddamn redo this bs
         when (sortBy) {
-            SortingBy.Rating -> chainCompare(a, b,
+            SortingBy.Rating -> chainCompare(
+                a, b,
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
@@ -239,7 +236,8 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) }
             )
 
-            SortingBy.Status -> chainCompare(a, b,
+            SortingBy.Status -> chainCompare(
+                a, b,
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
@@ -247,7 +245,8 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) }
             )
 
-            SortingBy.Rewatches -> chainCompare(a, b,
+            SortingBy.Rewatches -> chainCompare(
+                a, b,
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
@@ -255,7 +254,8 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) }
             )
 
-            SortingBy.Year -> chainCompare(a, b,
+            SortingBy.Year -> chainCompare(
+                a, b,
                 { x, y -> cmpInt(yearValue(x), yearValue(y)) },
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
@@ -263,7 +263,8 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
                 { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) }
             )
 
-            SortingBy.Length -> chainCompare(a, b,
+            SortingBy.Length -> chainCompare(
+                a, b,
                 { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
                 { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
                 { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
