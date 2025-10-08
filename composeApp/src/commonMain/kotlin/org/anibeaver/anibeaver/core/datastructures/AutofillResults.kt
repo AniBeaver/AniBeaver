@@ -1,7 +1,7 @@
 package org.anibeaver.anibeaver.core.datastructures
 
 data class AutofillResultSelection(
-    val name: String,
+    val name: String?,
     val year: Int?,
     val studios: List<String>,
     val genres: List<String>,

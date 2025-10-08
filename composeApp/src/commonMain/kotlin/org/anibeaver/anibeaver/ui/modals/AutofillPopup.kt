@@ -47,6 +47,8 @@ fun AutofillPopup(
     var bannerChecked by remember { mutableStateOf(true) }
     var airingChecked by remember { mutableStateOf(true) }
     var epsChecked by remember { mutableStateOf(true) }
+    var nameChecked by remember { mutableStateOf(true) }
+    var yearChecked by remember { mutableStateOf(true) }
     val totalEpisodes = autofillData?.eps_total ?: 0
 //    val runtime = autofillData?.runtime ?: 0 // FIXME: why this unused?
 
@@ -65,6 +67,8 @@ fun AutofillPopup(
             bannerChecked = true
             airingChecked = true
             epsChecked = true
+            nameChecked = true
+            yearChecked = true
         }
         if (autoTriggerPull) onPullFromAniList(0, { data -> onPull(data) })
     }
@@ -79,9 +83,10 @@ fun AutofillPopup(
             if (autofillData != null) {
                 Button(onClick = {
                     val year = if (yearRadioIdx == 0) autofillData!!.startYear else autofillData!!.endYear
+                    val name = nameOptions.getOrNull(selectedNameIdx) ?: ""
                     val selection = AutofillResultSelection(
-                        name = nameOptions.getOrNull(selectedNameIdx) ?: "",
-                        year = year,
+                        name = if (nameChecked) name else null,
+                        year = if (yearChecked) year else null,
                         studios = selectedStudios.toList(),
                         genres = selectedGenres.toList(),
                         tags = selectedTags.toList(),
@@ -163,7 +168,11 @@ fun AutofillPopup(
                         onAiringCheckedChange = { airingChecked = it },
                         epsChecked = epsChecked,
                         onEpsCheckedChange = { epsChecked = it },
-                        totalEpisodes = totalEpisodes
+                        totalEpisodes = totalEpisodes,
+                        nameChecked = nameChecked,
+                        onNameCheckedChange = { nameChecked = it },
+                        yearChecked = yearChecked,
+                        onYearCheckedChange = { yearChecked = it }
                     )
                 }
             }
@@ -194,7 +203,11 @@ private fun AutofillSelectorUI(
     onAiringCheckedChange: (Boolean) -> Unit,
     epsChecked: Boolean,
     onEpsCheckedChange: (Boolean) -> Unit,
-    totalEpisodes: Int
+    totalEpisodes: Int,
+    nameChecked: Boolean,
+    onNameCheckedChange: (Boolean) -> Unit,
+    yearChecked: Boolean,
+    onYearCheckedChange: (Boolean) -> Unit
 ) {
 
     val scrollState = rememberScrollState()
@@ -207,7 +220,10 @@ private fun AutofillSelectorUI(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text("Sync name", style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = nameChecked, onCheckedChange = { checked -> onNameCheckedChange(checked) })
+                Text("Sync name", style = MaterialTheme.typography.titleMedium)
+            }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -223,7 +239,11 @@ private fun AutofillSelectorUI(
                     }
                 }
             }
-            Text("Sync year", style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = yearChecked, onCheckedChange = { checked -> onYearCheckedChange(checked) })
+                Text("Sync year", style = MaterialTheme.typography.titleMedium)
+
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(24.dp),

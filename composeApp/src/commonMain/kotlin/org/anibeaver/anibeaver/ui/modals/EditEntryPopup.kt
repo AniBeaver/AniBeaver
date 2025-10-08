@@ -34,7 +34,7 @@ fun EditEntryPopup(
     dataWrapper: DataWrapper
 ) {
 
-    var animeName by remember { mutableStateOf(initialValues?.animeName ?: "") }
+    var animeName: String? by remember { mutableStateOf(initialValues?.animeName ?: "") }
     var releaseYear by remember { mutableStateOf(initialValues?.releaseYear ?: "2010") }
     var studioIds by remember { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
     var genreIds by remember { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
@@ -105,8 +105,8 @@ fun EditEntryPopup(
         }
 
         println(selection)
-        animeName = selection.name
-        releaseYear = selection.year?.toString() ?: ""
+        if (selection.name != null) animeName = selection.name
+        if (selection.year != null) releaseYear = selection.year.toString()
         releasingEvery = selection.airingSchedule
         if (selection.episodes != null) {
             episodesTotal = selection.episodes
@@ -207,13 +207,15 @@ fun EditEntryPopup(
                                 )
                             }
                             Column(modifier = Modifier.weight(1f)) {
-                                OutlinedTextField(
-                                    value = animeName,
-                                    onValueChange = { animeName = it },
-                                    label = { Text("Anime Name") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    singleLine = true
-                                )
+                                animeName?.let { it1 ->
+                                    OutlinedTextField(
+                                        value = it1,
+                                        onValueChange = { animeName = it },
+                                        label = { Text("Anime Name") },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        singleLine = true
+                                    )
+                                }
                                 Row(
                                     modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
                                     verticalAlignment = Alignment.CenterVertically

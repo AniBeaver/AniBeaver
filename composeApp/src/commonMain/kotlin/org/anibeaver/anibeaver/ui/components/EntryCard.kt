@@ -23,7 +23,7 @@ fun EntryCard(
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
-    val name = entry.entryData.animeName
+    val name: String = entry.entryData.animeName.toString()
     val description = entry.entryData.description
 
     val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }

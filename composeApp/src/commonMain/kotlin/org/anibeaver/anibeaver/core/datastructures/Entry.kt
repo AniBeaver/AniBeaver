@@ -40,7 +40,7 @@ class Entry internal constructor(
 }
 
 class EntryData internal constructor(
-    val animeName: String = "",
+    val animeName: String? = "",
     val releaseYear: String = "2000",
     val studioIds: List<Int> = emptyList(),
     val genreIds: List<Int> = emptyList(),
