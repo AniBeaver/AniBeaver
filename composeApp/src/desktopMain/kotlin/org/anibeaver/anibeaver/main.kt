@@ -7,6 +7,7 @@ import androidx.compose.ui.window.application
 import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.DesktopApiAuthorizationHandler
 import org.anibeaver.anibeaver.api.tokenStore
+import org.anibeaver.anibeaver.db.getDatabaseBuilder
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 fun main() = application {
@@ -16,7 +17,8 @@ fun main() = application {
     val dataWrapper = DataWrapper(
         activityKiller,
         apiHandler = ApiHandler(DesktopApiAuthorizationHandler()),
-        tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", platformContext = null)
+        tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", platformContext = null),
+        databaseBuilder = getDatabaseBuilder()
     )
     Window(
         onCloseRequest = ::exitApplication,
