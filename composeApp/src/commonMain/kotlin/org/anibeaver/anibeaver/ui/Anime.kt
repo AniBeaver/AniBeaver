@@ -24,10 +24,12 @@ import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.max
 
+@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 @Preview
 fun AnimeScreen(
-    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper
+    navController: NavHostController = rememberNavController(),
+    dataWrapper: DataWrapper
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -39,6 +41,8 @@ fun AnimeScreen(
     var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Descending) }
+
+    val viewModel: AnimeViewModel = remember { AnimeViewModel(dataWrapper) }
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -99,24 +103,25 @@ fun AnimeScreen(
                     showEntryPopup(null, true)
                 })
                 Button(onClick = {
-                    val entryData = EntryData(
-                        animeName = "Placeholder Anime",
-                        releaseYear = "2025",
-                        studioIds = listOf(18), // Bones studio id
-                        genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
-                        description = "This is a placeholder entry.",
-                        rating = 8.5f,
-                        status = Status.Completed,
-                        releasingEvery = Schedule.Irregular,
-                        tagIds = listOf(10, 11), // Shounen, Classic custom tag ids
-                        coverArt = Art("", ""),
-                        bannerArt = Art("", ""),
-                        episodesTotal = 13,
-                        episodesProgress = 13,
-                        rewatches = 1
-                        //references: e.g 179966
-                    )
-                    EntriesController.addEntry(entryData = entryData)
+//                    val entryData = EntryData(
+//                        animeName = "Placeholder Anime",
+//                        releaseYear = "2025",
+//                        studioIds = listOf(18), // Bones studio id
+//                        genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
+//                        description = "This is a placeholder entry.",
+//                        rating = 8.5f,
+//                        status = Status.Completed,
+//                        releasingEvery = Schedule.Irregular,
+//                        tagIds = listOf(10, 11), // Shounen, Classic custom tag ids
+//                        coverArt = Art("", ""),
+//                        bannerArt = Art("", ""),
+//                        episodesTotal = 13,
+//                        episodesProgress = 13,
+//                        rewatches = 1
+//                        //references: e.g 179966
+//                    )
+//                    EntriesController.addEntry(entryData = entryData)
+                    viewModel.saveAnimeEntry()
                 }) { Text("Add Placeholder Entry") }
             }
 
@@ -126,8 +131,8 @@ fun AnimeScreen(
                     show = showEditEntryPopup,
                     onDismiss = { showEditEntryPopup = false },
                     onConfirm = { entryData ->
-                        EntriesController.updateEntry(currentEditedEntryId, entryData)
-                        EntriesController.entriesVersion++ // resort
+                        viewModel.upsertAnimeEntry(currentEditedEntryId, entryData)
+
                         showEditEntryPopup = false
 
                         if (showAutofillPopup) quickAlId = ""
@@ -162,6 +167,7 @@ fun AnimeScreen(
             val filteredEntries = allEntries.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
             FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
+
             EntryGrid(
                 entriesToShow = entriesToShow,
                 columns = columns,
@@ -169,7 +175,7 @@ fun AnimeScreen(
                 cardSpacing = cardSpacing,
                 onEdit = { entryId -> showEntryPopup(entryId) },
                 onDelete = { entryId ->
-                    EntriesController.deleteEntry(entryId)
+                    viewModel.deleteAnimeEntry(entryId)
                 })
         }
     }
