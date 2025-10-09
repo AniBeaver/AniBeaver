@@ -61,6 +61,10 @@ fun App(
         }
     }
 
+    // On app start, populate the EntryController with the entries from the database
+    // While our app is open, the EntryController is the source of truth for entries
+    val appViewModel: AppViewModel = remember { AppViewModel(dataWrapper) }
+
     AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
             Row {
