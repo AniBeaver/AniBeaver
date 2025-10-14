@@ -40,7 +40,7 @@ fun AnimeScreen(
     val filterState = rememberAnimeFilterState()
     var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
-    var sortOrder by remember { mutableStateOf(SortingType.Descending) }
+    var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
 
     val viewModel: AnimeViewModel = remember { AnimeViewModel(dataWrapper) }
 

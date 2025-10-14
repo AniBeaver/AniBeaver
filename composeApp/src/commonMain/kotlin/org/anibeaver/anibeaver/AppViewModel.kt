@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.EntryType
+import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
+import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.db.getRoomDatabase
 
 class AppViewModel(
@@ -32,14 +35,14 @@ class AppViewModel(
                         releaseYear = entry.releaseYear,
                         description = entry.description,
                         rating = entry.rating,
-                        status = EntryData().status.fromString(entry.status) ?: EntryData().status,
-                        releasingEvery = EntryData().releasingEvery.fromString(entry.releasingEvery) ?: EntryData().releasingEvery,
+                        status = Status.fromId(entry.status) ?: EntryData().status,
+                        releasingEvery = ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
                         coverArt = EntryData().coverArt.copy(),
                         bannerArt = EntryData().bannerArt.copy(),
                         episodesTotal = entry.episodesTotal,
                         episodesProgress = entry.episodesProgress,
                         rewatches = entry.rewatches,
-                        //type = EntryData().type.fromString(entry.type) ?: EntryData().type
+                        type = EntryType.fromId(entry.type) ?: EntryData().type
                     )
                 )
             }

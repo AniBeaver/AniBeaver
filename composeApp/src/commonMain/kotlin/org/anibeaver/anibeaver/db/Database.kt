@@ -1,18 +1,16 @@
 package org.anibeaver.anibeaver.db
 
-import androidx.room.BuiltInTypeConverters
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import org.anibeaver.anibeaver.db.daos.AnimeEntryDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 
 
-@Database(entities = [AnimeEntryEntity::class], version = 1)
+@Database(entities = [AnimeEntryEntity::class], version = 3)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): AnimeEntryDao
@@ -30,5 +28,6 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
+        .fallbackToDestructiveMigration(true) //FIXME: probably not supposed to be here
         .build()
 }

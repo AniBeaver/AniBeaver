@@ -57,8 +57,13 @@ class EntryData internal constructor(
     val type: EntryType = EntryType.Anime
 )
 
-enum class EntryType {
-    Anime, Manga
+enum class EntryType(val id: Int) {
+    Anime(0),
+    Manga(1);
+
+    companion object {
+        fun fromId(id: Int): EntryType? = entries.find { it.id == id }
+    }
 }
 
 enum class Status(val id: Int, val displayName: String) {

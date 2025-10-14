@@ -16,8 +16,8 @@ data class AnimeEntryEntity(
 
     val description: String = "",
     val rating: Float = 0f,
-    val status: String = Status.Watching.toString(),
-    val releasingEvery: String = ReleaseSchedule.Irregular.toString(),
+    val status: Int = Status.Watching.id,
+    val releasingEvery: Int = ReleaseSchedule.Irregular.id,
     val coverArtSource: String = "",
     val coverArtLocalPath: String = "",
     val bannerArtSource: String = "",
@@ -25,5 +25,5 @@ data class AnimeEntryEntity(
     val episodesTotal: Int = 0,
     val episodesProgress: Int = 0,
     val rewatches: Int = 0,
-    val type: String = "Anime" // EntryType enum as string
+    val type: Int = 0
 )

@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.getRoomDatabase
 
@@ -23,7 +24,7 @@ class AnimeViewModel(
                     animeName = "Plastic Memories",
                     episodesProgress = 12,
                     episodesTotal = 24,
-                    status = "Watching"
+                    status = Status.Watching.id
                 )
             )
 
@@ -44,8 +45,8 @@ class AnimeViewModel(
                     releaseYear = entryData.releaseYear,
                     description = entryData.description,
                     rating = entryData.rating,
-                    status = entryData.status.toString(),
-                    releasingEvery = entryData.releasingEvery.toString(),
+                    status = entryData.status.id,
+                    releasingEvery = entryData.releasingEvery.id,
                     coverArtSource = entryData.coverArt.source,
                     coverArtLocalPath = entryData.coverArt.local_path,
                     bannerArtSource = entryData.bannerArt.source,
@@ -53,7 +54,7 @@ class AnimeViewModel(
                     episodesTotal = entryData.episodesTotal,
                     episodesProgress = entryData.episodesProgress,
                     rewatches = entryData.rewatches,
-                    type = entryData.type.toString(),
+                    type = entryData.type.id,
                 )
             )
 
