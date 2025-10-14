@@ -77,13 +77,12 @@ enum class Status {
         Dropped -> "Dropped"
     }
 
-    fun fromString(value: String): Status? = when (value.trim().lowercase()) {
-        normalize(Planning.toString()) -> Planning
-        normalize(Watching.toString()) -> Watching
-        normalize(Paused.toString()) -> Paused
-        normalize(Completed.toString()) -> Completed
-        normalize(Dropped.toString()) -> Dropped
-        else -> null
+    companion object {
+        private fun normalize(s: String): String = s.trim().lowercase()
+
+        private val lookup = entries.associateBy { normalize(it.toString()) }
+
+        fun fromString(value: String): Status? = lookup[normalize(value)]
     }
 
 }
