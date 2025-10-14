@@ -294,8 +294,9 @@ private fun EntryGrid(
     }
 
     fun updateOneGroupInFilterState(filterState: AnimeFilterState, status: Status) {
-        val newSelectedStatus = filterState.filterData!!.selectedStatus - status
-        val newFilterData = filterState.filterData!!.copy(selectedStatus = newSelectedStatus)
+        var tempSelectedStatus = filterState.filterData!!.selectedStatus
+        if (tempSelectedStatus.isEmpty()) tempSelectedStatus = defaultFilterData.selectedStatus
+        val newFilterData = filterState.filterData!!.copy(selectedStatus = tempSelectedStatus - status)
         filterState.onFilterChange(newFilterData)
     }
 

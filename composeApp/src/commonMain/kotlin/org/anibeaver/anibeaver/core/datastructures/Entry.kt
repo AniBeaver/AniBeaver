@@ -67,10 +67,10 @@ enum class EntryType(val id: Int) {
 }
 
 enum class Status(val id: Int, val displayName: String) {
-    Planning(0, "Planning"),
     Watching(1, "Watching"),
-    Paused(2, "On Hold"),
     Completed(3, "Completed"),
+    Planning(0, "Planning"),
+    Paused(2, "On Hold"),
     Dropped(4, "Dropped");
 
     override fun toString() = displayName

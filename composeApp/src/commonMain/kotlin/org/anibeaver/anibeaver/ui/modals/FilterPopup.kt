@@ -296,7 +296,7 @@ private fun <T> FilterCheckboxRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(label, modifier = Modifier.weight(1f))
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { //TODO: replace these with SectionWithCheckall
                 Button(onClick = { onChange(emptyList()) }, modifier = Modifier.height(32.dp)) {
                     Text("Uncheck all")
                 }
