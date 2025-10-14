@@ -31,8 +31,8 @@ import kotlin.math.max
 @Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 @Preview
-fun AnimeScreen(
-    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper
+fun EntriesScreen(
+    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper, forManga: Boolean
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun AnimeScreen(
         Column(
             Modifier.fillMaxSize()
         ) {
-            Text("Anime", style = Typography.headlineLarge)
+            Text(if (forManga) "Anime" else "Manga", style = Typography.headlineLarge)
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -159,7 +159,8 @@ fun AnimeScreen(
                     forceShowAutofillPopup = showAutofillPopup,
                     alIdToBePassed = quickAlId,
                     initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
-                    dataWrapper
+                    dataWrapper,
+                    forManga=forManga
                 )
             }
             ManageTagsModal(
@@ -185,7 +186,13 @@ fun AnimeScreen(
 
             val allEntries = EntriesController.entries
             val observedVersion = EntriesController.entriesVersion // for resorting
-            val filteredEntries = allEntries.filter { it.matchesFilter(filterState.filterData) }
+
+
+            val allEntriesByType: Map<Int, List<Entry>> = allEntries.groupBy { entry -> entry.entryData.type.id}
+            val allEntriesOfType = if (forManga) allEntriesByType.getOrDefault(EntryType.Manga.id, listOf()) else allEntriesByType.getOrDefault(EntryType.Anime.id, listOf())
+            print("Entries of type manga?" + forManga + allEntriesOfType.size)
+
+            val filteredEntries = allEntriesOfType.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
             FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
 
@@ -199,7 +206,8 @@ fun AnimeScreen(
                     viewModel.deleteAnimeEntry(entryId)
                 },
                 groupByStatus = groupByStatus,
-                filterState = filterState
+                filterState = filterState,
+                forManga=forManga
             )
         }
     }
@@ -286,7 +294,8 @@ private fun EntryGrid(
     groupByStatus: Boolean,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit,
-    filterState: AnimeFilterState
+    filterState: AnimeFilterState,
+    forManga: Boolean
 ) {
 
     val groupedEntries = entriesToShow.groupBy { entry ->
@@ -300,6 +309,7 @@ private fun EntryGrid(
         filterState.onFilterChange(newFilterData)
     }
 
+    //TODO: perhaps separate filter state for manga?
 
     groupedEntries.forEach { (statusId, entriesForStatus) ->
         CardSection(

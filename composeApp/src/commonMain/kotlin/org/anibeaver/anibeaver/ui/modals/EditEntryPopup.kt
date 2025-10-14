@@ -31,7 +31,8 @@ fun EditEntryPopup(
     forceShowAutofillPopup: Boolean,
     alIdToBePassed: String, //only if forceShowAutofillPopup
     initialValues: EntryData? = null,
-    dataWrapper: DataWrapper
+    dataWrapper: DataWrapper,
+    forManga: Boolean
 ) {
 
     var animeName: String? by remember { mutableStateOf(initialValues?.title ?: "") }
@@ -198,7 +199,7 @@ fun EditEntryPopup(
                                 OutlinedTextField(
                                     value = it1,
                                     onValueChange = { animeName = it },
-                                    label = { Text("Anime Name") },
+                                    label = { Text(if (forManga) "Manga name" else "Anime Name") },
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true
                                 )
@@ -231,7 +232,7 @@ fun EditEntryPopup(
                             onValueChange = { episodesProgress = it },
                             onIncrement = { episodesProgress += 1 },
                             onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
-                            label = "Ep. Progress",
+                            label = if (forManga) "Ch. Progress" else "Ep. Progress",
                             modifier = Modifier.weight(1f)
                         )
                         IntPicker(
@@ -239,7 +240,7 @@ fun EditEntryPopup(
                             onValueChange = { episodesTotal = it },
                             onIncrement = { episodesTotal += 1 },
                             onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
-                            label = "Eps Total",
+                            label = if (forManga) "Chs Total" else "Eps Total",
                             modifier = Modifier.weight(1f)
                         )
                         IntPicker(
@@ -247,7 +248,7 @@ fun EditEntryPopup(
                             onValueChange = { rewatches = it },
                             onIncrement = { rewatches += 1 },
                             onDecrement = { rewatches = (rewatches - 1).coerceAtLeast(0) },
-                            label = "Rewatches",
+                            label = if (forManga) "Rereads" else "Rewatches",
                             modifier = Modifier.weight(1f)
                         )
 
@@ -266,7 +267,7 @@ fun EditEntryPopup(
                             options = ReleaseSchedule.entries.toList(),
                             selectedOption = releasingEvery,
                             onOptionSelected = { releasingEvery = it },
-                            label = "Airing every",
+                            label = if (forManga) "Releasing every" else "Airing every",
                             modifier = Modifier.weight(1f).focusRequester(releasingEveryRequester)
                                 .focusProperties { next = descriptionRequester })
 

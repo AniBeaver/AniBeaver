@@ -19,12 +19,12 @@ class Entry internal constructor(
 
         if (filterData.selectedSchedule.isNotEmpty() && !filterData.selectedSchedule.contains(entryData.releasingEvery)) return false
 
-        val minYear = filterData.minYear?.toIntOrNull() ?: Int.MIN_VALUE
+        val minYear = filterData.minYear?.toIntOrNull() ?: -1
         val maxYear = filterData.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
-        val entryYear = entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE
-        if (entryYear < minYear || entryYear > maxYear) return false
+        val entryYear = entryData.releaseYear.toIntOrNull() ?: 0
+        if ((entryYear < minYear || entryYear > maxYear) && entryYear != 0) { return false } //FIXME: for now, 0 year means undefined, so true for all filters - but maybe add better constraints (UI/core)
 
-        val minRating = filterData.minRating ?: Float.MIN_VALUE
+        val minRating: Float = (filterData.minRating ?: -1) as Float
         val maxRating = filterData.maxRating ?: Float.MAX_VALUE
         if (entryData.rating < minRating || entryData.rating > maxRating) return false
 
@@ -37,7 +37,7 @@ class Entry internal constructor(
         val studioMatch = selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
         val genreMatch = selectedGenreTags.isEmpty() || selectedGenreTags.any { it in entryData.genreIds }
 
-        if (!customMatch || !studioMatch || !genreMatch) return false
+        if (!customMatch || !studioMatch || !genreMatch) { return false }
 
         return true
     }

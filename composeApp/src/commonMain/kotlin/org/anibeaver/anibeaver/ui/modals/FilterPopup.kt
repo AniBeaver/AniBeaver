@@ -114,7 +114,7 @@ fun FilterPopup(
                         maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
                         minRating = FilterDefaults.DEFAULT_MIN_RATING,
                         maxRating = FilterDefaults.DEFAULT_MAX_RATING,
-                        selectedTagIds = FilterDefaults.defaultTagIds()
+                        selectedTagIds = listOf() //TODO : there's a duplicate of this state object, get from same source
                     )
                 }) {
                 Text("Reset all filters")

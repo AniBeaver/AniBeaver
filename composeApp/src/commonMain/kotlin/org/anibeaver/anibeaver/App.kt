@@ -99,10 +99,10 @@ fun App(
                                 HomeScreen(navController)
                             }
                             composable(route = Screens.Anime.name) {
-                                AnimeScreen(navController, dataWrapper)
+                                EntriesScreen(navController, dataWrapper, forManga=false)
                             }
                             composable(route = Screens.Manga.name) {
-                                MangaScreen(navController)
+                                EntriesScreen(navController, dataWrapper, forManga=true)
                             }
                             composable(route = Screens.Settings.name) {
                                 SettingsScreen(navController)
