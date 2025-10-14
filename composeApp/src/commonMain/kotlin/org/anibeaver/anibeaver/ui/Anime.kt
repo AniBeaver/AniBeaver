@@ -195,78 +195,45 @@ fun rememberAnimeFilterState(): AnimeFilterState {
 }
 
 private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: SortingType): List<Entry> {
+
     fun statusWeight(s: Status) = when (s) {
         Status.Watching -> 10
-        Status.Paused -> 5
-        Status.Planning -> 4
-        Status.Completed -> 2
+        Status.Paused -> 1
+        Status.Planning -> 3
+        Status.Completed -> 5
         Status.Dropped -> 0
     }
 
-    fun yearValue(e: Entry) = e.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE
+    val comparators: Map<SortingBy, Comparator<Entry>> = mapOf(
+        SortingBy.Rating to compareBy<Entry> { it.entryData.rating },
+        SortingBy.Name to compareBy<Entry> { it.entryData.title?.lowercase() },
+        SortingBy.Rewatches to compareBy<Entry> { it.entryData.rewatches },
+        SortingBy.Year to compareBy({ it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }),
+        SortingBy.Length to compareBy { it.entryData.episodesTotal }
+    )
 
-    fun cmpInt(a: Int, b: Int) = a.compareTo(b)
-    fun cmpFloat(a: Float, b: Float) = a.compareTo(b)
+    val defaultTiebreakerPriority = listOf( // tiebreaker priority
+        SortingBy.Rating,
+        SortingBy.Name,
+        SortingBy.Rewatches,
+        SortingBy.Year,
+        SortingBy.Length
+    )
+    val finalSortingPriority = listOf(sortBy) + defaultTiebreakerPriority.filterNot { it == sortBy } //sortpriority
 
-    fun chainCompare(a: Entry, b: Entry, vararg comps: (Entry, Entry) -> Int): Int {
-        for (c in comps) {
-            val r = c(a, b)
-            if (r != 0) return r
+    val statusComparator = compareBy<Entry> {statusWeight(it.entryData.status) }
+
+    val chainedComparator: Comparator<Entry> = finalSortingPriority
+        .mapNotNull { comparators[it] }
+        .fold(statusComparator) { acc, next ->
+            acc.thenComparing(next)
         }
-        return 0
-    }
 
-    val comparator = Comparator<Entry> { a, b -> //FIXME: goddamn redo this bs
-        when (sortBy) {
-            SortingBy.Rating -> chainCompare(
-                a,
-                b,
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) },
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) })
+    val finalComparator =
+        if (sortType == SortingType.Ascending) chainedComparator
+        else chainedComparator.reversed()
 
-            SortingBy.Status -> chainCompare(
-                a,
-                b,
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) },
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) })
-
-            SortingBy.Rewatches -> chainCompare(
-                a,
-                b,
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) },
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) })
-
-            SortingBy.Year -> chainCompare(
-                a,
-                b,
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) },
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) })
-
-            SortingBy.Length -> chainCompare(
-                a,
-                b,
-                { x, y -> cmpInt(x.entryData.episodesTotal, y.entryData.episodesTotal) },
-                { x, y -> cmpFloat(x.entryData.rating, y.entryData.rating) },
-                { x, y -> cmpInt(statusWeight(x.entryData.status), statusWeight(y.entryData.status)) },
-                { x, y -> cmpInt(x.entryData.rewatches, y.entryData.rewatches) },
-                { x, y -> cmpInt(yearValue(x), yearValue(y)) })
-        }
-    }
-
-    return if (sortType == SortingType.Ascending) entries.sortedWith(comparator)
-    else entries.sortedWith(comparator.reversed())
+    return entries.sortedWith(finalComparator)
 }
 
 @Composable

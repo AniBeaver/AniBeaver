@@ -20,7 +20,7 @@ import kotlin.math.round
 fun EntryCard(
     entry: Entry, onEdit: () -> Unit = {}, onDelete: () -> Unit = {}
 ) {
-    val name: String = entry.entryData.animeName.toString()
+    val name: String = entry.entryData.title.toString()
     val description = entry.entryData.description
 
     val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }

@@ -34,7 +34,7 @@ fun EditEntryPopup(
     dataWrapper: DataWrapper
 ) {
 
-    var animeName: String? by remember { mutableStateOf(initialValues?.animeName ?: "") }
+    var animeName: String? by remember { mutableStateOf(initialValues?.title ?: "") }
     var releaseYear by remember { mutableStateOf(initialValues?.releaseYear ?: "2010") }
     var studioIds by remember { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
     var genreIds by remember { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
@@ -54,7 +54,7 @@ fun EditEntryPopup(
 
     // Reset fields when initialValues changes (for editing)
     LaunchedEffect(initialValues) {
-        animeName = initialValues?.animeName ?: ""
+        animeName = initialValues?.title ?: ""
         releaseYear = initialValues?.releaseYear ?: "2010"
         studioIds = initialValues?.studioIds ?: emptyList()
         genreIds = initialValues?.genreIds ?: emptyList()
@@ -149,7 +149,7 @@ fun EditEntryPopup(
             Button(onClick = {
                 onConfirm(
                     EntryData(
-                        animeName = animeName,
+                        title = animeName,
                         releaseYear = releaseYear,
                         studioIds = studioIds,
                         genreIds = genreIds,

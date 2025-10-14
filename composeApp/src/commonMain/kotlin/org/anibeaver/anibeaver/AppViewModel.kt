@@ -28,7 +28,7 @@ class AppViewModel(
 
                 entryController.addEntry(entry.id,
                     EntryData(
-                        animeName = entry.animeName,
+                        title = entry.animeName,
                         releaseYear = entry.releaseYear,
                         description = entry.description,
                         rating = entry.rating,

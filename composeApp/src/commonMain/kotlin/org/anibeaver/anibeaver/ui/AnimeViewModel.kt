@@ -2,13 +2,10 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.EntriesController
-import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
-import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.getRoomDatabase
 
@@ -31,7 +28,7 @@ class AnimeViewModel(
             )
 
             entryController.addEntry(entryId.toInt(), EntryData(
-                animeName = "Plastic Memories",
+                title = "Plastic Memories",
                 episodesProgress = 12,
                 episodesTotal = 24,
             ))
@@ -43,7 +40,7 @@ class AnimeViewModel(
             val dbEntryId = animeDao.upsert(
                 AnimeEntryEntity(
                     id = entryId ?: 0,
-                    animeName = entryData.animeName ?: "",
+                    animeName = entryData.title ?: "",
                     releaseYear = entryData.releaseYear,
                     description = entryData.description,
                     rating = entryData.rating,

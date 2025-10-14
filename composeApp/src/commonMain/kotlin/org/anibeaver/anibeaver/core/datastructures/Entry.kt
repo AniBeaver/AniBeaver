@@ -39,7 +39,7 @@ class Entry internal constructor(
 }
 
 class EntryData internal constructor(
-    val animeName: String? = "",
+    val title: String? = "",
     val releaseYear: String = "2000",
     val studioIds: List<Int> = emptyList(),
     val genreIds: List<Int> = emptyList(),
@@ -99,15 +99,14 @@ data class FilterData(
 )
 
 enum class SortingBy {
-    Rating, Status, //watching, on hold, planning, completed, dropped
-    Rewatches, Length, Year;
+    Rating, Rewatches, Length, Year, Name;
 
     override fun toString(): String = when (this) {
         Rating -> "Rating"
-        Status -> "Status"
         Rewatches -> "Rewatches"
         Year -> "Year"
         Length -> "Length"
+        Name -> "Alphabetical"
     }
 }
 
