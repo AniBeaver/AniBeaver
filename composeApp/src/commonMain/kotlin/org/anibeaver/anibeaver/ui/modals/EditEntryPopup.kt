@@ -165,7 +165,7 @@ fun EditEntryPopup(
                         episodesTotal = episodesTotal,
                         episodesProgress = episodesProgress,
                         rewatches = rewatches,
-                        type = EntryType.Anime
+                        type = if (forManga) EntryType.Manga else EntryType.Anime
                     )
                 )
             }) {
