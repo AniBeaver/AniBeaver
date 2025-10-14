@@ -89,6 +89,7 @@ fun FilterPopup(
             Button(
                 onClick = {
                     onConfirm(
+
                         FilterData(
                             state.selectedStatus,
                             state.selectedSchedule,
@@ -98,6 +99,7 @@ fun FilterPopup(
                             state.maxRating,
                             state.selectedTagIds
                         )
+
                     )
                 }) {
                 Text("Filter")

@@ -10,16 +10,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import org.anibeaver.anibeaver.core.datastructures.Status
 
 @Composable
 fun CardSection(
-    status: String,
-    isExpanded: Boolean = true,
+    statusId: Int,
+    invisible: Boolean,
+    isExpanded: Boolean,
     onToggleExpand: () -> Unit,
     cardSpacing: Dp
 ) {
-    if (status.isBlank()) return
+    if (invisible) return
 
     Row(
         modifier = Modifier
@@ -29,13 +30,14 @@ fun CardSection(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = status,
+            text = Status.fromId(statusId).toString(),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Button(onClick = onToggleExpand, modifier = Modifier.height(32.dp)) {
-            Text(if (isExpanded) "Collapse" else "Expand", fontSize = 12.sp)
+        Button(onClick = onToggleExpand, modifier = Modifier.height(32.dp).widthIn(min = 100.dp) ) {
+//            Text(if (isExpanded) "Collapse" else "Expand", fontSize = 12.sp)
+            Text("Collapse/Expand", fontSize = 12.sp)
         }
     }
 }

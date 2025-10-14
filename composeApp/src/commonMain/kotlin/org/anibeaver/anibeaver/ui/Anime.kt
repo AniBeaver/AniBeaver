@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,6 +46,7 @@ fun AnimeScreen(
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
     var groupByStatus by remember { mutableStateOf(true) }
+
 
     val viewModel: AnimeViewModel = remember { AnimeViewModel(dataWrapper) }
 
@@ -170,11 +170,15 @@ fun AnimeScreen(
                 onDismiss = { showManageTags = false },
                 onConfirm = { showManageTags = false },
                 onCreateTag = { showNewTagPopupFromManage = true })
+
             FilterPopup(
-                show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
-                filterState.onFilterChange(data)
-                showFilter = false
-            }, initialFilter = filterState.filterData
+                show = showFilter,
+                onDismiss = { showFilter = false },
+                onConfirm = { data ->
+                    filterState.onFilterChange(data)
+                    showFilter = false
+                    print(data)
+                }, initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -199,7 +203,8 @@ fun AnimeScreen(
                 onDelete = { entryId ->
                     viewModel.deleteAnimeEntry(entryId)
                 },
-                groupByStatus = groupByStatus
+                groupByStatus = groupByStatus,
+                filterState = filterState
             )
         }
     }
@@ -214,7 +219,7 @@ data class AnimeFilterState(
 
 @Composable
 fun rememberAnimeFilterState(): AnimeFilterState {
-    var filterData by remember { mutableStateOf<FilterData?>(null) }
+    var filterData by remember { mutableStateOf<FilterData?>(defaultFilterData) }
     return AnimeFilterState(filterData) { filterData = it }
 }
 
@@ -246,7 +251,7 @@ private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType
 
     val secondarySortBys = listOf(primarySortBy) + defaultTiebreakerPriorities.filterNot { it == primarySortBy }
 
-    val statusComparator = compareBy<Entry> {statusWeight(it.entryData.status) }.reversed()
+    val statusComparator = compareBy<Entry> { statusWeight(it.entryData.status) }.reversed()
 
     val chainedComparator: Comparator<Entry> = secondarySortBys
         .mapNotNull { comparators[it] }
@@ -275,7 +280,10 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
             )
             Spacer(Modifier.width(12.dp))
             Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
-                Text("Clear filters", fontSize = TextUnit.Unspecified) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
+                Text(
+                    "Clear filters",
+                    fontSize = TextUnit.Unspecified
+                ) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
             }
         }
     }
@@ -289,20 +297,37 @@ private fun EntryGrid(
     cardSpacing: Dp,
     groupByStatus: Boolean,
     onEdit: (Int) -> Unit,
-    onDelete: (Int) -> Unit
+    onDelete: (Int) -> Unit,
+    filterState: AnimeFilterState
 ) {
 
-    val groupedEntries = if (groupByStatus) {
-        entriesToShow.groupBy { it.entryData.status.toString() }.toList()
-    } else {
-        listOf("" to entriesToShow)
+    val groupedEntries = entriesToShow.groupBy { entry ->
+        if (groupByStatus) entry.entryData.status.id else -1
     }
 
-    groupedEntries.forEach { (status, entriesForStatus) ->
+    fun updateOneGroupInFilterState(filterState: AnimeFilterState, status: Status, unhide: Boolean) {
+        val newSelectedStatus = if (unhide) {
+            filterState.filterData!!.selectedStatus - status
+        } else {
+            filterState.filterData!!.selectedStatus + status
+        }
+        val newFilterData = filterState.filterData!!.copy(selectedStatus = newSelectedStatus)
+        filterState.onFilterChange(newFilterData)
+    }
+
+
+    groupedEntries.forEach { (statusId, entriesForStatus) ->
+        var isExpanded by remember { mutableStateOf(true) }
         CardSection(
-            status = status,
-            onToggleExpand = {},
-            cardSpacing = cardSpacing
+            statusId = statusId,
+            onToggleExpand = {
+                isExpanded = !isExpanded
+                updateOneGroupInFilterState(filterState, Status.fromId(statusId)!!, !isExpanded)
+                filterState.onFilterChange
+            },
+            cardSpacing = cardSpacing,
+            invisible = !groupByStatus,
+            isExpanded = isExpanded,
         )
 
         entriesForStatus.chunked(columns).forEach { rowEntries ->
