@@ -19,21 +19,26 @@ class Entry internal constructor(
 
         if (filterData.selectedSchedule.isNotEmpty() && !filterData.selectedSchedule.contains(entryData.releasingEvery)) return false
 
-//        val minYear = filterData.minYear?.toIntOrNull() ?: Int.MIN_VALUE
-//        val maxYear = filterData.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
-//        val entryYear = entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE
-//        if (entryYear < minYear || entryYear > maxYear) return false
+        val minYear = filterData.minYear?.toIntOrNull() ?: Int.MIN_VALUE
+        val maxYear = filterData.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
+        val entryYear = entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE
+        if (entryYear < minYear || entryYear > maxYear) return false
 
-//        val minRating = filterData.minRating ?: Float.MIN_VALUE
-//        val maxRating = filterData.maxRating ?: Float.MAX_VALUE
-//        if (entryData.rating < minRating || entryData.rating > maxRating) return false
+        val minRating = filterData.minRating ?: Float.MIN_VALUE
+        val maxRating = filterData.maxRating ?: Float.MAX_VALUE
+        if (entryData.rating < minRating || entryData.rating > maxRating) return false
 
-//        val selectedCustomTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
-//        val selectedStudioTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
-//        val selectedGenreTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
-//        if (selectedCustomTags.isNotEmpty() && selectedCustomTags.none { it in entryData.tagIds }) return false
-//        if (selectedStudioTags.isNotEmpty() && selectedStudioTags.none { it in entryData.studioIds }) return false
-//        if (selectedGenreTags.isNotEmpty() && selectedGenreTags.none { it in entryData.genreIds }) return false
+        //tags
+        val selectedCustomTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
+        val selectedStudioTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
+        val selectedGenreTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
+
+        val customMatch = selectedCustomTags.isEmpty() || selectedCustomTags.any { it in entryData.tagIds }
+        val studioMatch = selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
+        val genreMatch = selectedGenreTags.isEmpty() || selectedGenreTags.any { it in entryData.genreIds }
+
+//        if (!customMatch || !studioMatch || !genreMatch) return false //TODO: tags don't get loaded
+
         return true
     }
 }
