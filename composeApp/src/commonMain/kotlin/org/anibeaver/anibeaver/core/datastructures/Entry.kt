@@ -64,13 +64,28 @@ enum class EntryType {
 enum class Status {
     Planning, Watching, Paused, Completed, Dropped;
 
+    private fun normalize(s: String): String {
+        return s.trim().lowercase()
+    }
+
     override fun toString(): String = when (this) {
+        // careful when changing these names because the database uses them as ids. Potentially better to use ordinals there instead of tostring TODO (AppViewModel)
         Planning -> "Planning"
         Watching -> "Watching"
         Paused -> "On Hold"
         Completed -> "Completed"
         Dropped -> "Dropped"
     }
+
+    fun fromString(value: String): Status? = when (value.trim().lowercase()) {
+        normalize(Planning.toString()) -> Planning
+        normalize(Watching.toString()) -> Watching
+        normalize(Paused.toString()) -> Paused
+        normalize(Completed.toString()) -> Completed
+        normalize(Dropped.toString()) -> Dropped
+        else -> null
+    }
+
 }
 
 enum class Schedule {
