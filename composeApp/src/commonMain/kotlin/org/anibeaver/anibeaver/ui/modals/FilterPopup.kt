@@ -327,7 +327,7 @@ private fun <T> FilterCheckboxRow(
 }
 
 @Composable
-private fun TagCheckboxSection(
+private fun TagCheckboxSection( //TODO: could also be a SectionWithCheckAll, refactor
     label: String,
     tags: List<org.anibeaver.anibeaver.core.datastructures.Tag>,
     selectedTagIds: List<Int>,
@@ -411,5 +411,5 @@ val defaultFilterData: FilterData
         maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
         minRating = FilterDefaults.DEFAULT_MIN_RATING,
         maxRating = FilterDefaults.DEFAULT_MAX_RATING,
-        selectedTagIds = FilterDefaults.defaultTagIds()
+        selectedTagIds = listOf() //instead of FilterDefaults.defaultTagIds() because they're supposed to be unchecked by default
     )

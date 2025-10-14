@@ -37,7 +37,7 @@ class Entry internal constructor(
         val studioMatch = selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
         val genreMatch = selectedGenreTags.isEmpty() || selectedGenreTags.any { it in entryData.genreIds }
 
-//        if (!customMatch || !studioMatch || !genreMatch) return false //TODO: tags don't get loaded
+        if (!customMatch || !studioMatch || !genreMatch) return false
 
         return true
     }
