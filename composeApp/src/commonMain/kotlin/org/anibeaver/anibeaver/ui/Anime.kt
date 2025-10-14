@@ -194,7 +194,7 @@ fun rememberAnimeFilterState(): AnimeFilterState {
     return AnimeFilterState(filterData) { filterData = it }
 }
 
-private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: SortingType): List<Entry> {
+private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType: SortingType): List<Entry> {
 
     fun statusWeight(s: Status) = when (s) {
         Status.Watching -> 10
@@ -205,35 +205,36 @@ private fun sortEntries(entries: List<Entry>, sortBy: SortingBy, sortType: Sorti
     }
 
     val comparators: Map<SortingBy, Comparator<Entry>> = mapOf(
-        SortingBy.Rating to compareBy<Entry> { it.entryData.rating },
-        SortingBy.Name to compareBy<Entry> { it.entryData.title?.lowercase() },
+        SortingBy.Rating to compareBy<Entry> { it.entryData.rating }.reversed(), //TODO: sorting by title is the only one where the default makes sense to be descending... Not sure if this is the best solution though
+        SortingBy.Title to compareBy<Entry> { it.entryData.title?.lowercase() },
         SortingBy.Rewatches to compareBy<Entry> { it.entryData.rewatches },
         SortingBy.Year to compareBy({ it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }),
         SortingBy.Length to compareBy { it.entryData.episodesTotal }
     )
 
-    val defaultTiebreakerPriority = listOf( // tiebreaker priority
+    val defaultTiebreakerPriorities = listOf( // tiebreaker priority
         SortingBy.Rating,
-        SortingBy.Name,
+        SortingBy.Title,
         SortingBy.Rewatches,
         SortingBy.Year,
         SortingBy.Length
     )
-    val finalSortingPriority = listOf(sortBy) + defaultTiebreakerPriority.filterNot { it == sortBy } //sortpriority
 
-    val statusComparator = compareBy<Entry> {statusWeight(it.entryData.status) }
+    val secondarySortBys = listOf(primarySortBy) + defaultTiebreakerPriorities.filterNot { it == primarySortBy }
 
-    val chainedComparator: Comparator<Entry> = finalSortingPriority
+    val statusComparator = compareBy<Entry> {statusWeight(it.entryData.status) }.reversed()
+
+    val chainedComparator: Comparator<Entry> = secondarySortBys
         .mapNotNull { comparators[it] }
-        .fold(statusComparator) { acc, next ->
-            acc.thenComparing(next)
-        }
+        .fold(comparators[primarySortBy]) { acc, next ->
+            acc!!.thenComparing(next)
+        }!!
 
     val finalComparator =
         if (sortType == SortingType.Ascending) chainedComparator
         else chainedComparator.reversed()
 
-    return entries.sortedWith(finalComparator)
+    return entries.sortedWith(finalComparator).sortedWith(statusComparator)
 }
 
 @Composable

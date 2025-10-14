@@ -99,14 +99,14 @@ data class FilterData(
 )
 
 enum class SortingBy {
-    Rating, Rewatches, Length, Year, Name;
+    Rating, Rewatches, Length, Year, Title;
 
     override fun toString(): String = when (this) {
         Rating -> "Rating"
         Rewatches -> "Rewatches"
         Year -> "Year"
         Length -> "Length"
-        Name -> "Alphabetical"
+        Title -> "Title"
     }
 }
 
