@@ -3,11 +3,15 @@ package org.anibeaver.anibeaver.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -16,6 +20,7 @@ import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
+import org.anibeaver.anibeaver.ui.components.CardSection
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
@@ -41,6 +46,7 @@ fun AnimeScreen(
     var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
+    var groupByStatus by remember { mutableStateOf(true) }
 
     val viewModel: AnimeViewModel = remember { AnimeViewModel(dataWrapper) }
 
@@ -97,6 +103,22 @@ fun AnimeScreen(
                             label = "Sort order",
                             modifier = Modifier.width(160.dp)
                         )
+                    }
+                }
+                Card(
+                    modifier = Modifier.padding(end = 4.dp).height(72.dp)
+                ) {
+                    Row(
+                        Modifier.fillMaxHeight().padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("Group by status:")
+                        Checkbox(
+                            checked = groupByStatus,
+                            onCheckedChange = { checked -> groupByStatus = checked }
+                        )
+
                     }
                 }
                 QuickCreateEntryFromAl(quickAlId, { newQuickAlId -> quickAlId = newQuickAlId }, {
@@ -176,7 +198,9 @@ fun AnimeScreen(
                 onEdit = { entryId -> showEntryPopup(entryId) },
                 onDelete = { entryId ->
                     viewModel.deleteAnimeEntry(entryId)
-                })
+                },
+                groupByStatus = groupByStatus
+            )
         }
     }
 }
@@ -243,15 +267,15 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
     if (hiddenCount > 0) {
         val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
         val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
-        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 "Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.",
-                color = androidx.compose.ui.graphics.Color.Gray,
+                color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Spacer(Modifier.width(12.dp))
             Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
-                Text("Clear filters", fontSize = androidx.compose.ui.unit.TextUnit.Unspecified) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
+                Text("Clear filters", fontSize = TextUnit.Unspecified) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
             }
         }
     }
@@ -263,17 +287,37 @@ private fun EntryGrid(
     columns: Int,
     cardWidth: Dp,
     cardSpacing: Dp,
+    groupByStatus: Boolean,
     onEdit: (Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
-    entriesToShow.chunked(columns).forEach { rowEntries ->
-        Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
-            Spacer(Modifier.width(cardSpacing))
-            rowEntries.forEach { entry ->
-                EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
-                Spacer(Modifier.width(cardSpacing))
-            }
-            repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
-        }
+
+    val groupedEntries = if (groupByStatus) {
+        entriesToShow.groupBy { it.entryData.status.toString() }.toList()
+    } else {
+        listOf("" to entriesToShow)
     }
+
+    groupedEntries.forEach { (status, entriesForStatus) ->
+        CardSection(
+            status = status,
+            onToggleExpand = {},
+            cardSpacing = cardSpacing
+        )
+
+        entriesForStatus.chunked(columns).forEach { rowEntries ->
+            Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                Spacer(Modifier.width(cardSpacing))
+                rowEntries.forEach { entry ->
+                    EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
+                    Spacer(Modifier.width(cardSpacing))
+                }
+                repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+            }
+        }
+
+
+    }
+
+
 }
