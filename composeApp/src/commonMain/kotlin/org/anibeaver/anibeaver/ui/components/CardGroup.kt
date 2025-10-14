@@ -16,8 +16,7 @@ import org.anibeaver.anibeaver.core.datastructures.Status
 fun CardSection(
     statusId: Int,
     invisible: Boolean,
-    isExpanded: Boolean,
-    onToggleExpand: () -> Unit,
+    onCollapseClicked: () -> Unit,
     cardSpacing: Dp
 ) {
     if (invisible) return
@@ -35,9 +34,9 @@ fun CardSection(
             fontWeight = FontWeight.Bold
         )
 
-        Button(onClick = onToggleExpand, modifier = Modifier.height(32.dp).widthIn(min = 100.dp) ) {
+        Button(onClick = onCollapseClicked, modifier = Modifier.height(32.dp) ) {
 //            Text(if (isExpanded) "Collapse" else "Expand", fontSize = 12.sp)
-            Text("Collapse/Expand", fontSize = 12.sp)
+            Text("Collapse", fontSize = 12.sp)
         }
     }
 }

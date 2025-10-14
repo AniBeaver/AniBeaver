@@ -32,8 +32,7 @@ import kotlin.math.max
 @Composable
 @Preview
 fun AnimeScreen(
-    navController: NavHostController = rememberNavController(),
-    dataWrapper: DataWrapper
+    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -115,9 +114,7 @@ fun AnimeScreen(
                     ) {
                         Text("Group by status:")
                         Checkbox(
-                            checked = groupByStatus,
-                            onCheckedChange = { checked -> groupByStatus = checked }
-                        )
+                            checked = groupByStatus, onCheckedChange = { checked -> groupByStatus = checked })
 
                     }
                 }
@@ -172,13 +169,11 @@ fun AnimeScreen(
                 onCreateTag = { showNewTagPopupFromManage = true })
 
             FilterPopup(
-                show = showFilter,
-                onDismiss = { showFilter = false },
-                onConfirm = { data ->
-                    filterState.onFilterChange(data)
-                    showFilter = false
-                    print(data)
-                }, initialFilter = filterState.filterData
+                show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
+                filterState.onFilterChange(data)
+                showFilter = false
+                print(data)
+            }, initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -233,35 +228,29 @@ private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType
         Status.Dropped -> 0
     }
 
-    val comparators: Map<SortingBy, Comparator<Entry>> = mapOf(
-        SortingBy.Rating to compareBy<Entry> { it.entryData.rating }.reversed(), //TODO: sorting by title is the only one where the default makes sense to be descending... Not sure if this is the best solution though
-        SortingBy.Title to compareBy<Entry> { it.entryData.title?.lowercase() },
-        SortingBy.Rewatches to compareBy<Entry> { it.entryData.rewatches },
-        SortingBy.Year to compareBy({ it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }),
-        SortingBy.Length to compareBy { it.entryData.episodesTotal }
-    )
+    val comparators: Map<SortingBy, Comparator<Entry>> =
+        mapOf(
+            SortingBy.Rating to compareBy<Entry> { it.entryData.rating }.reversed(), //TODO: sorting by title is the only one where the default makes sense to be descending... Not sure if this is the best solution though
+            SortingBy.Title to compareBy<Entry> { it.entryData.title?.lowercase() },
+            SortingBy.Rewatches to compareBy<Entry> { it.entryData.rewatches },
+            SortingBy.Year to compareBy({ it.entryData.releaseYear.toIntOrNull() ?: Int.MIN_VALUE }),
+            SortingBy.Length to compareBy { it.entryData.episodesTotal })
 
     val defaultTiebreakerPriorities = listOf( // tiebreaker priority
-        SortingBy.Rating,
-        SortingBy.Title,
-        SortingBy.Rewatches,
-        SortingBy.Year,
-        SortingBy.Length
+        SortingBy.Rating, SortingBy.Title, SortingBy.Rewatches, SortingBy.Year, SortingBy.Length
     )
 
     val secondarySortBys = listOf(primarySortBy) + defaultTiebreakerPriorities.filterNot { it == primarySortBy }
 
     val statusComparator = compareBy<Entry> { statusWeight(it.entryData.status) }.reversed()
 
-    val chainedComparator: Comparator<Entry> = secondarySortBys
-        .mapNotNull { comparators[it] }
-        .fold(comparators[primarySortBy]) { acc, next ->
+    val chainedComparator: Comparator<Entry> =
+        secondarySortBys.mapNotNull { comparators[it] }.fold(comparators[primarySortBy]) { acc, next ->
             acc!!.thenComparing(next)
         }!!
 
-    val finalComparator =
-        if (sortType == SortingType.Ascending) chainedComparator
-        else chainedComparator.reversed()
+    val finalComparator = if (sortType == SortingType.Ascending) chainedComparator
+    else chainedComparator.reversed()
 
     return entries.sortedWith(finalComparator).sortedWith(statusComparator)
 }
@@ -281,8 +270,7 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
             Spacer(Modifier.width(12.dp))
             Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
                 Text(
-                    "Clear filters",
-                    fontSize = TextUnit.Unspecified
+                    "Clear filters", fontSize = TextUnit.Unspecified
                 ) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
             }
         }
@@ -305,29 +293,21 @@ private fun EntryGrid(
         if (groupByStatus) entry.entryData.status.id else -1
     }
 
-    fun updateOneGroupInFilterState(filterState: AnimeFilterState, status: Status, unhide: Boolean) {
-        val newSelectedStatus = if (unhide) {
-            filterState.filterData!!.selectedStatus - status
-        } else {
-            filterState.filterData!!.selectedStatus + status
-        }
+    fun updateOneGroupInFilterState(filterState: AnimeFilterState, status: Status) {
+        val newSelectedStatus = filterState.filterData!!.selectedStatus - status
         val newFilterData = filterState.filterData!!.copy(selectedStatus = newSelectedStatus)
         filterState.onFilterChange(newFilterData)
     }
 
 
     groupedEntries.forEach { (statusId, entriesForStatus) ->
-        var isExpanded by remember { mutableStateOf(true) }
         CardSection(
             statusId = statusId,
-            onToggleExpand = {
-                isExpanded = !isExpanded
-                updateOneGroupInFilterState(filterState, Status.fromId(statusId)!!, !isExpanded)
-                filterState.onFilterChange
+            onCollapseClicked = {
+                updateOneGroupInFilterState(filterState, Status.fromId(statusId)!!)
             },
             cardSpacing = cardSpacing,
             invisible = !groupByStatus,
-            isExpanded = isExpanded,
         )
 
         entriesForStatus.chunked(columns).forEach { rowEntries ->
