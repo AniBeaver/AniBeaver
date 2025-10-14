@@ -8,7 +8,7 @@ import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillMediaQuery
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillTitle
-import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 
 data class ParsedAutofillData(
     val name_jp: String,
@@ -22,7 +22,7 @@ data class ParsedAutofillData(
     val studios: List<String>,
     val genres: List<String>,
     val tags: List<String>,
-    val airingScheduleWeekday: Schedule,
+    val airingScheduleWeekday: ReleaseSchedule,
     val eps_total: Int,
     val runtime: Int
 )
@@ -40,7 +40,7 @@ val emptyParsedAutofillData =
         studios = emptyList(),
         genres = emptyList(),
         tags = emptyList(),
-        airingScheduleWeekday = Schedule.Irregular,
+        airingScheduleWeekday = ReleaseSchedule.Irregular,
         eps_total = 0,
         runtime = 0
     )
@@ -58,8 +58,8 @@ object AutofillController {
         scope: CoroutineScope,
         priorityIndex: Int? = null
     ) {
-        fun inferAiringScheduleWeekday(airingAts: List<Long>, airingScheduleErrorRatio: Float): Schedule {
-            val weekdays = Schedule.entries.filter { it != Schedule.Irregular }
+        fun inferAiringScheduleWeekday(airingAts: List<Long>, airingScheduleErrorRatio: Float): ReleaseSchedule {
+            val weekdays = ReleaseSchedule.entries.filter { it != ReleaseSchedule.Irregular }
             val secondsInDay = 86400L
             val airingWeekdays = airingAts.mapNotNull { ts ->
                 // Calculate weekday from epoch seconds (1970-01-01 is a Thursday)
@@ -72,8 +72,8 @@ object AutofillController {
             val mismatchCount = airingWeekdays.count { it != mostCommonWeekday }
             val irregular =
                 airingWeekdays.isNotEmpty() && mismatchCount > airingWeekdays.size * airingScheduleErrorRatio
-            return if (airingWeekdays.isEmpty() || mostCommonWeekday == null) Schedule.Irregular
-            else if (irregular) Schedule.Irregular
+            return if (airingWeekdays.isEmpty() || mostCommonWeekday == null) ReleaseSchedule.Irregular
+            else if (irregular) ReleaseSchedule.Irregular
             else mostCommonWeekday
         }
 

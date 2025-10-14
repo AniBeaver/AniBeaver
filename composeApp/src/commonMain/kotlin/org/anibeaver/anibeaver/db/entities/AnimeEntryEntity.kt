@@ -2,7 +2,7 @@ package org.anibeaver.anibeaver.db.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 import org.anibeaver.anibeaver.core.datastructures.Status
 
 
@@ -17,7 +17,7 @@ data class AnimeEntryEntity(
     val description: String = "",
     val rating: Float = 0f,
     val status: String = Status.Watching.toString(),
-    val releasingEvery: String = Schedule.Irregular.toString(),
+    val releasingEvery: String = ReleaseSchedule.Irregular.toString(),
     val coverArtSource: String = "",
     val coverArtLocalPath: String = "",
     val bannerArtSource: String = "",

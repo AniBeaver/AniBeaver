@@ -41,7 +41,7 @@ fun EditEntryPopup(
     var description by remember { mutableStateOf(initialValues?.description ?: "") }
     var rating by remember { mutableStateOf(initialValues?.rating ?: 8.5f) }
     var status by remember { mutableStateOf(initialValues?.status ?: Status.Planning) }
-    var releasingEvery by remember { mutableStateOf(initialValues?.releasingEvery ?: Schedule.Monday) }
+    var releasingEvery by remember { mutableStateOf(initialValues?.releasingEvery ?: ReleaseSchedule.Monday) }
     var tagsIds by remember { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
     var references by remember { mutableStateOf(initialValues?.references ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
@@ -61,7 +61,7 @@ fun EditEntryPopup(
         description = initialValues?.description ?: ""
         rating = initialValues?.rating ?: 8.5f
         status = initialValues?.status ?: Status.Planning
-        releasingEvery = initialValues?.releasingEvery ?: Schedule.Monday
+        releasingEvery = initialValues?.releasingEvery ?: ReleaseSchedule.Monday
         tagsIds = initialValues?.tagIds ?: emptyList()
         references = initialValues?.references ?: emptyList()
         episodesTotal = initialValues?.episodesTotal ?: 0
@@ -263,7 +263,7 @@ fun EditEntryPopup(
                             modifier = Modifier.weight(1f).focusRequester(statusRequester)
                                 .focusProperties { next = releasingEveryRequester })
                         SimpleDropdown(
-                            options = Schedule.entries.toList(),
+                            options = ReleaseSchedule.entries.toList(),
                             selectedOption = releasingEvery,
                             onOptionSelected = { releasingEvery = it },
                             label = "Airing every",

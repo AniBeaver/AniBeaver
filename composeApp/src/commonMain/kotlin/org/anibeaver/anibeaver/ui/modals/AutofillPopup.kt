@@ -12,7 +12,7 @@ import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.core.ParsedAutofillData
 import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.Reference
-import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 import org.anibeaver.anibeaver.ui.components.references.ReferenceRow
 
 @Composable
@@ -96,7 +96,7 @@ fun AutofillPopup(
                         tags = selectedTags.toList(),
                         cover = if (coverChecked) autofillData!!.cover_link else null,
                         banner = if (bannerChecked) autofillData!!.banner_link else null,
-                        airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else Schedule.Monday,
+                        airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else ReleaseSchedule.Monday,
                         episodes = if (epsChecked) totalEpisodes else null
                     )
                     onConfirm(selection)

@@ -8,6 +8,6 @@ data class AutofillResultSelection(
     val tags: List<String>,
     val cover: String?,
     val banner: String?,
-    val airingSchedule: Schedule,
+    val airingSchedule: ReleaseSchedule,
     val episodes: Int?
 )

@@ -46,7 +46,7 @@ class EntryData internal constructor(
     val description: String = "",
     val rating: Float = 0f,
     val status: Status = Status.Watching,
-    val releasingEvery: Schedule = Schedule.Irregular,
+    val releasingEvery: ReleaseSchedule = ReleaseSchedule.Irregular,
     val tagIds: List<Int> = emptyList(),
     val references: List<Reference> = emptyList(),
     val coverArt: Art = Art("", ""),
@@ -61,50 +61,44 @@ enum class EntryType {
     Anime, Manga
 }
 
-enum class Status {
-    Planning, Watching, Paused, Completed, Dropped;
+enum class Status(val id: Int, val displayName: String) {
+    Planning(0, "Planning"),
+    Watching(1, "Watching"),
+    Paused(2, "On Hold"),
+    Completed(3, "Completed"),
+    Dropped(4, "Dropped");
 
-    private fun normalize(s: String): String {
-        return s.trim().lowercase()
-    }
-
-    override fun toString(): String = when (this) {
-        // careful when changing these names because the database uses them as ids. Potentially better to use ordinals there instead of tostring TODO (AppViewModel)
-        Planning -> "Planning"
-        Watching -> "Watching"
-        Paused -> "On Hold"
-        Completed -> "Completed"
-        Dropped -> "Dropped"
-    }
+    override fun toString() = displayName
 
     companion object {
-        private fun normalize(s: String): String = s.trim().lowercase()
-
-        private val lookup = entries.associateBy { normalize(it.toString()) }
-
-        fun fromString(value: String): Status? = lookup[normalize(value)]
-    }
-
-}
-
-enum class Schedule {
-    Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Irregular;
-
-    override fun toString(): String = when (this) {
-        Monday -> "Monday"
-        Tuesday -> "Tuesday"
-        Wednesday -> "Wednesday"
-        Thursday -> "Thursday"
-        Friday -> "Friday"
-        Saturday -> "Saturday"
-        Sunday -> "Sunday"
-        Irregular -> "Irregular"
+        fun fromId(id: Int): Status? = entries.find { it.id == id }
+        fun fromString(value: String): Status? = entries.find { it.displayName.equals(value, ignoreCase = true) }
     }
 }
+
+enum class ReleaseSchedule(val id: Int, val displayName: String) {
+    Monday(0, "Monday"),
+    Tuesday(1, "Tuesday"),
+    Wednesday(2, "Wednesday"),
+    Thursday(3, "Thursday"),
+    Friday(4, "Friday"),
+    Saturday(5, "Saturday"),
+    Sunday(6, "Sunday"),
+    Irregular(7, "Irregular");
+
+    override fun toString() = displayName
+
+    companion object {
+        fun fromId(id: Int): ReleaseSchedule? = entries.find { it.id == id }
+        fun fromString(value: String): ReleaseSchedule? =
+            entries.find { it.displayName.equals(value, ignoreCase = true) }
+    }
+}
+
 
 data class FilterData(
     val selectedStatus: List<Status>,
-    val selectedSchedule: List<Schedule>,
+    val selectedSchedule: List<ReleaseSchedule>,
     val minYear: String?,
     val maxYear: String?,
     val minRating: Float?,

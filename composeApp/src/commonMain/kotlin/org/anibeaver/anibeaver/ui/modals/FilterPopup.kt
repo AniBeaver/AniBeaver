@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.FilterData
-import org.anibeaver.anibeaver.core.datastructures.Schedule
+import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
@@ -28,7 +28,7 @@ object FilterDefaults {
     val DEFAULT_MIN_RATING = MIN_RATING
     val DEFAULT_MAX_RATING = MAX_RATING
     fun defaultStatus() = Status.entries.toList()
-    fun defaultSchedule() = Schedule.entries.toList()
+    fun defaultSchedule() = ReleaseSchedule.entries.toList()
     fun defaultTagIds() = TagsController.tags.sortedBy { it.name }.map { it.id }
 
     fun resetFilter(onChange: (FilterData) -> Unit) {
@@ -57,7 +57,7 @@ fun FilterPopup(
 
     data class FilterUiState(
         var selectedStatus: List<Status>,
-        var selectedSchedule: List<Schedule>,
+        var selectedSchedule: List<ReleaseSchedule>,
         var minYear: String?,
         var maxYear: String?,
         var minRating: Float?,
@@ -179,8 +179,8 @@ fun FilterPopup(
 private fun FilterGeneralTab(
     selectedStatus: List<Status>,
     onStatusChange: (List<Status>) -> Unit,
-    selectedSchedule: List<Schedule>,
-    onScheduleChange: (List<Schedule>) -> Unit,
+    selectedSchedule: List<ReleaseSchedule>,
+    onScheduleChange: (List<ReleaseSchedule>) -> Unit,
     minYear: String?,
     onMinYearChange: (String?) -> Unit,
     maxYear: String?,
@@ -210,7 +210,7 @@ private fun FilterGeneralTab(
         )
         FilterCheckboxRow(
             label = "Schedule",
-            entries = Schedule.entries.toList(),
+            entries = ReleaseSchedule.entries.toList(),
             selected = selectedSchedule,
             onChange = onScheduleChange
         )
