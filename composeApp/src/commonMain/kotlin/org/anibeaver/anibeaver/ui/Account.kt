@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.*
 import org.anibeaver.anibeaver.api.tokenStore
@@ -53,7 +52,6 @@ import org.koin.core.context.GlobalContext
 @Composable
 @Preview
 fun AccountScreen(
-    dataWrapper: DataWrapper,
     pagePadding: PaddingValues,
     windowSizeClass: WindowSizeClass,
 ) {

@@ -15,7 +15,6 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
@@ -30,8 +29,7 @@ fun EditEntryPopup(
     onConfirm: (EntryData) -> Unit,
     forceShowAutofillPopup: Boolean,
     alIdToBePassed: String, //only if forceShowAutofillPopup
-    initialValues: EntryData? = null,
-    dataWrapper: DataWrapper
+    initialValues: EntryData? = null
 ) {
 
     var animeName: String? by remember { mutableStateOf(initialValues?.title ?: "") }
@@ -141,7 +139,7 @@ fun EditEntryPopup(
                 onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
                     AutofillController.pullParsedAutofill(
-                        referenceIds, { result -> onPulled(result) }, dataWrapper, coroutineScope, priorityIndex
+                        referenceIds, { result -> onPulled(result) }, coroutineScope, priorityIndex
                     )
                 })
         }

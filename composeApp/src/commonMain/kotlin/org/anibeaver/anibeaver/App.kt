@@ -32,7 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App(
     navController: NavHostController? = rememberNavController(),
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dataWrapper: DataWrapper,
+    activityKiller: () -> Unit,
     windowSizeClass: WindowSizeClass
 ) {
     if (navController == null) {
@@ -63,7 +63,7 @@ fun App(
 
     // On app start, populate the EntryController with the entries from the database
     // While our app is open, the EntryController is the source of truth for entries
-    val appViewModel: AppViewModel = remember { AppViewModel(dataWrapper) }
+    val appViewModel: AppViewModel = remember { AppViewModel() }
 
     AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
@@ -99,7 +99,7 @@ fun App(
                                 HomeScreen(navController)
                             }
                             composable(route = Screens.Anime.name) {
-                                AnimeScreen(navController, dataWrapper)
+                                AnimeScreen(navController)
                             }
                             composable(route = Screens.Manga.name) {
                                 MangaScreen(navController)
@@ -108,7 +108,7 @@ fun App(
                                 SettingsScreen(navController)
                             }
                             composable(route = Screens.Account.name) {
-                                AccountScreen(dataWrapper, paddingValues, windowSizeClass)
+                                AccountScreen(paddingValues, windowSizeClass)
                             }
                         }
                     }

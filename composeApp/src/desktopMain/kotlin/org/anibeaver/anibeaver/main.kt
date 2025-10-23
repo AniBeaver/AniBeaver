@@ -20,14 +20,11 @@ fun main(){
         val activityKiller: () -> Unit = {
             this.exitApplication()
         }
-        val dataWrapper = DataWrapper(
-            activityKiller
-        )
         Window(
             onCloseRequest = ::exitApplication,
             title = "AniBeaver",
         ) {
-            App(dataWrapper = dataWrapper, windowSizeClass = calculateWindowSizeClass())
+            App(activityKiller = activityKiller, windowSizeClass = calculateWindowSizeClass())
         }
     }
 }

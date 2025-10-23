@@ -7,7 +7,6 @@ import androidx.room.RoomDatabase
 import org.koin.core.component.inject
 import org.koin.core.component.KoinComponent
 
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.Status
@@ -16,7 +15,6 @@ import org.anibeaver.anibeaver.db.getRoomDatabase
 import org.anibeaver.anibeaver.db.AppDatabase
 
 class AnimeViewModel (
-    dataWrapper: DataWrapper
 ) : ViewModel(), KoinComponent {
     private val databaseBuilder: RoomDatabase.Builder<AppDatabase> by inject()
     val animeDao = getRoomDatabase(databaseBuilder).getDao()

@@ -2,7 +2,6 @@ package org.anibeaver.anibeaver.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
@@ -59,7 +58,6 @@ object AutofillController {
     fun pullParsedAutofill(
         mediaIds: List<String>,
         onResult: (ParsedAutofillData) -> Unit,
-        dataWrapper: DataWrapper,
         scope: CoroutineScope,
         priorityIndex: Int? = null
     ) {
