@@ -77,6 +77,7 @@ kotlin {
             implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")
             implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Extended
+        
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -89,6 +90,8 @@ kotlin {
             implementation("org.netbeans.api:org-openide-util-lookup:RELEASE260")
             implementation("net.java.dev.jna:jna:5.14.0")
             implementation("net.java.dev.jna:jna-platform:5.14.0")
+
+            implementation("io.insert-koin:koin-core:4.1.0")
         }
         /*
         iosMain.dependencies {

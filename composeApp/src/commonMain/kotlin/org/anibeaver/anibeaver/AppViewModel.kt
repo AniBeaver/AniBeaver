@@ -3,17 +3,23 @@ package org.anibeaver.anibeaver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import androidx.room.RoomDatabase
+import org.koin.core.component.inject
+import org.koin.core.component.KoinComponent
+
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.EntryType
 import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.db.getRoomDatabase
+import org.anibeaver.anibeaver.db.AppDatabase
 
 class AppViewModel(
     val dataWrapper: DataWrapper
-) : ViewModel() {
-    val animeDao = getRoomDatabase(dataWrapper.databaseBuilder).getDao()
+) : ViewModel(), KoinComponent  {
+    private val databaseBuilder: RoomDatabase.Builder<AppDatabase> by inject()
+    val animeDao = getRoomDatabase(databaseBuilder).getDao()
     val entryController = EntriesController
     val entries = entryController.entries
 

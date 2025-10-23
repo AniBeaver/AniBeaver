@@ -41,8 +41,14 @@ import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.*
 import org.anibeaver.anibeaver.api.tokenStore
+import org.anibeaver.anibeaver.api.TokenStore
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
+import org.anibeaver.anibeaver.api.ApiHandler
+
 import org.jetbrains.compose.resources.painterResource
+
+import org.koin.core.component.KoinComponent
+import org.koin.core.context.GlobalContext
 
 @Composable
 @Preview
@@ -54,9 +60,12 @@ fun AccountScreen(
     val scope = rememberCoroutineScope()
     var userInfo by remember { mutableStateOf<Profile?>(null) }
 
+    val apiHandler: ApiHandler = GlobalContext.get().get()
+    val tokenStore: TokenStore = GlobalContext.get().get()
+
     fun getUserProfile() {
         scope.launch {
-            dataWrapper.apiHandler.makeAuthorizedRequest(
+            apiHandler.makeAuthorizedRequest(
                 variables = mapOf("id" to "1", "name" to "name"),
                 valueSetter = ValueSetter { userProfileQuery: UserProfileQuery ->
                     userInfo = userProfileQuery.data.profile
@@ -66,7 +75,7 @@ fun AccountScreen(
     }
 
     LaunchedEffect(Unit) {
-        val token = dataWrapper.tokenStore.load()
+        val token = tokenStore.load()
 
         if (token != null) {
             getUserProfile()
@@ -172,8 +181,8 @@ fun AccountScreen(
                             if (!isSmallScreen) {
                                 Button(
                                     onClick = {
-                                        dataWrapper.tokenStore.clear()
-                                        dataWrapper.apiHandler.logout()
+                                        tokenStore.clear()
+                                        apiHandler.logout()
                                         userInfo = null
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),
@@ -345,8 +354,8 @@ fun AccountScreen(
                     // Logout button as full-width under stats cards
                     Button(
                         onClick = {
-                            dataWrapper.tokenStore.clear()
-                            dataWrapper.apiHandler.logout()
+                            tokenStore.clear()
+                            apiHandler.logout()
                             userInfo = null
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444)),

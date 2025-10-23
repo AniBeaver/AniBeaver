@@ -6,8 +6,5 @@ import org.anibeaver.anibeaver.api.TokenStore
 import org.anibeaver.anibeaver.db.AppDatabase
 
 class DataWrapper(
-    val activityKiller: () -> Unit = {},
-    val apiHandler : ApiHandler,
-    val tokenStore: TokenStore,
-    val databaseBuilder: RoomDatabase.Builder<AppDatabase>
+    val activityKiller: () -> Unit = {}
 )

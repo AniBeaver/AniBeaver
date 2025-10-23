@@ -4,26 +4,30 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.anibeaver.anibeaver.api.ApiHandler
-import org.anibeaver.anibeaver.api.DesktopApiAuthorizationHandler
-import org.anibeaver.anibeaver.api.tokenStore
-import org.anibeaver.anibeaver.db.getDatabaseBuilder
+
+import org.anibeaver.anibeaver.di.sharedModule
+import org.anibeaver.anibeaver.di.platformModule
+
+import org.koin.core.context.startKoin
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-fun main() = application {
-    val activityKiller: () -> Unit = {
-        this.exitApplication()
+fun main(){
+    startKoin {
+        modules(sharedModule, platformModule)
     }
-    val dataWrapper = DataWrapper(
-        activityKiller,
-        apiHandler = ApiHandler(DesktopApiAuthorizationHandler()),
-        tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", platformContext = null),
-        databaseBuilder = getDatabaseBuilder()
-    )
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "AniBeaver",
-    ) {
-        App(dataWrapper = dataWrapper, windowSizeClass = calculateWindowSizeClass())
+
+    application {
+        val activityKiller: () -> Unit = {
+            this.exitApplication()
+        }
+        val dataWrapper = DataWrapper(
+            activityKiller
+        )
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "AniBeaver",
+        ) {
+            App(dataWrapper = dataWrapper, windowSizeClass = calculateWindowSizeClass())
+        }
     }
 }
