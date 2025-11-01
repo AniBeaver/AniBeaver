@@ -2,13 +2,17 @@ package org.anibeaver.anibeaver.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillMediaQuery
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillTitle
 import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
+import org.anibeaver.anibeaver.api.ApiHandler
+
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext
 
 data class ParsedAutofillData(
     val name_jp: String,
@@ -54,7 +58,6 @@ object AutofillController {
     fun pullParsedAutofill(
         mediaIds: List<String>,
         onResult: (ParsedAutofillData) -> Unit,
-        dataWrapper: DataWrapper,
         scope: CoroutineScope,
         priorityIndex: Int? = null
     ) {
@@ -175,6 +178,7 @@ object AutofillController {
                 runtime = inferRuntime(autofillDataList)
             )
         }
+        val apiHandler: ApiHandler = GlobalContext.get().get()
 
         val results = mutableListOf<AutofillData>()
         var completed = 0
@@ -185,7 +189,7 @@ object AutofillController {
         }
         scope.launch {
             for (mediaId in validIds) {
-                dataWrapper.apiHandler.makeRequest(
+                apiHandler.makeRequest(
                     variables = mapOf("id" to mediaId),
                     valueSetter = ValueSetter { mediaQuery: AutofillMediaQuery ->
                         results.add(mediaQuery.data.media)

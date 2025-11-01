@@ -1,4 +1,4 @@
-package org.anibeaver.anibeaver
+package org.anibeaver.anibeaver.api
 
 import android.content.Context
 import org.anibeaver.anibeaver.api.ApiAuthorizationHandler

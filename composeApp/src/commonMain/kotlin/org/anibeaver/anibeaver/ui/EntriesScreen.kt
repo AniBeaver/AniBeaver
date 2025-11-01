@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.DataWrapper
 import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
@@ -32,7 +31,7 @@ import kotlin.math.max
 @Composable
 @Preview
 fun EntriesScreen(
-    navController: NavHostController = rememberNavController(), dataWrapper: DataWrapper, forManga: Boolean
+    navController: NavHostController = rememberNavController(), forManga: Boolean
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -47,7 +46,7 @@ fun EntriesScreen(
     var groupByStatus by remember { mutableStateOf(true) }
 
 
-    val viewModel: AnimeViewModel = remember { AnimeViewModel(dataWrapper) }
+    val viewModel: AnimeViewModel = remember { AnimeViewModel() }
 
     fun refreshTags() {
         // TODO: Implement tag refresh logic here
@@ -159,7 +158,6 @@ fun EntriesScreen(
                     forceShowAutofillPopup = showAutofillPopup,
                     alIdToBePassed = quickAlId,
                     initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
-                    dataWrapper,
                     forManga=forManga
                 )
             }
