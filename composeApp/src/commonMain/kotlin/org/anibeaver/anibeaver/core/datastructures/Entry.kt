@@ -75,7 +75,7 @@ enum class EntryType(val id: Int) {
 }
 
 enum class Status(val id: Int, val displayName: String) {
-    Watching(1, "Watching"),
+    Watching(1, "In Progress"),
     Completed(3, "Completed"),
     Planning(0, "Planning"),
     Paused(2, "On Hold"),
