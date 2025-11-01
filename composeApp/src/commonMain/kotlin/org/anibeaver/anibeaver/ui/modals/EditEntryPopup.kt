@@ -146,7 +146,8 @@ fun EditEntryPopup(
                     AutofillController.pullParsedAutofill(
                         referenceIds, { result -> onPulled(result) }, coroutineScope, priorityIndex
                     )
-                })
+                },
+                forManga=forManga)
         }
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
             Button(onClick = {

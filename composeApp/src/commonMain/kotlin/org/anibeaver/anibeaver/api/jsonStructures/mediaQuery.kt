@@ -50,7 +50,9 @@ data class AutofillData(
     @SerialName("type") val type: String? = null,
     @SerialName("title") val title: AutofillTitle? = null,
     @SerialName("duration") val duration: Int? = null,
-    @SerialName("episodes") val episodes: Int? = null
+    @SerialName("episodes") val episodes: Int? = null,
+    @SerialName("chapters") val chapters: Int? = null,
+    @SerialName("volumes") val volumes: Int? = null
 )
 
 @Serializable
@@ -82,12 +84,17 @@ data class StudioNode(
 @Serializable
 data class StaffEdge(
     val role: String? = null,
-    val nameNode: NameNode? = null
+    val node: NameNode? = null
 )
 
 @Serializable
 data class NameNode(
-    val fullName: String? = null
+    val name: FullName? = null
+)
+
+@Serializable
+data class FullName(
+    val full: String? = null
 )
 
 @Serializable

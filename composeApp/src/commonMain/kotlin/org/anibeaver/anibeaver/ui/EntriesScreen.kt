@@ -40,7 +40,7 @@ fun EntriesScreen(
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
     val filterState = rememberAnimeFilterState()
-    var quickAlId by remember { mutableStateOf("97832") } //default value set here for debug (Citrus)
+    var quickAlId by remember { mutableStateOf((if (!forManga) "97832" else "80145")) } //default value set here for debug (Citrus)
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
     var groupByStatus by remember { mutableStateOf(true) }

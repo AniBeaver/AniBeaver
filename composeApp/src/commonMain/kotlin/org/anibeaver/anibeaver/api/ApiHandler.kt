@@ -203,6 +203,8 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                 seasonYear
                 duration
                 episodes
+                chapters
+                volumes
                 status
                 studios {
                     nodes {

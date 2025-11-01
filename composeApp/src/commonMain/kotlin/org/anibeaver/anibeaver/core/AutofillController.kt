@@ -2,16 +2,13 @@ package org.anibeaver.anibeaver.core
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillMediaQuery
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillTitle
 import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
-import org.anibeaver.anibeaver.api.ApiHandler
-
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext
 
 data class ParsedAutofillData(
@@ -47,8 +44,8 @@ val emptyParsedAutofillData =
         genres = emptyList(),
         tags = emptyList(),
         airingScheduleWeekday = ReleaseSchedule.Irregular,
-        eps_total = 0,
-        runtime = 0
+        eps_total = 0,//chapters
+        runtime = 0 //volumes,
     )
 
 object AutofillController {
@@ -98,6 +95,7 @@ object AutofillController {
             return strings[0].substring(0, end).trim().replace(Regex(":+$"), "")
         }
 
+        //TODO: anilist doesn't seem to have end/start year and chapter counts for unfinished manga
         fun inferYearRange(autofillDataList: List<AutofillData>): Pair<Int, Int> {
             val years = autofillDataList.mapNotNull { it.seasonYear }
             return Pair(years.minOrNull() ?: 0, years.maxOrNull() ?: 0)
@@ -116,23 +114,37 @@ object AutofillController {
         fun inferAvgScore(autofillDataList: List<AutofillData>): Float =
             autofillDataList.mapNotNull { it.meanScore }.let { if (it.isNotEmpty()) it.average().toFloat() else 0f }
 
-        fun inferStudios(autofillDataList: List<AutofillData>): List<String> =
-            autofillDataList.flatMap { data ->
-                data.studios?.nodes?.filter { it.isAnimationStudio == true }?.mapNotNull { it.name } ?: emptyList()
-            }.distinct()
+        fun inferStudios(autofillDataList: List<AutofillData>, forManga: Boolean): List<String> {
+            if (forManga) {
+                return emptyList()
+            } else {
+                return autofillDataList.flatMap { data ->
+                    data.studios?.nodes?.filter { it.isAnimationStudio == true }?.mapNotNull { it.name } ?: emptyList()
+                }.distinct()
+            }
+        }
 
-        fun inferAuthor(autofillDataList: List<AutofillData>): List<String> =
-            autofillDataList
-                .flatMap { data ->
-                    data.staff?.edges
-                        ?.filter { edge ->
-                            edge.role?.contains("story", ignoreCase = true) == true ||
-                                    edge.role?.contains("art", ignoreCase = true) == true
-                        }
-                        ?.mapNotNull { edge -> edge.nameNode?.fullName }
-                        ?: emptyList()
-                }
-                .distinct()
+        fun inferAuthor(autofillDataList: List<AutofillData>, forManga: Boolean): List<String> {
+            if (!forManga) {
+                return emptyList()
+            } else {
+                print(autofillDataList[0].staff?.edges)
+                val result = autofillDataList
+                    .flatMap { data ->
+                        data.staff?.edges
+                            ?.filter { edge ->
+                                edge.role?.contains("story", ignoreCase = true) == true ||
+                                        edge.role?.contains("art", ignoreCase = true) == true
+                            }
+                            ?.mapNotNull { edge -> edge.node?.name?.full }
+                            ?: emptyList()
+                    }
+                    .distinct()
+                print(result)
+                return result
+
+            }
+        }
 
         fun inferGenres(autofillDataList: List<AutofillData>): List<String> =
             autofillDataList.flatMap { it.genres ?: emptyList() }
@@ -150,8 +162,9 @@ object AutofillController {
             autofillDataList.flatMap { it.airingSchedule?.nodes ?: emptyList() }
                 .mapNotNull { it.airingAt }
 
-        fun inferEpsTotal(autofillDataList: List<AutofillData>): Int =
-            autofillDataList.mapNotNull { it.episodes }.takeIf { it.isNotEmpty() }?.let { it.sum() } ?: 0
+        fun inferEpsTotal(autofillDataList: List<AutofillData>, forManga: Boolean): Int =
+            autofillDataList.mapNotNull { if (!forManga) it.episodes else it.chapters }.takeIf { it.isNotEmpty() }
+                ?.let { it.sum() } ?: 0
 
         fun inferMostCurrentAiringAts(autofillDataList: List<AutofillData>): List<Long> {
             val mostCurrentYear = autofillDataList.maxOfOrNull { it.seasonYear ?: Int.MIN_VALUE }
@@ -167,15 +180,22 @@ object AutofillController {
             return if (names.isNotEmpty()) commonPrefix(names) else ""
         }
 
-        fun inferRuntime(autofillDataList: List<AutofillData>): Int =
-            autofillDataList.mapNotNull { data ->
-                val eps = data.episodes ?: 0
-                val dur = data.duration ?: 0
-                if (eps > 0 && dur > 0) eps * dur else null
-            }.sum()
+        fun inferRuntime(autofillDataList: List<AutofillData>, forManga: Boolean): Int =
+            if (!forManga) {
+                autofillDataList.mapNotNull { data ->
+                    val eps = data.episodes ?: 0
+                    val dur = data.duration ?: 0
+                    if (eps > 0 && dur > 0) eps * dur else null
+                }.sum()
+            } else {
+                autofillDataList.mapNotNull { data ->
+                    data.volumes
+                }.sum()
+            }
 
         fun parseAutofillDataList(autofillDataList: List<AutofillData>): ParsedAutofillData {
             if (autofillDataList.isEmpty()) return emptyParsedAutofillData
+            val forManga = autofillDataList[0].type == "MANGA" //FIXME: idk maybe different
             return ParsedAutofillData(
                 name_jp = inferNames(autofillDataList) { it.native },
                 name_rm = inferNames(autofillDataList) { it.romaji },
@@ -185,15 +205,16 @@ object AutofillController {
                 cover_link = inferCoverLink(autofillDataList),
                 banner_link = inferBannerLink(autofillDataList),
                 avg_score = inferAvgScore(autofillDataList),
-                studios = inferStudios(autofillDataList),
-                author = inferAuthor(autofillDataList),
+                studios = inferStudios(autofillDataList, forManga),
+                author = inferAuthor(autofillDataList, forManga),
                 genres = inferGenres(autofillDataList),
                 tags = inferTags(autofillDataList),
                 airingScheduleWeekday = inferAiringScheduleWeekday(inferMostCurrentAiringAts(autofillDataList), 0.2f),
-                eps_total = inferEpsTotal(autofillDataList),
-                runtime = inferRuntime(autofillDataList)
+                eps_total = inferEpsTotal(autofillDataList, forManga),
+                runtime = inferRuntime(autofillDataList, forManga)
             )
         }
+
         val apiHandler: ApiHandler = GlobalContext.get().get()
 
         val results = mutableListOf<AutofillData>()

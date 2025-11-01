@@ -26,7 +26,8 @@ fun AutofillPopup(
     onConfirm: (AutofillResultSelection?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
     autoTriggerPull: Boolean,
-    onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit
+    onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit,
+    forManga: Boolean
 ) {
     var _autoTriggerPull = autoTriggerPull
 
@@ -41,6 +42,7 @@ fun AutofillPopup(
     var yearRadioIdx by remember { mutableStateOf(0) } // 0 = start, 1 = end
 
     var selectedStudios by remember { mutableStateOf(emptySet<String>()) }
+    var selectedAuthor by remember { mutableStateOf(emptySet<String>()) }
     var selectedGenres by remember { mutableStateOf(emptySet<String>()) }
     var selectedTags by remember { mutableStateOf(emptySet<String>()) }
     var coverChecked by remember { mutableStateOf(true) }
@@ -167,6 +169,8 @@ fun AutofillPopup(
                         nameOptions = nameOptions,
                         selectedStudios = selectedStudios,
                         onSelectedStudiosChange = { selectedStudios = it },
+                        selectedAuthor = selectedAuthor,
+                        onSelectedAuthorChange = { selectedAuthor = it },
                         selectedGenres = selectedGenres,
                         onSelectedGenresChange = { selectedGenres = it },
                         selectedTags = selectedTags,
@@ -183,7 +187,8 @@ fun AutofillPopup(
                         nameChecked = nameChecked,
                         onNameCheckedChange = { nameChecked = it },
                         yearChecked = yearChecked,
-                        onYearCheckedChange = { yearChecked = it }
+                        onYearCheckedChange = { yearChecked = it },
+                        forManga = forManga
                     )
                 }
             }
@@ -202,6 +207,8 @@ private fun AutofillSelectorUI(
     nameOptions: List<String>,
     selectedStudios: Set<String>,
     onSelectedStudiosChange: (Set<String>) -> Unit,
+    selectedAuthor: Set<String>,
+    onSelectedAuthorChange: (Set<String>) -> Unit,
     selectedGenres: Set<String>,
     onSelectedGenresChange: (Set<String>) -> Unit,
     selectedTags: Set<String>,
@@ -218,7 +225,8 @@ private fun AutofillSelectorUI(
     nameChecked: Boolean,
     onNameCheckedChange: (Boolean) -> Unit,
     yearChecked: Boolean,
-    onYearCheckedChange: (Boolean) -> Unit
+    onYearCheckedChange: (Boolean) -> Unit,
+    forManga: Boolean
 ) {
 
     val scrollState = rememberScrollState()
@@ -309,7 +317,7 @@ private fun AutofillSelectorUI(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = airingChecked, onCheckedChange = { checked -> onAiringCheckedChange(checked) })
-                    Text("Airing ${autofill.airingScheduleWeekday}")
+                    Text("Releasing ${autofill.airingScheduleWeekday}")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = coverChecked, onCheckedChange = { checked -> onCoverCheckedChange(checked) })
@@ -320,16 +328,26 @@ private fun AutofillSelectorUI(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = epsChecked, onCheckedChange = { checked -> onEpsCheckedChange(checked) })
-                    Text("Eps. Total: $totalEpisodes")
+                    Text((if (forManga) "Ch. Total:" else "Eps. Total:") + " $totalEpisodes")
                 }
             }
-            SectionWithCheckAll(
-                label = "Studios",
-                labelBold = true,
-                allItems = autofill.studios,
-                selectedItems = selectedStudios,
-                onSelectionChange = onSelectedStudiosChange
-            )
+            if (!forManga) {
+                SectionWithCheckAll(
+                    label = "Studios",
+                    labelBold = true,
+                    allItems = autofill.studios,
+                    selectedItems = selectedStudios,
+                    onSelectionChange = onSelectedStudiosChange
+                )
+            } else {
+                SectionWithCheckAll(
+                    label = "Authors",
+                    labelBold = true,
+                    allItems = autofill.author,
+                    selectedItems = selectedAuthor,
+                    onSelectionChange = onSelectedAuthorChange
+                )
+            }
             SectionWithCheckAll(
                 label = "Genres",
                 labelBold = true,
@@ -345,7 +363,7 @@ private fun AutofillSelectorUI(
                 onSelectionChange = onSelectedTagsChange
             )
             Text(
-                "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The series has a total runtime of ${
+                "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The " + if (forManga) "manga has a total of ${autofill.runtime} volumes." else "anime has a total runtime of ${
                     formatMinutes(
                         autofill.runtime
                     )
