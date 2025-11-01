@@ -192,7 +192,7 @@ fun EntriesScreen(
 
             val filteredEntries = allEntriesOfType.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
-            FilterInfoRow(entriesToShow, allEntries) { filterState.clear() }
+            FilterInfoRow(entriesToShow, allEntriesOfType) { filterState.clear() }
 
             EntryGrid(
                 entriesToShow = entriesToShow,
