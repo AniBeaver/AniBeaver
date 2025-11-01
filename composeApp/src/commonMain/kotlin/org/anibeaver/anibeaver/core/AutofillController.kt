@@ -24,6 +24,7 @@ data class ParsedAutofillData(
     var banner_link: String,
     val avg_score: Float,
     val studios: List<String>,
+    val author: List<String>,
     val genres: List<String>,
     val tags: List<String>,
     val airingScheduleWeekday: ReleaseSchedule,
@@ -42,6 +43,7 @@ val emptyParsedAutofillData =
         banner_link = "",
         avg_score = 0f,
         studios = emptyList(),
+        author = emptyList(),
         genres = emptyList(),
         tags = emptyList(),
         airingScheduleWeekday = ReleaseSchedule.Irregular,
@@ -119,6 +121,19 @@ object AutofillController {
                 data.studios?.nodes?.filter { it.isAnimationStudio == true }?.mapNotNull { it.name } ?: emptyList()
             }.distinct()
 
+        fun inferAuthor(autofillDataList: List<AutofillData>): List<String> =
+            autofillDataList
+                .flatMap { data ->
+                    data.staff?.edges
+                        ?.filter { edge ->
+                            edge.role?.contains("story", ignoreCase = true) == true ||
+                                    edge.role?.contains("art", ignoreCase = true) == true
+                        }
+                        ?.mapNotNull { edge -> edge.nameNode?.fullName }
+                        ?: emptyList()
+                }
+                .distinct()
+
         fun inferGenres(autofillDataList: List<AutofillData>): List<String> =
             autofillDataList.flatMap { it.genres ?: emptyList() }
                 .distinct()
@@ -171,6 +186,7 @@ object AutofillController {
                 banner_link = inferBannerLink(autofillDataList),
                 avg_score = inferAvgScore(autofillDataList),
                 studios = inferStudios(autofillDataList),
+                author = inferAuthor(autofillDataList),
                 genres = inferGenres(autofillDataList),
                 tags = inferTags(autofillDataList),
                 airingScheduleWeekday = inferAiringScheduleWeekday(inferMostCurrentAiringAts(autofillDataList), 0.2f),

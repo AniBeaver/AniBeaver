@@ -43,6 +43,7 @@ data class AutofillData(
     @SerialName("seasonYear") val seasonYear: Int? = null,
     @SerialName("status") val status: String? = null,
     @SerialName("studios") val studios: Studios? = null,
+    @SerialName("staff") val staff: Staff? = null,
     @SerialName("tags") val tags: List<Tag>? = null,
     @SerialName("genres") val genres: List<String>? = null,
     @SerialName("coverImage") val coverImage: CoverImage? = null,
@@ -68,9 +69,25 @@ data class Studios(
 )
 
 @Serializable
+data class Staff(
+    val edges: List<StaffEdge>? = null,
+)
+
+@Serializable
 data class StudioNode(
     val name: String? = null,
     val isAnimationStudio: Boolean? = null
+)
+
+@Serializable
+data class StaffEdge(
+    val role: String? = null,
+    val nameNode: NameNode? = null
+)
+
+@Serializable
+data class NameNode(
+    val fullName: String? = null
 )
 
 @Serializable

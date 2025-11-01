@@ -36,6 +36,7 @@ fun EditEntryPopup(
     var animeName: String? by remember { mutableStateOf(initialValues?.title ?: "") }
     var releaseYear by remember { mutableStateOf(initialValues?.releaseYear ?: "2010") }
     var studioIds by remember { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
+    var authorIds by remember { mutableStateOf(initialValues?.authorIds ?: emptyList()) }
     var genreIds by remember { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
     var description by remember { mutableStateOf(initialValues?.description ?: "") }
     var rating by remember { mutableStateOf(initialValues?.rating ?: 8.5f) }
@@ -56,6 +57,7 @@ fun EditEntryPopup(
         animeName = initialValues?.title ?: ""
         releaseYear = initialValues?.releaseYear ?: "2010"
         studioIds = initialValues?.studioIds ?: emptyList()
+        authorIds = initialValues?.authorIds ?: emptyList()
         genreIds = initialValues?.genreIds ?: emptyList()
         description = initialValues?.description ?: ""
         rating = initialValues?.rating ?: 8.5f
@@ -79,6 +81,7 @@ fun EditEntryPopup(
     val releaseYearRequester = remember { FocusRequester() }
     val genreRequester = remember { FocusRequester() }
     val studioNameRequester = remember { FocusRequester() }
+    val authorNameRequester = remember { FocusRequester() }
     val tagsRequester = remember { FocusRequester() }
     val statusRequester = remember { FocusRequester() }
     val releasingEveryRequester = remember { FocusRequester() }
@@ -89,6 +92,7 @@ fun EditEntryPopup(
         when (tagType) {
             TagType.GENRE -> if (tagId !in genreIds) genreIds = genreIds + tagId
             TagType.STUDIO -> if (tagId !in studioIds) studioIds = studioIds + tagId
+            TagType.AUTHOR -> if (tagId !in authorIds) authorIds = authorIds + tagId
             TagType.CUSTOM -> if (tagId !in tagsIds) tagsIds = tagsIds + tagId
         }
     }
@@ -151,6 +155,7 @@ fun EditEntryPopup(
                         title = animeName,
                         releaseYear = releaseYear,
                         studioIds = studioIds,
+                        authorIds = authorIds,
                         genreIds = genreIds,
                         description = description,
                         rating = rating,
@@ -292,18 +297,35 @@ fun EditEntryPopup(
                         },
                         surfaceColor = null
                     )
-                    TagChipInput(
-                        tags = studioIds,
-                        onTagsChange = { studioIds = it },
-                        tagType = TagType.STUDIO,
-                        label = "Studio",
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(studioNameRequester),
-                        onCreateTagClick = {
-                            newTagInitialType = TagType.STUDIO
-                            showNewTagPopup = true
-                        },
-                        surfaceColor = null
-                    )
+                    if (!forManga) {
+                        TagChipInput(
+                            tags = studioIds,
+                            onTagsChange = { studioIds = it },
+                            tagType = TagType.STUDIO,
+                            label = "Studio",
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                                .focusRequester(studioNameRequester),
+                            onCreateTagClick = {
+                                newTagInitialType = TagType.STUDIO
+                                showNewTagPopup = true
+                            },
+                            surfaceColor = null
+                        )
+                    } else {
+                        TagChipInput(
+                            tags = studioIds,
+                            onTagsChange = { authorIds = it },
+                            tagType = TagType.AUTHOR,
+                            label = "Author",
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                                .focusRequester(authorNameRequester),
+                            onCreateTagClick = {
+                                newTagInitialType = TagType.AUTHOR
+                                showNewTagPopup = true
+                            },
+                            surfaceColor = null
+                        )
+                    }
                     TagChipInput(
                         tags = tagsIds,
                         onTagsChange = { tagsIds = it },

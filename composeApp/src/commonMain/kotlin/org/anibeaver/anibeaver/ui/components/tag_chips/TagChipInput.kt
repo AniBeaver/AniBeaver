@@ -74,7 +74,7 @@ fun TagChipInput(
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions.Default,
                 )
-                if (input.isNotBlank() && TagsController.tags.filter { it.type == tagType && it.id !in tags }.isNotEmpty()) {
+                if (input.isNotBlank() && TagsController.tags.any { it.type == tagType && it.id !in tags }) {
                     val suggestions = TagsController.tags
                         .filter { it.type == tagType && it.id !in tags }
                         .filter { it.name.contains(input, ignoreCase = true) }

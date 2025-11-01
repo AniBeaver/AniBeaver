@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.core.datastructures.EntryType
 import kotlin.math.round
 
 @Composable
@@ -24,9 +25,10 @@ fun EntryCard(
     val description = entry.entryData.description
 
     val studioTags = entry.entryData.studioIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+    val authorTags = entry.entryData.authorIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
     val genreTags = entry.entryData.genreIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
     val customTags = entry.entryData.tagIds.mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
-    val tags = (genreTags + listOf(entry.entryData.releaseYear) + studioTags + customTags).joinToString(", ")
+    val tags = (genreTags + listOf(entry.entryData.releaseYear) + ( if (entry.entryData.type == EntryType.Anime) studioTags else authorTags) + customTags).joinToString(", ")
 
     Card(shape = RoundedCornerShape(6.dp)) {
         Row(
@@ -66,7 +68,7 @@ fun EntryCard(
                 Spacer(Modifier.height(6.dp))
 
                 val tagsLine = listOf(
-                    genreTags.joinToString(", "), studioTags.joinToString(", "), customTags.joinToString(", ")
+                    genreTags.joinToString(", "), studioTags.joinToString(", "), authorTags.joinToString(", "),  customTags.joinToString(", ")
                 ).filter { it.isNotBlank() }.joinToString(", ")
                 if (tagsLine.isNotBlank()) {
                     Text(tagsLine, fontSize = 12.sp)

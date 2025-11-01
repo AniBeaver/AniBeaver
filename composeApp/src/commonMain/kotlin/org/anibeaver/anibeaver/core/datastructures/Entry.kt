@@ -31,13 +31,15 @@ class Entry internal constructor(
         //tags
         val selectedCustomTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.CUSTOM }
         val selectedStudioTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.STUDIO }
+        val selectedAuthorTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.AUTHOR }
         val selectedGenreTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
 
         val customMatch = selectedCustomTags.isEmpty() || selectedCustomTags.any { it in entryData.tagIds }
-        val studioMatch = selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
+        val studioMatch = entryData.type == EntryType.Manga || selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
+        val authorMatch = entryData.type == EntryType.Anime ||selectedAuthorTags.isEmpty() || selectedAuthorTags.any { it in entryData.authorIds }
         val genreMatch = selectedGenreTags.isEmpty() || selectedGenreTags.any { it in entryData.genreIds }
 
-        if (!customMatch || !studioMatch || !genreMatch) { return false }
+        if (!customMatch || !studioMatch || !authorMatch || !genreMatch) { return false }
 
         return true
     }
@@ -47,6 +49,7 @@ class EntryData internal constructor(
     val title: String? = "",
     val releaseYear: String = "2000",
     val studioIds: List<Int> = emptyList(),
+    val authorIds: List<Int> = emptyList(),
     val genreIds: List<Int> = emptyList(),
     val description: String = "",
     val rating: Float = 0f,

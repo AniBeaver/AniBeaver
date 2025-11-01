@@ -5,7 +5,8 @@ import org.anibeaver.anibeaver.core.TagsController
 enum class TagType {
     CUSTOM,
     GENRE,
-    STUDIO
+    STUDIO,
+    AUTHOR
 }
 
 class Tag(

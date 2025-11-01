@@ -22,8 +22,8 @@ fun ManageTagsModal(
     if (!show) return
 
     var selectedTab by remember { mutableStateOf(0) }
-    val tabTitles = listOf("Custom", "Genre", "Studio")
-    val tagTypes = listOf(TagType.CUSTOM, TagType.GENRE, TagType.STUDIO)
+    val tabTitles = listOf("Custom", "Genre", "Studio", "Author")
+    val tagTypes = listOf(TagType.CUSTOM, TagType.GENRE, TagType.STUDIO, TagType.AUTHOR)
 
     AlertDialog(
         onDismissRequest = onDismiss,
