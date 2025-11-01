@@ -128,7 +128,6 @@ object AutofillController {
             if (!forManga) {
                 return emptyList()
             } else {
-                print(autofillDataList[0].staff?.edges)
                 val result = autofillDataList
                     .flatMap { data ->
                         data.staff?.edges
@@ -140,7 +139,6 @@ object AutofillController {
                             ?: emptyList()
                     }
                     .distinct()
-                print(result)
                 return result
 
             }

@@ -4,6 +4,7 @@ data class AutofillResultSelection(
     val name: String?,
     val year: Int?,
     val studios: List<String>,
+    val author: List<String>,
     val genres: List<String>,
     val tags: List<String>,
     val cover: String?,

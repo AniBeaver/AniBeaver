@@ -77,7 +77,7 @@ fun NewTagPopup(
         },
         confirmButton = {
             Button(onClick = { onConfirm(tagName, tagHex, tagType) }, enabled = isConfirmEnabled) {
-                Text("Confirm/Create")
+                Text("Confirm/Create/Apply")
             }
         },
         dismissButton = {

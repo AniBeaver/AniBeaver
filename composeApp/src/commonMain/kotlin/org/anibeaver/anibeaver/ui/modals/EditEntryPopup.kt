@@ -71,7 +71,7 @@ fun EditEntryPopup(
 
         if (forceShowAutofillPopup) {
             showAutofillPopup = true
-            if (references.isEmpty()) references = listOf(Reference("Se1", alIdToBePassed))
+            if (references.isEmpty()) references = listOf(Reference(if (!forManga) "Se1" else "Main", alIdToBePassed))
         }
     }
 
@@ -119,6 +119,7 @@ fun EditEntryPopup(
         massCreateAndApplyTags(selection.genres, TagType.GENRE)
         massCreateAndApplyTags(selection.studios, TagType.STUDIO)
         massCreateAndApplyTags(selection.tags, TagType.CUSTOM)
+        massCreateAndApplyTags(selection.author, TagType.AUTHOR)
 
     }
 
@@ -314,7 +315,7 @@ fun EditEntryPopup(
                         )
                     } else {
                         TagChipInput(
-                            tags = studioIds,
+                            tags = authorIds,
                             onTagsChange = { authorIds = it },
                             tagType = TagType.AUTHOR,
                             label = "Author",

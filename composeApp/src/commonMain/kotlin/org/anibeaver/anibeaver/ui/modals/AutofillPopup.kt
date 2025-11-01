@@ -94,6 +94,7 @@ fun AutofillPopup(
                         name = if (nameChecked) name else null,
                         year = if (yearChecked) year else null,
                         studios = selectedStudios.toList(),
+                        author = selectedAuthor.toList(),
                         genres = selectedGenres.toList(),
                         tags = selectedTags.toList(),
                         cover = if (coverChecked) autofillData!!.cover_link else null,
