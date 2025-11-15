@@ -21,7 +21,10 @@ import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.ImageInput
-import org.anibeaver.anibeaver.ui.components.basic.*
+import org.anibeaver.anibeaver.ui.components.basic.FloatPicker
+import org.anibeaver.anibeaver.ui.components.basic.IntPicker
+import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
+import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
 
 //TODO: tiny windows not supported still
@@ -54,8 +57,8 @@ fun EditEntryPopup(
     var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 1) }
     var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
     var rewatches by remember { mutableStateOf(initialValues?.rewatches ?: 1) }
-    var bannerArt: Art by remember {mutableStateOf(initialValues?.bannerArt ?: Art("empty", ""))}
-    var coverArt: Art by remember {mutableStateOf(initialValues?.coverArt ?: Art("empty", ""))}
+    var bannerArt: Art by remember { mutableStateOf(initialValues?.bannerArt ?: Art("empty", "")) }
+    var coverArt: Art by remember { mutableStateOf(initialValues?.coverArt ?: Art("empty", "")) }
 
     // Reset fields when initialValues changes (for editing)
     LaunchedEffect(initialValues) {
@@ -104,7 +107,7 @@ fun EditEntryPopup(
         }
     }
 
-    fun applyAutofillSelection(selection: AutofillResultSelection) {
+    suspend fun applyAutofillSelection(selection: AutofillResultSelection) {
         fun massCreateAndApplyTags(tagList: List<String>, newTagType: TagType) {
             for (newTagName in tagList) {
                 //TODO: in other places: maybe don't allow creating a tag by the same name as an existing one; Also add tag searching/sorting in tag menu (UI)
@@ -121,8 +124,8 @@ fun EditEntryPopup(
         if (selection.episodes != null) {
             episodesTotal = selection.episodes
         }
-        //TODO: banner and cover
-        //TODO: Studio, genre and custom tag creation
+        if (selection.cover != null) coverArt = ImageController.downloadNewArt(selection.cover)
+        if (selection.banner != null) bannerArt = ImageController.downloadNewArt(selection.banner)
         massCreateAndApplyTags(selection.genres, TagType.GENRE)
         massCreateAndApplyTags(selection.studios, TagType.STUDIO)
         massCreateAndApplyTags(selection.tags, TagType.CUSTOM)
@@ -146,7 +149,11 @@ fun EditEntryPopup(
                 onDismiss = { showAutofillPopup = false },
                 onConfirm = { selection ->
                     showAutofillPopup = false
-                    selection?.let { applyAutofillSelection(it) }
+                    selection?.let {
+                        coroutineScope.launch {
+                            applyAutofillSelection(it)
+                        }
+                    }
                 },
                 onConfirmReorder = { newList -> references = newList },
                 autoTriggerPull = forceShowAutofillPopup,
@@ -156,7 +163,8 @@ fun EditEntryPopup(
                         referenceIds, { result -> onPulled(result) }, coroutineScope, priorityIndex
                     )
                 },
-                forManga=forManga)
+                forManga = forManga
+            )
         }
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
             Button(onClick = {
@@ -191,8 +199,8 @@ fun EditEntryPopup(
         }, title = { Text("Edit Entry") }, text = {
             Column(
                 Modifier.fillMaxSize().verticalScroll(
-                        rememberScrollState()
-                    )
+                    rememberScrollState()
+                )
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(
@@ -212,8 +220,7 @@ fun EditEntryPopup(
 
 
                                     }
-                                }
-                            )
+                                })
                             ImageInput(
                                 modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
                                 imagePath = bannerArt.localPath,
@@ -225,8 +232,7 @@ fun EditEntryPopup(
                                         bannerArt = ImageController.chooseAndResaveNewArt()
 
                                     }
-                                }
-                            )
+                                })
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             animeName?.let { it1 ->
@@ -307,12 +313,12 @@ fun EditEntryPopup(
 
                         YearPicker(
                             value = releaseYear, onValueChange = { releaseYear = it }, onIncrement = {
-                            val year = releaseYear.toIntOrNull() ?: 0
-                            if (year < 9999) releaseYear = (year + 1).toString()
-                        }, onDecrement = {
-                            val year = releaseYear.toIntOrNull() ?: 0
-                            if (year > 0) releaseYear = (year - 1).toString()
-                        }, modifier = Modifier.weight(1f), label = "Year"
+                                val year = releaseYear.toIntOrNull() ?: 0
+                                if (year < 9999) releaseYear = (year + 1).toString()
+                            }, onDecrement = {
+                                val year = releaseYear.toIntOrNull() ?: 0
+                                if (year > 0) releaseYear = (year - 1).toString()
+                            }, modifier = Modifier.weight(1f), label = "Year"
                         )
 
                     }
