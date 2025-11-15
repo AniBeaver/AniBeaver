@@ -4,7 +4,6 @@ import io.github.vinceglb.filekit.*
 import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
-import io.ktor.util.Platform
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.anibeaver.anibeaver.core.datastructures.Art
@@ -39,7 +38,6 @@ object ImageController {
         } while (destination.exists())
         return destination
     }
-
 
 
     suspend fun chooseAndResaveNewArt(): Art {
@@ -78,7 +76,7 @@ object ImageController {
     suspend fun downloadNewArt(link: String): Art {
         suspend fun downloadImage(link: String): PlatformFile {
             createImagesDir()
-            fun getExtensionFromLink (link: String): String {
+            fun getExtensionFromLink(link: String): String {
                 return run {
                     val path = URL(link).path
                     val idx = path.lastIndexOf('.')
@@ -90,6 +88,7 @@ object ImageController {
                 }
 
             }
+
             val imageBytes = withContext(Dispatchers.IO) {
                 URL(link).openStream().use { it.readBytes() }
             }

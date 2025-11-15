@@ -26,16 +26,19 @@ import kotlin.math.round
 fun BannerBackground(
     bannerFile: PlatformFile?,
     modifier: Modifier = Modifier,
-    alpha: Float = 0.2f,
-    scale: Float = 1.5f
+    alpha: Float = 0.2f
 ) {
     if (bannerFile == null) return
 
-    Box(
-        modifier = modifier
-            .fillMaxSize(),
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val parentHeight = constraints.maxHeight.toFloat()
+        val parentWidth = constraints.maxWidth.toFloat()
+        val imageAspectRatio = 16f / 9f
+        val scaleX = ((parentHeight / parentWidth) * imageAspectRatio).coerceAtLeast(1f)
+
         AsyncImage(
             file = bannerFile,
             contentDescription = null,
@@ -44,8 +47,8 @@ fun BannerBackground(
                 .matchParentSize()
                 .graphicsLayer {
                     this.alpha = alpha
-                    this.scaleX = scale
-                    this.scaleY = scale
+                    this.scaleX = scaleX
+                    this.scaleY = 1f
                 }
         )
 
@@ -56,6 +59,7 @@ fun BannerBackground(
         )
     }
 }
+
 
 @Composable
 fun EntryCard(
@@ -85,7 +89,6 @@ fun EntryCard(
                 bannerFile = PlatformFile(entry.entryData.bannerArt.localPath),
                 modifier = Modifier.fillMaxSize(),
                 alpha = 0.2f,
-                scale = 1.5f
             )
 
             Row(
