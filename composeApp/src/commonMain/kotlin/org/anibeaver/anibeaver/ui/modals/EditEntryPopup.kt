@@ -1,6 +1,5 @@
 package org.anibeaver.anibeaver.ui.modals
 
-import ImageInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +20,7 @@ import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
+import org.anibeaver.anibeaver.ui.ImageInput
 import org.anibeaver.anibeaver.ui.components.basic.*
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
 
@@ -173,8 +173,8 @@ fun EditEntryPopup(
                         releasingEvery = releasingEvery,
                         tagIds = tagsIds,
                         references = references,
-                        coverArt = Art("", ""),
-                        bannerArt = Art("", ""),
+                        coverArt = coverArt,
+                        bannerArt = bannerArt,
                         episodesTotal = episodesTotal,
                         episodesProgress = episodesProgress,
                         rewatches = rewatches,
@@ -210,8 +210,10 @@ fun EditEntryPopup(
                                     coroutineScope.launch {
                                         coverArt = ImageController.chooseAndResaveNewArt()
 
+
                                     }
-                                })
+                                }
+                            )
                             ImageInput(
                                 modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
                                 imagePath = bannerArt.localPath,
@@ -223,7 +225,8 @@ fun EditEntryPopup(
                                         bannerArt = ImageController.chooseAndResaveNewArt()
 
                                     }
-                                })
+                                }
+                            )
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             animeName?.let { it1 ->

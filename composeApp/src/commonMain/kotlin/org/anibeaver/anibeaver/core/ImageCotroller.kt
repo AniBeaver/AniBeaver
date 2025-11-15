@@ -42,11 +42,15 @@ object ImageController {
 
         var destination: PlatformFile
         do {
-            val uuid = UUID.randomUUID().toString()
-            destination = imagesDir / "$uuid$extension"
+            destination = generateFilename(imagesDir, extension)
         } while (destination.exists())
 
         image.copyTo(destination)
         return destination
+    }
+
+    private fun generateFilename(imagesDir: PlatformFile, extension: String): PlatformFile {
+        val uuid = UUID.randomUUID().toString()
+        return imagesDir / "$uuid$extension"
     }
 }
