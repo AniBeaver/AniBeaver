@@ -1,5 +1,6 @@
 package org.anibeaver.anibeaver.ui.modals
 
+import ImageInput
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +16,9 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.core.AutofillController
+import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.basic.*
@@ -51,6 +54,8 @@ fun EditEntryPopup(
     var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 1) }
     var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
     var rewatches by remember { mutableStateOf(initialValues?.rewatches ?: 1) }
+    var bannerArt: Art by remember {mutableStateOf(initialValues?.bannerArt ?: Art("empty", ""))}
+    var coverArt: Art by remember {mutableStateOf(initialValues?.coverArt ?: Art("empty", ""))}
 
     // Reset fields when initialValues changes (for editing)
     LaunchedEffect(initialValues) {
@@ -68,6 +73,8 @@ fun EditEntryPopup(
         episodesTotal = initialValues?.episodesTotal ?: 0
         episodesProgress = initialValues?.episodesProgress ?: 0
         rewatches = initialValues?.rewatches ?: 1
+        bannerArt = initialValues?.bannerArt ?: Art("empty", "")
+        coverArt = initialValues?.coverArt ?: Art("empty", "")
 
         if (forceShowAutofillPopup) {
             showAutofillPopup = true
@@ -126,6 +133,7 @@ fun EditEntryPopup(
 
     if (show) {
         val coroutineScope = rememberCoroutineScope()
+
         if (showAutofillPopup) {
             AutofillPopup(
                 show = showAutofillPopup,
@@ -194,10 +202,28 @@ fun EditEntryPopup(
                         Column(modifier = Modifier.padding(end = 24.dp)) {
                             ImageInput(
                                 modifier = Modifier.size(width = 96.dp, height = 96.dp),
-                                onClick = { /* TODO: Handle image selection */ })
+                                imagePath = coverArt.localPath,
+                                onImagePathChange = { newPath ->
+                                    coverArt = coverArt.copy(localPath = newPath)
+                                },
+                                onClick = {
+                                    coroutineScope.launch {
+                                        coverArt = ImageController.chooseAndResaveNewArt()
+
+                                    }
+                                })
                             ImageInput(
                                 modifier = Modifier.size(width = 96.dp, height = 32.dp).padding(top = 8.dp),
-                                onClick = { /* TODO: Handle image selection */ })
+                                imagePath = bannerArt.localPath,
+                                onImagePathChange = { newPath ->
+                                    bannerArt = bannerArt.copy(localPath = newPath)
+                                },
+                                onClick = {
+                                    coroutineScope.launch {
+                                        bannerArt = ImageController.chooseAndResaveNewArt()
+
+                                    }
+                                })
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             animeName?.let { it1 ->

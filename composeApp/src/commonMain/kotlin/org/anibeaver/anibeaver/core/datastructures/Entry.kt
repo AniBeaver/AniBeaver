@@ -141,6 +141,6 @@ enum class SortingType {
 }
 
 data class Art(
-    val source: String, //either link or "custom"
-    val local_path: String //if empty TODO: download image from link and save local_path maybe
+    val source: String, //either link or "custom" or "empty"
+    val localPath: String //if empty TODO: download image from link and save local_path maybe
 )

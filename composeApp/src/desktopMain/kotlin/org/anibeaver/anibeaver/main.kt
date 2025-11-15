@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import io.github.vinceglb.filekit.FileKit
 
 import org.anibeaver.anibeaver.di.sharedModule
 import org.anibeaver.anibeaver.di.platformModule
@@ -15,6 +16,8 @@ fun main(){
     startKoin {
         modules(sharedModule, platformModule)
     }
+
+    FileKit.init(appId = "AniBeaver")
 
     application {
         val activityKiller: () -> Unit = {
