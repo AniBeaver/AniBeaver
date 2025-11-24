@@ -112,7 +112,7 @@ fun EditEntryPopup(
             for (newTagName in tagList) {
                 //TODO: in other places: maybe don't allow creating a tag by the same name as an existing one; Also add tag searching/sorting in tag menu (UI)
 
-                val newTagId = TagsController.safeCreateTagByName(newTagName, "#ffffff", newTagType)
+                val newTagId = TagsController.safeCreateByName(newTagName, "#ffffff", newTagType)
                 applyTagToThisEntry(newTagId, newTagType)
             }
         }

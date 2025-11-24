@@ -9,38 +9,9 @@ object TagsController {
     private var nextId = 1
     private val _tags = mutableStateListOf<Tag>()
     val tags: SnapshotStateList<Tag> get() = _tags
-    // TODO: initial fill from some source of truth (database or anilist servers), comment out those placeholders
 
     init {
-        listOf(
-            Tag("Music", "#FFB300", TagType.CUSTOM, nextId++),
-            Tag("Intro", "#1976D2", TagType.CUSTOM, nextId++),
-            Tag("Fight Scenes", "#D32F2F", TagType.CUSTOM, nextId++),
-            Tag("Comedy", "#FBC02D", TagType.GENRE, nextId++),
-            Tag("Drama", "#7B1FA2", TagType.GENRE, nextId++),
-            Tag("Romance", "#C2185B", TagType.GENRE, nextId++),
-            Tag("Action", "#FF0000", TagType.GENRE, nextId++),
-            Tag("Adventure", "#00FF00", TagType.GENRE, nextId++),
-            Tag("Fantasy", "#0000FF", TagType.GENRE, nextId++),
-            Tag("Shounen", "#AAAAAA", TagType.CUSTOM, nextId++),
-            Tag("Classic", "#BBBBBB", TagType.CUSTOM, nextId++),
-            Tag("Sci-Fi", "#CCCCCC", TagType.GENRE, nextId++),
-            Tag("Thriller", "#DDDDDD", TagType.GENRE, nextId++),
-            Tag("Time Travel", "#EEEEEE", TagType.CUSTOM, nextId++),
-            Tag("White Fox", "#123456", TagType.STUDIO, nextId++),
-            Tag("A-1 Pictures", "#039BE5", TagType.STUDIO, nextId++),
-            Tag("MAPPA", "#039BE5", TagType.STUDIO, nextId++),
-            Tag("Madhouse", "#8E24AA", TagType.STUDIO, nextId++),
-            Tag("Bones", "#654321", TagType.STUDIO, nextId++),
-            Tag("Wit Studio", "#FEDCBA", TagType.STUDIO, nextId++),
-            Tag("Kyoto Animation", "#ABCDEF", TagType.STUDIO, nextId++),
-            Tag("Slice of Life", "#F0F0F0", TagType.GENRE, nextId++),
-            Tag("Dark", "#111111", TagType.CUSTOM, nextId++),
-            Tag("Music", "#FFB300", TagType.GENRE, nextId++)
-        ).forEach { _tags.add(it) }
-        for (i in 1..100) {
-            addTag("test", "#FF0000", TagType.GENRE)
-        }
+        // Tags are loaded from the database via AppViewModel.loadTags()
     }
 
     private fun debugPrint() {
@@ -51,23 +22,30 @@ object TagsController {
         return _tags.find { it.name == name && it.type == type }?.id ?: -1
     }
 
-
-    fun addTag(name: String, color: String, type: TagType): Int {
-        val tag = Tag(name, color, type, nextId++)
+    fun addTag(name: String, color: String, type: TagType, idOverride: Int? = null): Int {
+        val assignedId = idOverride ?: nextId
+        if (idOverride != null) {
+            nextId = maxOf(nextId, idOverride + 1)
+        } else {
+            nextId++
+        }
+        val tag = Tag(name, color, type, assignedId)
         _tags.add(tag)
         debugPrint()
         return tag.id
     }
 
-    fun safeCreateTagByName(name: String, color: String, type: TagType): Int {
-        val potentialId = getTagIdByNameAndType(name, type)
-        if (potentialId > -1) {
-            return potentialId
-
-        } else {
-            return addTag(name, color, type)
-
+    fun addAllTags(tags: Collection<Tag>) {
+        tags.forEach { tag ->
+            if (_tags.any { it.id == tag.id }) return@forEach
+            _tags.add(tag)
+            nextId = maxOf(nextId, tag.id + 1)
         }
+    }
+
+    fun safeCreateByName(name: String, color: String, type: TagType): Int {
+        val existing = _tags.firstOrNull { it.name.equals(name, ignoreCase = true) && it.type == type }
+        return existing?.id ?: addTag(name, color, type)
     }
 
     fun removeTagById(id: Int) {
@@ -77,6 +55,8 @@ object TagsController {
 
     fun clear() {
         _tags.clear()
+        nextId = 1
+        Tag.clearTypeCache()
     }
 
     fun updateTag(id: Int, name: String, color: String, type: TagType) {

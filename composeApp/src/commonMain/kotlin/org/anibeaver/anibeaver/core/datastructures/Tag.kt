@@ -9,15 +9,12 @@ enum class TagType {
     AUTHOR
 }
 
-class Tag(
+data class Tag(
     val name: String,
     val color: String,
     val type: TagType,
-    id: Int 
+    val id: Int
 ) {
-    internal val id: Int = id
-        get() = field
-    
     companion object {
         private val idToTypeCache = mutableMapOf<Int, TagType>()
         fun getTypeById(id: Int): TagType? {

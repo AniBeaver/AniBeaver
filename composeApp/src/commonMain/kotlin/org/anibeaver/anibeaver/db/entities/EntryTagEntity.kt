@@ -12,6 +12,12 @@ import androidx.room.Index
             parentColumns = ["id"],
             childColumns = ["entryId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = TagEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tagId"],
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["entryId"]), Index(value = ["tagId"])]
