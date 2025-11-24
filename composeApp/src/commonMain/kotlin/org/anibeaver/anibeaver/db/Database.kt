@@ -28,6 +28,5 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .fallbackToDestructiveMigration(true) //FIXME: probably not supposed to be here
         .build()
 }
