@@ -176,11 +176,13 @@ fun EntriesScreen(
                 onCreateTag = { showNewTagPopupFromManage = true })
 
             FilterPopup(
-                show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
-                filterState.onFilterChange(data)
-                showFilter = false
-                print(data)
-            }, initialFilter = filterState.filterData
+                show = showFilter,
+                onDismiss = { showFilter = false },
+                onConfirm = { data ->
+                    filterState.onFilterChange(data)
+                    showFilter = false
+                },
+                initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -191,20 +193,18 @@ fun EntriesScreen(
                 })
 
             val allEntries = EntriesController.entries
-            val observedVersion = EntriesController.entriesVersion // for resorting
+            EntriesController.entriesVersion // trigger recomposition on version change
 
+            val currentEntryType = if (forManga) EntryType.Manga else EntryType.Anime
+            val entriesOfCurrentType = allEntries.filter { it.entryData.type == currentEntryType }
 
-            val allEntriesByType: Map<Int, List<Entry>> = allEntries.groupBy { entry -> entry.entryData.type.id}
-            val allEntriesOfType = if (forManga) allEntriesByType.getOrDefault(EntryType.Manga.id, listOf()) else allEntriesByType.getOrDefault(EntryType.Anime.id, listOf())
-            print("Entries of type manga?" + forManga + allEntriesOfType.size)
-
-            val filteredEntries = allEntriesOfType.filter { it.matchesFilter(filterState.filterData) }
+            val filteredEntries = entriesOfCurrentType.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
-            FilterInfoRow(entriesToShow, allEntriesOfType) { filterState.clear() }
+
+            FilterInfoRow(entriesToShow, entriesOfCurrentType) { filterState.clear() }
 
             EntryGrid(
                 entriesToShow = entriesToShow,
-                allEntriesOfType = allEntriesOfType,
                 columns = columns,
                 cardWidth = cardWidth,
                 cardSpacing = cardSpacing,
@@ -223,40 +223,46 @@ fun EntriesScreen(
 
 data class AnimeFilterState(
     var filterData: FilterData? = null,
-    val onFilterChange: (FilterData?) -> Unit
+    val onFilterChange: (FilterData?) -> Unit,
+    var collapsedStatuses: Set<Int> = emptySet(),
+    val onCollapsedStatusesChange: (Set<Int>) -> Unit = {}
 ) {
-    private val currentSelectedStatuses: List<Status>
-        get() = (filterData ?: defaultFilterData).selectedStatus.ifEmpty { defaultFilterData.selectedStatus }
+    private val allStatusIds: Set<Int>
+        get() = Status.entries.map { it.id }.toSet()
 
     fun clear() = onFilterChange(defaultFilterData)
 
-    fun toggleStatusInFilter(status: Status) {
-        val statusSet = currentSelectedStatuses.toSet()
-        val newSelectedStatuses = if (status in statusSet) {
-            (statusSet - status).toList()
+    fun toggleStatusExpanded(statusId: Int) {
+        collapsedStatuses = if (statusId in collapsedStatuses) {
+            collapsedStatuses - statusId
         } else {
-            (statusSet + status).toList()
+            collapsedStatuses + statusId
         }
-        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = newSelectedStatuses))
+        onCollapsedStatusesChange(collapsedStatuses)
     }
 
-    fun isStatusInFilter(status: Status): Boolean = status in currentSelectedStatuses
+    fun isStatusExpanded(statusId: Int): Boolean = statusId !in collapsedStatuses
 
     fun collapseAll() {
-        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = emptyList()))
+        collapsedStatuses = allStatusIds
+        onCollapsedStatusesChange(collapsedStatuses)
     }
 
     fun expandAll() {
-        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = Status.entries.toList()))
+        collapsedStatuses = emptySet()
+        onCollapsedStatusesChange(collapsedStatuses)
     }
 }
 
 @Composable
 fun rememberAnimeFilterState(): AnimeFilterState {
     var filterData by remember { mutableStateOf<FilterData?>(defaultFilterData) }
+    var collapsedStatuses by remember { mutableStateOf<Set<Int>>(emptySet()) }
     return AnimeFilterState(
         filterData = filterData,
-        onFilterChange = { filterData = it }
+        onFilterChange = { filterData = it },
+        collapsedStatuses = collapsedStatuses,
+        onCollapsedStatusesChange = { collapsedStatuses = it }
     )
 }
 
@@ -300,20 +306,25 @@ private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType
 @Composable
 private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, onClear: () -> Unit) {
     val hiddenCount = allEntries.size - entriesToShow.size
-    if (hiddenCount > 0) {
-        val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
-        val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.",
-                color = Color.Gray,
+
+    Box(modifier = Modifier.height(48.dp).fillMaxWidth()) {
+        if (hiddenCount > 0) {
+            val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
+            val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Spacer(Modifier.width(12.dp))
-            Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
+            ) {
                 Text(
-                    "Clear filters", fontSize = TextUnit.Unspecified
-                ) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData
+                    "Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.",
+                    color = Color.Gray
+                )
+                Spacer(Modifier.width(12.dp))
+                Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
+                    Text(
+                        "Clear filters", fontSize = TextUnit.Unspecified
+                    ) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData - doesn't it?
+                }
             }
         }
     }
@@ -322,7 +333,6 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
 @Composable
 private fun EntryGrid(
     entriesToShow: List<Entry>,
-    allEntriesOfType: List<Entry>,
     columns: Int,
     cardWidth: Dp,
     cardSpacing: Dp,
@@ -332,18 +342,16 @@ private fun EntryGrid(
     filterState: AnimeFilterState,
     forManga: Boolean
 ) {
-    val groupedEntries = entriesToShow.groupBy { entry ->
-        if (groupByStatus) entry.entryData.status.id else -1
-    }
+    val UNGROUPED_STATUS_ID = -1
 
-    val allEntriesGroupedByStatus = allEntriesOfType.groupBy { entry ->
-        if (groupByStatus) entry.entryData.status.id else -1
+    val groupedEntries = entriesToShow.groupBy { entry ->
+        if (groupByStatus) entry.entryData.status.id else UNGROUPED_STATUS_ID
     }
 
     val statusesToDisplay = if (groupByStatus) {
         Status.entries
     } else {
-        listOf(Status.fromId(-1)!!)
+        listOf(Status.fromId(UNGROUPED_STATUS_ID)!!)
     }
 
     //TODO: perhaps separate filter state for manga?
@@ -351,22 +359,21 @@ private fun EntryGrid(
     statusesToDisplay.forEach { status ->
         val statusId = status.id
         val entriesForThisStatus = groupedEntries[statusId] ?: emptyList()
-        val allEntriesForThisStatus = allEntriesGroupedByStatus[statusId] ?: emptyList()
-        val isStatusInFilter = filterState.isStatusInFilter(status)
-        val hasEntriesForStatus = allEntriesForThisStatus.isNotEmpty()
+        val isStatusExpanded = filterState.isStatusExpanded(statusId)
+        val hasFilteredEntries = entriesForThisStatus.isNotEmpty()
 
-        if (hasEntriesForStatus) {
+        if (hasFilteredEntries) {
             CardGroup(
                 statusId = statusId,
                 onCollapseClicked = {
-                    filterState.toggleStatusInFilter(status)
+                    filterState.toggleStatusExpanded(statusId)
                 },
                 cardSpacing = cardSpacing,
                 invisible = !groupByStatus,
-                isExpanded = isStatusInFilter
+                isExpanded = isStatusExpanded
             )
 
-            if (isStatusInFilter) {
+            if (isStatusExpanded) {
                 entriesForThisStatus.chunked(columns).forEach { rowEntries ->
                     Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
                         Spacer(Modifier.width(cardSpacing))
