@@ -1,13 +1,6 @@
 package org.anibeaver.anibeaver.ui.components.anilist_searchbar
 
-import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -37,7 +30,7 @@ fun QuickCreateEntryFromAl(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
                 .fillMaxHeight(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AniListSearchBar(quickAlId, setQuickAlId)

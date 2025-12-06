@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagRow
-import org.anibeaver.anibeaver.core.datastructures.TagType
 
 @Composable
 fun ManageTagsModal(

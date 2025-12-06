@@ -2,27 +2,26 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import androidx.room.RoomDatabase
-import org.koin.core.component.inject
-import org.koin.core.component.KoinComponent
-
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.FilterData
 import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.entities.EntryTagEntity
 import org.anibeaver.anibeaver.db.entities.TagEntity
 import org.anibeaver.anibeaver.db.getRoomDatabase
-import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.ui.modals.defaultFilterData
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AnimeViewModel (
+class AnimeViewModel(
 ) : ViewModel(), KoinComponent {
     private val databaseBuilder: RoomDatabase.Builder<AppDatabase> by inject()
     private val database = getRoomDatabase(databaseBuilder)
@@ -70,11 +69,13 @@ class AnimeViewModel (
                 )
             )
 
-            entryController.addEntry(entryId.toInt(), EntryData(
-                title = "Plastic Memories",
-                episodesProgress = 12,
-                episodesTotal = 24,
-            ))
+            entryController.addEntry(
+                entryId.toInt(), EntryData(
+                    title = "Plastic Memories",
+                    episodesProgress = 12,
+                    episodesTotal = 24,
+                )
+            )
         }
     }
 

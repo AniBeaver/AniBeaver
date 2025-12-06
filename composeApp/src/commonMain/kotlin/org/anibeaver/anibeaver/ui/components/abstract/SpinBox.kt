@@ -38,7 +38,9 @@ fun SpinBox(
             modifier = Modifier
                 .weight(1f)
                 .widthIn(min = 48.dp, max = 72.dp),
-            label = if (label.isNotEmpty()) { { Text(label) } } else null
+            label = if (label.isNotEmpty()) {
+                { Text(label) }
+            } else null
         )
         UpDownButtons(
             onIncrement = onIncrement,

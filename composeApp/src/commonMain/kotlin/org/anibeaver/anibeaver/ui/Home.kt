@@ -1,25 +1,15 @@
 package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
-import androidx.compose.runtime.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -49,18 +39,18 @@ fun HomeScreen(
     val watchingAnime = remember(allEntries, EntriesController.entriesVersion) {
         allEntries.filter {
             it.entryData.type == EntryType.Anime &&
-            it.entryData.status == Status.Watching
+                    it.entryData.status == Status.Watching
         }.take(3)
     }
 
     val readingManga = remember(allEntries, EntriesController.entriesVersion) {
         allEntries.filter {
             it.entryData.type == EntryType.Manga &&
-            it.entryData.status == Status.Watching
+                    it.entryData.status == Status.Watching
         }.take(3)
     }
 
-    Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 32.dp).fillMaxSize() ){
+    Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 32.dp).fillMaxSize()) {
         SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,17 +61,19 @@ fun HomeScreen(
             expanded = false,
             onExpandedChange = {},
 
-            inputField = {SearchBarDefaults.InputField(
-                query = "",
-                onQueryChange = {},
-                placeholder = {
-                    Text("Search for an anime or manga...", fontSize = 0.9.em, lineHeight = 1.2.em)
-                },
-                onSearch = {},
-                onExpandedChange = {},
-                expanded = true,
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "Search Icon") },
-            )}
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = "",
+                    onQueryChange = {},
+                    placeholder = {
+                        Text("Search for an anime or manga...", fontSize = 0.9.em, lineHeight = 1.2.em)
+                    },
+                    onSearch = {},
+                    onExpandedChange = {},
+                    expanded = true,
+                    leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "Search Icon") },
+                )
+            }
         ) {
             Text("Search for an anime or manga", style = Typography.headlineLarge)
         }
@@ -120,7 +112,7 @@ fun HomeScreen(
                                 onDelete = { }
                             )
                             if (entry != watchingAnime.last()) {
-                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                             }
                         }
                     }
@@ -155,7 +147,7 @@ fun HomeScreen(
                                 onDelete = { }
                             )
                             if (entry != readingManga.last()) {
-                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                             }
                         }
                     }

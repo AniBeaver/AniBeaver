@@ -22,8 +22,8 @@ import org.anibeaver.anibeaver.ui.components.CardGroup
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
-import org.anibeaver.anibeaver.ui.modals.*
 import org.anibeaver.anibeaver.ui.components.showConfirmation
+import org.anibeaver.anibeaver.ui.modals.*
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.max
@@ -54,7 +54,11 @@ fun EntriesScreen(
         filterData = filterData,
         onFilterChange = { if (forManga) viewModel.updateMangaFilterData(it) else viewModel.updateAnimeFilterData(it) },
         collapsedStatuses = collapsedStatuses,
-        onCollapsedStatusesChange = { if (forManga) viewModel.updateMangaCollapsedStatuses(it) else viewModel.updateAnimeCollapsedStatuses(it) }
+        onCollapsedStatusesChange = {
+            if (forManga) viewModel.updateMangaCollapsedStatuses(it) else viewModel.updateAnimeCollapsedStatuses(
+                it
+            )
+        }
     )
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -171,7 +175,7 @@ fun EntriesScreen(
                     forceShowAutofillPopup = showAutofillPopup,
                     alIdToBePassed = quickAlId,
                     initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
-                    forManga=forManga
+                    forManga = forManga
                 )
             }
             ManageTagsModal(
@@ -225,7 +229,7 @@ fun EntriesScreen(
                 },
                 groupByStatus = groupByStatus,
                 filterState = filterState,
-                forManga=forManga
+                forManga = forManga
             )
         }
     }

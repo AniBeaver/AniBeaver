@@ -2,11 +2,8 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AccountCircle
@@ -14,19 +11,7 @@ import androidx.compose.material.icons.filled.Login
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.Screens
-import org.anibeaver.anibeaver.ui.theme.Typography
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,17 +21,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-
-import org.anibeaver.anibeaver.api.ValueSetter
-import org.anibeaver.anibeaver.api.jsonStructures.*
-import org.anibeaver.anibeaver.api.tokenStore
-import org.anibeaver.anibeaver.api.TokenStore
-import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
+import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.api.ApiHandler
-
-import org.jetbrains.compose.resources.painterResource
-
-import org.koin.core.component.KoinComponent
+import org.anibeaver.anibeaver.api.TokenStore
+import org.anibeaver.anibeaver.api.ValueSetter
+import org.anibeaver.anibeaver.api.jsonStructures.Profile
+import org.anibeaver.anibeaver.api.jsonStructures.UserProfileQuery
+import org.anibeaver.anibeaver.ui.theme.Typography
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.context.GlobalContext
 
 @Composable
@@ -84,7 +66,7 @@ fun AccountScreen(
     val isSmallScreen = windowSizeClass.widthSizeClass <= WindowWidthSizeClass.Compact
 
     // Header
-    Column (
+    Column(
         modifier = Modifier
             .padding(pagePadding)
             .fillMaxSize()
@@ -234,7 +216,8 @@ fun AccountScreen(
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
                                 Text(
-                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched ?: 0).toString(),
+                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -262,12 +245,14 @@ fun AccountScreen(
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                                 Text(
-                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead ?: 0).toString(),
+                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
                                 Text(
-                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead ?: 0).toString(),
+                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -306,7 +291,8 @@ fun AccountScreen(
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
                                 Text(
-                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched ?: 0).toString(),
+                                    text = "Episodes: " + (userInfo?.statistics?.anime?.episodesWatched
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -334,12 +320,14 @@ fun AccountScreen(
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                                 Text(
-                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead ?: 0).toString(),
+                                    text = "Chapters read: " + (userInfo?.statistics?.manga?.chaptersRead
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
                                 Text(
-                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead ?: 0).toString(),
+                                    text = "Volumes read: " + (userInfo?.statistics?.manga?.volumesRead
+                                        ?: 0).toString(),
                                     style = Typography.bodyMedium,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )

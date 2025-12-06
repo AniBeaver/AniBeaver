@@ -87,9 +87,9 @@ fun EditEntryPopup(
     }
 
     //for tab navigation
-    val focusManager = LocalFocusManager.current
-    val animeNameRequester = remember { FocusRequester() }
-    val releaseYearRequester = remember { FocusRequester() }
+    LocalFocusManager.current
+    remember { FocusRequester() }
+    remember { FocusRequester() }
     val genreRequester = remember { FocusRequester() }
     val studioNameRequester = remember { FocusRequester() }
     val authorNameRequester = remember { FocusRequester() }

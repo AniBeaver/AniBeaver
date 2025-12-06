@@ -14,8 +14,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.AutofillController.idIsValid
-import org.anibeaver.anibeaver.ui.components.anilist_searchbar.AniListSearchBar
 import org.anibeaver.anibeaver.ui.components.abstract.DeleteButton
+import org.anibeaver.anibeaver.ui.components.anilist_searchbar.AniListSearchBar
 
 @Composable
 fun ReferenceRow(
@@ -67,6 +67,7 @@ fun ReferenceRow(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { uriHandler.openUri("https://anilist.co/anime/$alId") }
                 )
+
                 else -> Text("Illegal", color = Color.Red, fontWeight = FontWeight.Bold)
             }
         }

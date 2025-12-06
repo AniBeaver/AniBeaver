@@ -41,7 +41,7 @@ fun Sidebar(
         containerColor = colors.surfaceContainer,
         modifier = Modifier.zIndex(1f).fillMaxHeight()
     ) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxHeight().padding(top = 16.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -75,7 +75,7 @@ fun Sidebar(
                     )
                 }
             }
-            Column() {
+            Column {
                 BottomSidebarEntries(
                     navController,
                     selectedDestination

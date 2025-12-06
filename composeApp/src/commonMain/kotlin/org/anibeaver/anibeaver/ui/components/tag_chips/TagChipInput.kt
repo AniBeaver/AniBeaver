@@ -4,11 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +31,6 @@ fun TagChipInput(
     onCreateTagClick: ((String) -> Unit)? = null
 ) {
     var input by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
     var textFieldWidth by remember { mutableStateOf(0) }
     val density = LocalDensity.current
     Column(modifier) {

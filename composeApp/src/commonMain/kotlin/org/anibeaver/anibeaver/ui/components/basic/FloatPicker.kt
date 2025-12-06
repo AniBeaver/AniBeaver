@@ -1,6 +1,6 @@
 package org.anibeaver.anibeaver.ui.components.basic
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.anibeaver.anibeaver.ui.components.abstract.SpinBox
 

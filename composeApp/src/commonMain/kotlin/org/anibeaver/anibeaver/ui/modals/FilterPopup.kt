@@ -334,7 +334,7 @@ private fun TagCheckboxSection( //TODO: could also be a SectionWithCheckAll, ref
     onChange: (List<Int>) -> Unit
 ) {
     val sectionTagIds = tags.map { it.id }
-    val sectionSelected = selectedTagIds.filter { it in sectionTagIds }
+    selectedTagIds.filter { it in sectionTagIds }
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

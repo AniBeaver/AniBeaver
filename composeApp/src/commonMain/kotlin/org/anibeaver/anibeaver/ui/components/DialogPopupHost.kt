@@ -68,6 +68,7 @@ fun DialogPopupHost() {
                 }
             )
         }
+
         is DialogConfig.Confirmation -> {
             ConfirmationPopup(
                 show = true,
@@ -82,6 +83,7 @@ fun DialogPopupHost() {
                 }
             )
         }
+
         null -> {}
     }
 }

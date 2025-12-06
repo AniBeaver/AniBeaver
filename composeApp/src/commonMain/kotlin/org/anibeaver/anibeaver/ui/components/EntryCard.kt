@@ -21,7 +21,6 @@ import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.ui.ImageInput
-import org.anibeaver.anibeaver.ui.ImagePreview
 import kotlin.math.round
 
 @Composable
