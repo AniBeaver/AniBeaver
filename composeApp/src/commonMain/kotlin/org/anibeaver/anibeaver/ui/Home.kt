@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Search
@@ -18,7 +19,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -29,6 +30,10 @@ import androidx.compose.ui.unit.em
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.Screens
+import org.anibeaver.anibeaver.core.EntriesController
+import org.anibeaver.anibeaver.core.datastructures.EntryType
+import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,7 +42,24 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
+    viewModel: AnimeViewModel = remember { AnimeViewModel() }
 ) {
+    val allEntries by remember { derivedStateOf { EntriesController.entries } }
+    //TODO: add real logic here! Maybe even turn off this home screen for now
+    val watchingAnime = remember(allEntries, EntriesController.entriesVersion) {
+        allEntries.filter {
+            it.entryData.type == EntryType.Anime &&
+            it.entryData.status == Status.Watching
+        }.take(3)
+    }
+
+    val readingManga = remember(allEntries, EntriesController.entriesVersion) {
+        allEntries.filter {
+            it.entryData.type == EntryType.Manga &&
+            it.entryData.status == Status.Watching
+        }.take(3)
+    }
+
     Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 32.dp).fillMaxSize() ){
         SearchBar(
             modifier = Modifier
@@ -88,15 +110,18 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    // Replace with Card composables for anime
-                    repeat(3) {
-                        androidx.compose.material3.Card(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .height(120.dp)
-                                .weight(1f)
-                        ) {
-                            Text("Anime $it", modifier = Modifier.padding(8.dp))
+                    if (watchingAnime.isEmpty()) {
+                        Text("No anime currently watching", modifier = Modifier.padding(8.dp))
+                    } else {
+                        watchingAnime.forEach { entry ->
+                            EntryCard(
+                                entry = entry,
+                                onEdit = { },
+                                onDelete = { }
+                            )
+                            if (entry != watchingAnime.last()) {
+                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                            }
                         }
                     }
                 }
@@ -120,15 +145,18 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    // Replace with your Card composables for manga
-                    repeat(3) {
-                        androidx.compose.material3.Card(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .height(120.dp)
-                                .weight(1f)
-                        ) {
-                            Text("Manga $it", modifier = Modifier.padding(8.dp))
+                    if (readingManga.isEmpty()) {
+                        Text("No manga currently reading", modifier = Modifier.padding(8.dp))
+                    } else {
+                        readingManga.forEach { entry ->
+                            EntryCard(
+                                entry = entry,
+                                onEdit = { },
+                                onDelete = { }
+                            )
+                            if (entry != readingManga.last()) {
+                                androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                            }
                         }
                     }
                 }
