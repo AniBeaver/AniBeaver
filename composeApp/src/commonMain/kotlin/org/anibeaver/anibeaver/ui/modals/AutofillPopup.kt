@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
+import org.anibeaver.anibeaver.core.AutofillController
 import org.anibeaver.anibeaver.core.ParsedAutofillData
 import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.Reference
@@ -124,14 +125,16 @@ fun AutofillPopup(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text("Add any number of references here (e.g a single series or all seasons of a series) to automatically extract (common) data and fill in the selected entry inputs. The radio button selects the priority series.")
+
                 references.forEachIndexed { idx, ref ->
-                    ReferenceRow(
-                        alId = ref.alId,
-                        refNote = ref.note,
-                        onAlIdChange = { newAlIdStr -> onUpdateReference(ref, Reference(ref.note, newAlIdStr)) },
-                        onRefNoteChange = { newNote -> onUpdateReference(ref, Reference(newNote, ref.alId)) },
-                        onDelete = { onDeleteReference(ref) },
-                        onMoveUp = if (idx > 0) {
+                    key(idx) {
+                        ReferenceRow(
+                            alId = ref.alId,
+                            refNote = ref.note,
+                            onAlIdChange = { newAlIdStr -> onUpdateReference(ref, Reference(ref.note, newAlIdStr)) },
+                            onRefNoteChange = { newNote -> onUpdateReference(ref, Reference(newNote, ref.alId)) },
+                            onDelete = { onDeleteReference(ref) },
+                            onMoveUp = if (idx > 0) {
                             {
                                 val newList = references.toMutableList()
                                 newList.removeAt(idx)
@@ -150,6 +153,7 @@ fun AutofillPopup(
                         isPriority = idx == priorityIndex,
                         onPrioritySelected = { priorityIndex = idx }
                     )
+                    }
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Button(onClick = {
@@ -161,9 +165,14 @@ fun AutofillPopup(
                         )
                     }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
                     Spacer(modifier = Modifier.weight(1f))
-                    Button(onClick = {
-                        onPullFromAniList(priorityIndex) { data -> onPull(data) } //TODO: If anilist id illegal or no references, forbid pull from anilist
-                    }) { Text("Pull from AniList") }
+                    Button(
+                        onClick = {
+                            onPullFromAniList(priorityIndex) { data -> onPull(data) }
+                        },
+                        enabled = references.isNotEmpty() &&
+                                  references.any { it.alId.isNotBlank() } &&
+                                  references.all { it.alId.isBlank() || AutofillController.idIsValid(it.alId) }
+                    ) { Text("Pull from AniList") }
                 }
                 if (showSelector && autofillData != null) {
                     AutofillSelectorUI(
