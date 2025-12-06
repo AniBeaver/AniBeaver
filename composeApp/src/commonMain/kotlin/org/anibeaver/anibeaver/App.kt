@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.ui.*
+import org.anibeaver.anibeaver.ui.components.DialogPopupHost
 import org.anibeaver.anibeaver.ui.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.layout.Sidebar
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
@@ -123,6 +124,8 @@ fun App(
                     }
                 }
             }
+
+            DialogPopupHost()
         }
     }
 }

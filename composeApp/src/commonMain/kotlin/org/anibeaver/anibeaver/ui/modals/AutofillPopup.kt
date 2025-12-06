@@ -14,6 +14,7 @@ import org.anibeaver.anibeaver.core.datastructures.AutofillResultSelection
 import org.anibeaver.anibeaver.core.datastructures.Reference
 import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
 import org.anibeaver.anibeaver.ui.components.references.ReferenceRow
+import org.anibeaver.anibeaver.ui.components.showConfirmation
 
 @Composable
 fun AutofillPopup(
@@ -91,8 +92,8 @@ fun AutofillPopup(
                     val year = if (yearRadioIdx == 0) autofillData!!.startYear else autofillData!!.endYear
                     val name = nameOptions.getOrNull(selectedNameIdx) ?: ""
                     val selection = AutofillResultSelection(
-                        name = if (nameChecked) name else null,
-                        year = if (yearChecked) year else null,
+                        year = year,
+                        name = name,
                         studios = selectedStudios.toList(),
                         author = selectedAuthor.toList(),
                         genres = selectedGenres.toList(),
@@ -102,7 +103,12 @@ fun AutofillPopup(
                         airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else ReleaseSchedule.Monday,
                         episodes = if (epsChecked) totalEpisodes else null
                     )
-                    onConfirm(selection)
+                    showConfirmation(
+                        message = "Apply autofill data to this entry? This will overwrite existing data.",
+                        onAccept = {
+                            onConfirm(selection)
+                        }
+                    )
                 }) {
                     Text("Update Entry With These")
                 }

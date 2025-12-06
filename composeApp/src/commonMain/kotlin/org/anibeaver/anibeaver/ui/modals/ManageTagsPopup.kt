@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagRow
 import org.anibeaver.anibeaver.core.datastructures.TagType
 
@@ -96,7 +97,14 @@ private fun TagList(tagType: TagType) {
                 onTagHexChange = { hex ->
                     TagsController.updateTag(tag.id, tag.name, hex, tag.type)
                 },
-                onDelete = { id -> TagsController.removeTagById(id) },
+                onDelete = { id ->
+                    showConfirmation(
+                        message = "Delete tag \"${tag.name}\"? This will remove it from all entries.",
+                        onAccept = {
+                            TagsController.removeTagById(id)
+                        }
+                    )
+                },
                 usageCount = usageCount
             )
         }

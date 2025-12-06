@@ -23,6 +23,7 @@ import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.modals.*
+import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.theme.Typography
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.max
@@ -214,7 +215,13 @@ fun EntriesScreen(
                 cardSpacing = cardSpacing,
                 onEdit = { entryId -> showEntryPopup(entryId) },
                 onDelete = { entryId ->
-                    viewModel.deleteAnimeEntry(entryId)
+                    val entryName = EntriesController.getEntryDataById(entryId)?.title ?: "this entry"
+                    showConfirmation(
+                        message = "Delete \"$entryName\"?",
+                        onAccept = {
+                            viewModel.deleteAnimeEntry(entryId)
+                        }
+                    )
                 },
                 groupByStatus = groupByStatus,
                 filterState = filterState,
