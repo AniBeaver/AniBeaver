@@ -117,11 +117,11 @@ object ImageController {
             return localFile
         }
 
-        if (art.source.isNotBlank() && art.source != "custom" && art.source != "empty") {
+        if (art.source.isNotBlank() && art.source != "custom" && art.source != "empty") { //redownload if needed
             return try {
                 downloadImageToPath(art.source, art.localPath)
             } catch (e: Exception) {
-                null
+                null //TODO: potentially alert user that the link should be re-set by re-pulling or manually downloading? Likely won't happen but still
             }
         }
 
