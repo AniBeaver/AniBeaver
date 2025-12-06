@@ -9,6 +9,7 @@ import org.koin.core.component.KoinComponent
 
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.EntryType
 import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
@@ -71,8 +72,8 @@ class AppViewModel(
                     releasingEvery = ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
                     tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)?.map { it.id }
                         ?: entry.customTagIds,
-                    coverArt = EntryData().coverArt.copy(),
-                    bannerArt = EntryData().bannerArt.copy(),
+                    coverArt = Art(source = entry.coverArtSource, localPath = entry.coverArtLocalPath),
+                    bannerArt = Art(source = entry.bannerArtSource, localPath = entry.bannerArtLocalPath),
                     episodesTotal = entry.episodesTotal,
                     episodesProgress = entry.episodesProgress,
                     rewatches = entry.rewatches,
