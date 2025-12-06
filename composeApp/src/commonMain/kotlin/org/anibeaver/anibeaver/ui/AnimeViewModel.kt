@@ -2,6 +2,8 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.room.RoomDatabase
 import org.koin.core.component.inject
@@ -10,6 +12,7 @@ import org.koin.core.component.KoinComponent
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.FilterData
 import org.anibeaver.anibeaver.core.datastructures.Status
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
@@ -17,6 +20,7 @@ import org.anibeaver.anibeaver.db.entities.EntryTagEntity
 import org.anibeaver.anibeaver.db.entities.TagEntity
 import org.anibeaver.anibeaver.db.getRoomDatabase
 import org.anibeaver.anibeaver.db.AppDatabase
+import org.anibeaver.anibeaver.ui.modals.defaultFilterData
 
 class AnimeViewModel (
 ) : ViewModel(), KoinComponent {
@@ -26,6 +30,34 @@ class AnimeViewModel (
     private val tagDao: TagDao = database.tagDao()
 
     val entryController = EntriesController
+
+    private val _animeFilterData = MutableStateFlow<FilterData?>(defaultFilterData)
+    val animeFilterData: StateFlow<FilterData?> = _animeFilterData
+
+    private val _mangaFilterData = MutableStateFlow<FilterData?>(defaultFilterData)
+    val mangaFilterData: StateFlow<FilterData?> = _mangaFilterData
+
+    private val _animeCollapsedStatuses = MutableStateFlow<Set<Int>>(emptySet())
+    val animeCollapsedStatuses: StateFlow<Set<Int>> = _animeCollapsedStatuses
+
+    private val _mangaCollapsedStatuses = MutableStateFlow<Set<Int>>(emptySet())
+    val mangaCollapsedStatuses: StateFlow<Set<Int>> = _mangaCollapsedStatuses
+
+    fun updateAnimeFilterData(filterData: FilterData?) {
+        _animeFilterData.value = filterData
+    }
+
+    fun updateMangaFilterData(filterData: FilterData?) {
+        _mangaFilterData.value = filterData
+    }
+
+    fun updateAnimeCollapsedStatuses(statuses: Set<Int>) {
+        _animeCollapsedStatuses.value = statuses
+    }
+
+    fun updateMangaCollapsedStatuses(statuses: Set<Int>) {
+        _mangaCollapsedStatuses.value = statuses
+    }
 
     fun saveAnimeEntry() {
         viewModelScope.launch {

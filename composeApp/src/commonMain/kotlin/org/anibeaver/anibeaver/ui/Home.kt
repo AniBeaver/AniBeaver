@@ -42,7 +42,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
-    viewModel: AnimeViewModel = remember { AnimeViewModel() }
+    viewModel: AnimeViewModel = AnimeViewModel()
 ) {
     val allEntries by remember { derivedStateOf { EntriesController.entries } }
     //TODO: add real logic here! Maybe even turn off this home screen for now

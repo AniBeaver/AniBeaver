@@ -64,6 +64,7 @@ fun App(
     // On app start, populate the EntryController with the entries from the database
     // While our app is open, the EntryController is the source of truth for entries
     val appViewModel: AppViewModel = remember { AppViewModel() }
+    val sharedAnimeViewModel: AnimeViewModel = remember { AnimeViewModel() }
 
     AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
@@ -96,13 +97,13 @@ fun App(
                         }, modifier = Modifier.fillMaxHeight(1f).verticalScroll(rememberScrollState())
                         ) {
                             composable(route = Screens.Home.name) {
-                                HomeScreen(navController)
+                                HomeScreen(navController, sharedAnimeViewModel)
                             }
                             composable(route = Screens.Anime.name) {
-                                EntriesScreen(navController, forManga=false)
+                                EntriesScreen(navController, forManga=false, viewModel = sharedAnimeViewModel)
                             }
                             composable(route = Screens.Manga.name) {
-                                EntriesScreen(navController, forManga=true)
+                                EntriesScreen(navController, forManga=true, viewModel = sharedAnimeViewModel)
                             }
                             composable(route = Screens.Settings.name) {
                                 SettingsScreen(navController)

@@ -31,7 +31,9 @@ import kotlin.math.max
 @Composable
 @Preview
 fun EntriesScreen(
-    navController: NavHostController = rememberNavController(), forManga: Boolean
+    navController: NavHostController = rememberNavController(),
+    forManga: Boolean,
+    viewModel: AnimeViewModel = AnimeViewModel()
 ) {
     var showEditEntryPopup by remember { mutableStateOf(false) }
     var showAutofillPopup by remember { mutableStateOf(false) }
@@ -39,18 +41,20 @@ fun EntriesScreen(
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
-    val filterState = rememberAnimeFilterState()
-    var quickAlId by remember { mutableStateOf((if (!forManga) "97832" else "80145")) } //default value set here for debug (Citrus)
+    var quickAlId by remember { mutableStateOf((if (!forManga) "97832" else "80145")) }
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
     var groupByStatus by remember { mutableStateOf(true) }
 
+    val filterData by if (forManga) viewModel.mangaFilterData.collectAsState() else viewModel.animeFilterData.collectAsState()
+    val collapsedStatuses by if (forManga) viewModel.mangaCollapsedStatuses.collectAsState() else viewModel.animeCollapsedStatuses.collectAsState()
 
-    val viewModel: AnimeViewModel = remember { AnimeViewModel() }
-
-    fun refreshTags() {
-        // TODO: Implement tag refresh logic here
-    }
+    val filterState = AnimeFilterState(
+        filterData = filterData,
+        onFilterChange = { if (forManga) viewModel.updateMangaFilterData(it) else viewModel.updateAnimeFilterData(it) },
+        collapsedStatuses = collapsedStatuses,
+        onCollapsedStatusesChange = { if (forManga) viewModel.updateMangaCollapsedStatuses(it) else viewModel.updateAnimeCollapsedStatuses(it) }
+    )
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
@@ -254,17 +258,6 @@ data class AnimeFilterState(
     }
 }
 
-@Composable
-fun rememberAnimeFilterState(): AnimeFilterState {
-    var filterData by remember { mutableStateOf<FilterData?>(defaultFilterData) }
-    var collapsedStatuses by remember { mutableStateOf<Set<Int>>(emptySet()) }
-    return AnimeFilterState(
-        filterData = filterData,
-        onFilterChange = { filterData = it },
-        collapsedStatuses = collapsedStatuses,
-        onCollapsedStatusesChange = { collapsedStatuses = it }
-    )
-}
 
 private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType: SortingType): List<Entry> {
 
@@ -354,7 +347,6 @@ private fun EntryGrid(
         listOf(Status.fromId(UNGROUPED_STATUS_ID)!!)
     }
 
-    //TODO: perhaps separate filter state for manga?
 
     statusesToDisplay.forEach { status ->
         val statusId = status.id
