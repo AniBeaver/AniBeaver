@@ -52,6 +52,7 @@ fun EditEntryPopup(
     var references by remember { mutableStateOf(initialValues?.references ?: emptyList()) }
     var showNewTagPopup by remember { mutableStateOf(false) }
     var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
+    var newTagInitialName by remember { mutableStateOf("") }
     var showAutofillPopup by remember { mutableStateOf(false) }
     val onManageAutofillClicked = { showAutofillPopup = true }
     var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 1) }
@@ -328,8 +329,9 @@ fun EditEntryPopup(
                         tagType = TagType.GENRE,
                         label = "Genre",
                         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(genreRequester),
-                        onCreateTagClick = {
+                        onCreateTagClick = { partialName ->
                             newTagInitialType = TagType.GENRE
+                            newTagInitialName = partialName
                             showNewTagPopup = true
                         },
                         surfaceColor = null
@@ -342,8 +344,9 @@ fun EditEntryPopup(
                             label = "Studio",
                             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
                                 .focusRequester(studioNameRequester),
-                            onCreateTagClick = {
+                            onCreateTagClick = { partialName ->
                                 newTagInitialType = TagType.STUDIO
+                                newTagInitialName = partialName
                                 showNewTagPopup = true
                             },
                             surfaceColor = null
@@ -356,8 +359,9 @@ fun EditEntryPopup(
                             label = "Author",
                             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
                                 .focusRequester(authorNameRequester),
-                            onCreateTagClick = {
+                            onCreateTagClick = { partialName ->
                                 newTagInitialType = TagType.AUTHOR
+                                newTagInitialName = partialName
                                 showNewTagPopup = true
                             },
                             surfaceColor = null
@@ -369,8 +373,9 @@ fun EditEntryPopup(
                         tagType = TagType.CUSTOM,
                         label = "Tags",
                         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).focusRequester(tagsRequester),
-                        onCreateTagClick = {
+                        onCreateTagClick = { partialName ->
                             newTagInitialType = TagType.CUSTOM
+                            newTagInitialName = partialName
                             showNewTagPopup = true
                         },
                         surfaceColor = null
@@ -383,6 +388,7 @@ fun EditEntryPopup(
                             applyTagToThisEntry(newId, type)
                             showNewTagPopup = false
                         },
+                        initialTagName = newTagInitialName,
                         initialType = newTagInitialType
                     )
 

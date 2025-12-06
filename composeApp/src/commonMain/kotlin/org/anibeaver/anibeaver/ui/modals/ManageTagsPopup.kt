@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagRow
 import org.anibeaver.anibeaver.core.datastructures.TagType
@@ -77,6 +78,14 @@ private fun TagList(tagType: TagType) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         tags.forEach { tag ->
+            val usageCount = EntriesController.entries.count { entry ->
+                when (tagType) {
+                    TagType.CUSTOM -> tag.id in entry.entryData.tagIds
+                    TagType.GENRE -> tag.id in entry.entryData.genreIds
+                    TagType.STUDIO -> tag.id in entry.entryData.studioIds
+                    TagType.AUTHOR -> tag.id in entry.entryData.authorIds
+                }
+            }
             TagRow(
                 tagId = tag.id,
                 tagName = tag.name,
@@ -87,7 +96,8 @@ private fun TagList(tagType: TagType) {
                 onTagHexChange = { hex ->
                     TagsController.updateTag(tag.id, tag.name, hex, tag.type)
                 },
-                onDelete = { id -> TagsController.removeTagById(id) }
+                onDelete = { id -> TagsController.removeTagById(id) },
+                usageCount = usageCount
             )
         }
     }

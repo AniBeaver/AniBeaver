@@ -32,7 +32,7 @@ fun TagChipInput(
     modifier: Modifier = Modifier,
     label: String = "Tags",
     buttonContent: (@Composable () -> Unit)? = null,
-    onCreateTagClick: (() -> Unit)? = null
+    onCreateTagClick: ((String) -> Unit)? = null
 ) {
     var input by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
@@ -116,7 +116,10 @@ fun TagChipInput(
             }
             if (onCreateTagClick != null) {
                 Button(
-                    onClick = onCreateTagClick,
+                    onClick = {
+                        onCreateTagClick(input)
+                        input = ""
+                    },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Text("Create ${label.lowercase()}")
@@ -145,7 +148,7 @@ fun TagChipInput(
     modifier: Modifier = Modifier,
     label: String = "Tags",
     buttonContent: (@Composable () -> Unit)? = null,
-    onCreateTagClick: (() -> Unit)? = null,
+    onCreateTagClick: ((String) -> Unit)? = null,
     surfaceColor: Color? = null
 ) {
     Surface(

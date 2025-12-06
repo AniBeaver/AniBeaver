@@ -2,6 +2,7 @@ package org.anibeaver.anibeaver.ui.components.tag_chips
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,9 +21,14 @@ fun TagRow(
     tagHex: String,
     onTagHexChange: (String) -> Unit,
     onDelete: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    usageCount: Int? = null
 ) {
-    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+    ) {
         OutlinedTextField(
             value = tagName,
             onValueChange = onTagNameChange,
@@ -36,6 +42,14 @@ fun TagRow(
             onHexChange = onTagHexChange,
             modifier = Modifier.weight(1f)
         )
+        if (usageCount != null) {
+            Text(
+                text = "Used in\n$usageCount entries",
+                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 8.dp),
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
         DeleteButton(onClick = { onDelete(tagId) })
     }
 }
