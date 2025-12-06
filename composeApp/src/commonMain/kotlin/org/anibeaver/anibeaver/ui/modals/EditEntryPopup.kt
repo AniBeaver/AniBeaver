@@ -168,29 +168,32 @@ fun EditEntryPopup(
             )
         }
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
-            Button(onClick = {
-                onConfirm(
-                    EntryData(
-                        title = animeName,
-                        releaseYear = releaseYear,
-                        studioIds = studioIds,
-                        authorIds = authorIds,
-                        genreIds = genreIds,
-                        description = description,
-                        rating = rating,
-                        status = status,
-                        releasingEvery = releasingEvery,
-                        tagIds = tagsIds,
-                        references = references,
-                        coverArt = coverArt,
-                        bannerArt = bannerArt,
-                        episodesTotal = episodesTotal,
-                        episodesProgress = episodesProgress,
-                        rewatches = rewatches,
-                        type = if (forManga) EntryType.Manga else EntryType.Anime
+            Button(
+                onClick = {
+                    onConfirm(
+                        EntryData(
+                            title = animeName,
+                            releaseYear = releaseYear,
+                            studioIds = studioIds,
+                            authorIds = authorIds,
+                            genreIds = genreIds,
+                            description = description,
+                            rating = rating,
+                            status = status,
+                            releasingEvery = releasingEvery,
+                            tagIds = tagsIds,
+                            references = references,
+                            coverArt = coverArt,
+                            bannerArt = bannerArt,
+                            episodesTotal = episodesTotal,
+                            episodesProgress = episodesProgress,
+                            rewatches = rewatches,
+                            type = if (forManga) EntryType.Manga else EntryType.Anime
+                        )
                     )
-                )
-            }) {
+                },
+                enabled = !animeName.isNullOrBlank()
+            ) {
                 Text("Confirm/Create")
             }
         }, dismissButton = {
