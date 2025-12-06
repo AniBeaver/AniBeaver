@@ -26,6 +26,20 @@ object ImageController {
         )
     }
 
+    private fun getExtensionFromFile(image: PlatformFile): String {
+        return image.extension.takeIf { it.isNotBlank() }?.let { ".$it" } ?: ""
+    }
+
+    private fun getExtensionFromLink(link: String): String {
+        val path = URL(link).path
+        val idx = path.lastIndexOf('.')
+        return if (idx >= 0 && idx < path.length - 1) {
+            "." + path.substring(idx + 1)
+        } else {
+            ""
+        }
+    }
+
     private fun getDestinationFile(extension: String): PlatformFile {
         fun generateFilename(extension: String): PlatformFile {
             val uuid = UUID.randomUUID().toString()
@@ -39,14 +53,22 @@ object ImageController {
         return destination
     }
 
+    private suspend fun downloadImageBytes(link: String): ByteArray {
+        return withContext(Dispatchers.IO) {
+            URL(link).openStream().use { it.readBytes() }
+        }
+    }
+
+    private suspend fun downloadImageToPath(link: String, destinationPath: String): PlatformFile {
+        createImagesDir()
+        val imageBytes = downloadImageBytes(link)
+        val destination = PlatformFile(destinationPath)
+        destination.write(imageBytes)
+        return destination
+    }
 
     suspend fun chooseAndResaveNewArt(): Art {
         suspend fun resaveImage(image: PlatformFile): PlatformFile {
-            fun getExtensionFromFile(image: PlatformFile): String {
-                return image.extension.takeIf { it.isNotBlank() }?.let { ".$it" } ?: ""
-
-            }
-
             createImagesDir()
 
             //if already in the directory
@@ -74,32 +96,34 @@ object ImageController {
     }
 
     suspend fun downloadNewArt(link: String): Art {
-        suspend fun downloadImage(link: String): PlatformFile {
-            createImagesDir()
-            fun getExtensionFromLink(link: String): String {
-                return run {
-                    val path = URL(link).path
-                    val idx = path.lastIndexOf('.')
-                    if (idx >= 0 && idx < path.length - 1) {
-                        "." + path.substring(idx + 1)
-                    } else {
-                        ""
-                    }
-                }
+        createImagesDir()
+        val imageBytes = downloadImageBytes(link)
+        val extension = getExtensionFromLink(link)
+        val destination = getDestinationFile(extension)
+        destination.write(imageBytes)
+        return artFromImage(destination, link)
+    }
 
-            }
-
-            val imageBytes = withContext(Dispatchers.IO) {
-                URL(link).openStream().use { it.readBytes() }
-            }
-            val extension = getExtensionFromLink(link)
-            val destination = getDestinationFile(extension)
-            destination.write(imageBytes)
-            return destination
+    suspend fun ensureImageExists(art: Art): PlatformFile? {
+        if (art.localPath.isBlank()) {
+            return null
         }
 
-        val downloaded = downloadImage(link)
-        return artFromImage(downloaded, link)
+        val localFile = PlatformFile(art.localPath)
+
+        if (localFile.exists()) {
+            return localFile
+        }
+
+        if (art.source.isNotBlank() && art.source != "custom" && art.source != "empty") {
+            return try {
+                downloadImageToPath(art.source, art.localPath)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        return null
     }
 
     fun cleanUpImagesDir() {

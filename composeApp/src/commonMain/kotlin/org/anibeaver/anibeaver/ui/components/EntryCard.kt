@@ -6,7 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,20 +14,28 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.coil.AsyncImage
+import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.core.TagsController
+import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
+import org.anibeaver.anibeaver.ui.ImageInput
 import org.anibeaver.anibeaver.ui.ImagePreview
 import kotlin.math.round
 
 @Composable
 fun BannerBackground(
-    bannerFile: PlatformFile?,
+    art: Art?,
     modifier: Modifier = Modifier,
     alpha: Float = 0.2f
 ) {
+    var bannerFile by remember { mutableStateOf<PlatformFile?>(null) }
+
+    LaunchedEffect(art) {
+        bannerFile = art?.let { ImageController.ensureImageExists(it) }
+    }
+
     if (bannerFile == null) return
 
     BoxWithConstraints(
@@ -86,7 +94,7 @@ fun EntryCard(
                 .width(380.dp)
         ) {
             BannerBackground(
-                bannerFile = PlatformFile(entry.entryData.bannerArt.localPath),
+                art = entry.entryData.bannerArt,
                 modifier = Modifier.fillMaxSize(),
                 alpha = 0.2f,
             )
@@ -101,9 +109,9 @@ fun EntryCard(
                     modifier = Modifier.size(64.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    ImagePreview(
+                    ImageInput(
                         modifier = Modifier.size(64.dp),
-                        file = PlatformFile(entry.entryData.coverArt.localPath),
+                        art = entry.entryData.coverArt,
                         onClick = { /* TODO */ }
                     )
                 }
