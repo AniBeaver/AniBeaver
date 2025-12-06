@@ -131,9 +131,21 @@ fun AutofillPopup(
                         ReferenceRow(
                             alId = ref.alId,
                             refNote = ref.note,
-                            onAlIdChange = { newAlIdStr -> onUpdateReference(ref, Reference(ref.note, newAlIdStr)) },
-                            onRefNoteChange = { newNote -> onUpdateReference(ref, Reference(newNote, ref.alId)) },
-                            onDelete = { onDeleteReference(ref) },
+                            onAlIdChange = { newAlIdStr ->
+                                val newList = references.toMutableList()
+                                newList[idx] = Reference(ref.note, newAlIdStr)
+                                onConfirmReorder(newList)
+                            },
+                            onRefNoteChange = { newNote ->
+                                val newList = references.toMutableList()
+                                newList[idx] = Reference(newNote, ref.alId)
+                                onConfirmReorder(newList)
+                            },
+                            onDelete = {
+                                val newList = references.toMutableList()
+                                newList.removeAt(idx)
+                                onConfirmReorder(newList)
+                            },
                             onMoveUp = if (idx > 0) {
                             {
                                 val newList = references.toMutableList()
