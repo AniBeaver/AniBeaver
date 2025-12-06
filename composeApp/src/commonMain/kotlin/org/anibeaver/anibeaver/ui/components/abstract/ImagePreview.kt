@@ -44,7 +44,7 @@ fun ImagePreview(
             Box(
                 modifier = Modifier
                     .matchParentSize()
-                    .background(Color.LightGray)
+                    .background(Color(0xFF1A1A1A))
             )
         }
 

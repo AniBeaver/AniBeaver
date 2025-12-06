@@ -217,9 +217,10 @@ fun EditEntryPopup(
                                 },
                                 onClick = {
                                     coroutineScope.launch {
-                                        coverArt = ImageController.chooseAndResaveNewArt()
-
-
+                                        val newArt = ImageController.chooseAndResaveNewArt()
+                                        if (newArt != null) {
+                                            coverArt = newArt
+                                        }
                                     }
                                 })
                             ImageInput(
@@ -230,8 +231,10 @@ fun EditEntryPopup(
                                 },
                                 onClick = {
                                     coroutineScope.launch {
-                                        bannerArt = ImageController.chooseAndResaveNewArt()
-
+                                        val newArt = ImageController.chooseAndResaveNewArt()
+                                        if (newArt != null) {
+                                            bannerArt = newArt
+                                        }
                                     }
                                 })
                         }

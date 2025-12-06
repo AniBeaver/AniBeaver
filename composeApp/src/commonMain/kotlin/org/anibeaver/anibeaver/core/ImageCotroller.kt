@@ -67,7 +67,7 @@ object ImageController {
         return destination
     }
 
-    suspend fun chooseAndResaveNewArt(): Art {
+    suspend fun chooseAndResaveNewArt(): Art? {
         suspend fun resaveImage(image: PlatformFile): PlatformFile {
             createImagesDir()
 
@@ -78,7 +78,6 @@ object ImageController {
                     return image
                 }
             }
-            //otherwise copy into dir
 
             val extension = getExtensionFromFile(image)
             val destination = getDestinationFile(extension)
@@ -90,8 +89,11 @@ object ImageController {
             mode = FileKitMode.Single, type = FileKitType.File(listOf("jpg", "jpeg", "png", "webp"))
         )
 
-        val image = chosen ?: throw IllegalStateException("No image chosen")
-        val resaved = resaveImage(image)
+        if (chosen == null) {
+            return null
+        }
+
+        val resaved = resaveImage(chosen)
         return artFromImage(resaved, "custom")
     }
 
@@ -127,7 +129,29 @@ object ImageController {
     }
 
     fun cleanUpImagesDir() {
-        //TODO: go through all the entries and delete any images that aren't mentioned in any
+        if (!imagesDir.exists()) {
+            return
+        }
+
+        val allUsedPaths = EntriesController.entries.flatMap { entry ->
+            listOfNotNull(
+                entry.entryData.coverArt.localPath.takeIf { it.isNotBlank() },
+                entry.entryData.bannerArt.localPath.takeIf { it.isNotBlank() }
+            )
+        }.toSet()
+
+        val imagesDirFile = java.io.File(imagesDir.path)
+        val filesInDir = imagesDirFile.listFiles() ?: return
+
+        filesInDir.forEach { file ->
+            val filePath = file.absolutePath
+            if (filePath !in allUsedPaths) {
+                try {
+                    file.delete()
+                } catch (_: Exception) {
+                }
+            }
+        }
     }
 
 
