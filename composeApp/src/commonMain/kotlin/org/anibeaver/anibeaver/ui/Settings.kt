@@ -23,11 +23,11 @@ fun SettingsScreen(
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Settings", style = Typography.headlineLarge)
 
-        Button(onClick = {
-            navController.navigate(Screens.Home.name)
-        }) {
-            Text("Go to Home")
-        }
+//        Button(onClick = { //FIXME: readd later
+//            navController.navigate(Screens.Home.name)
+//        }) {
+//            Text("Go to Home")
+//        }
 
         Button(
             onClick = {

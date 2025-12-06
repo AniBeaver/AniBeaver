@@ -82,7 +82,7 @@ fun EntriesScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.wrapContentWidth()
             ) {
-                Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") }
+//                Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") } //FIXME: change back to home
 
                 Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
                 Button(onClick = { showManageTags = true }) { Text("Manage tags") }

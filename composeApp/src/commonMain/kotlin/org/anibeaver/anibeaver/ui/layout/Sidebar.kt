@@ -26,9 +26,10 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun Sidebar(
     navController: NavHostController = rememberNavController(),
-    colors: ColorScheme
+    colors: ColorScheme,
+    onCreateEntry: (forManga: Boolean) -> Unit = {}
 ) {
-    val startDestination = Screens.Home
+    val startDestination = Screens.Anime
     var selectedDestination by rememberSaveable { mutableStateOf(startDestination.name) }
 
     // Update bottom bar when destination changes
@@ -63,14 +64,20 @@ fun Sidebar(
                 ) { newDest -> selectedDestination = newDest }
 
                 FilledIconButton(
-                    onClick = {},
+                    onClick = {
+                        when (selectedDestination) {
+                            Screens.Anime.name -> onCreateEntry(false)
+                            Screens.Manga.name -> onCreateEntry(true)
+                            else -> {} // Do nothing on other tabs
+                        }
+                    },
                     colors = IconButtonDefaults.filledIconButtonColors(),
                     shape = ShapeDefaults.Medium,
                     modifier = Modifier.padding(top = 12.dp).size(48.dp)
                 ) {
                     Icon(
                         Icons.Filled.Add,
-                        contentDescription = "yeet",
+                        contentDescription = "Create new entry",
                         modifier = Modifier.size(28.dp)
                     )
                 }

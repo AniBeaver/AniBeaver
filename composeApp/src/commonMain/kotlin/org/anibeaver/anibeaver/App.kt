@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -24,6 +26,7 @@ import org.anibeaver.anibeaver.ui.*
 import org.anibeaver.anibeaver.ui.components.DialogPopupHost
 import org.anibeaver.anibeaver.ui.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.layout.Sidebar
+import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
 import org.anibeaver.anibeaver.ui.theme.AniBeaverTheme
 import org.anibeaver.anibeaver.ui.theme.getColorScheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -67,11 +70,21 @@ fun App(
     val appViewModel: AppViewModel = remember { AppViewModel() }
     val sharedAnimeViewModel: AnimeViewModel = remember { AnimeViewModel() }
 
+    var showEntryPopup by remember { mutableStateOf(false) }
+    var entryPopupForManga by remember { mutableStateOf(false) }
+
     AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
             Row {
                 if (showSidebar) {
-                    Sidebar(navController, colors)
+                    Sidebar(
+                        navController,
+                        colors,
+                        onCreateEntry = { forManga ->
+                            entryPopupForManga = forManga
+                            showEntryPopup = true
+                        }
+                    )
                 }
 
                 Column(
@@ -79,7 +92,7 @@ fun App(
                 ) {
                     Box(modifier = Modifier.weight(1f).padding(padding)) {
                         NavHost(
-                            navController = navController, startDestination = Screens.Home.name, enterTransition = {
+                            navController = navController, startDestination = Screens.Anime.name, enterTransition = {
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
                             )
@@ -97,9 +110,9 @@ fun App(
                             )
                         }, modifier = Modifier.fillMaxHeight(1f).verticalScroll(rememberScrollState())
                         ) {
-                            composable(route = Screens.Home.name) {
-                                HomeScreen(navController, sharedAnimeViewModel)
-                            }
+//                            composable(route = Screens.Home.name) {
+//                                HomeScreen(navController, sharedAnimeViewModel)
+//                            }
                             composable(route = Screens.Anime.name) {
                                 EntriesScreen(navController, forManga=false, viewModel = sharedAnimeViewModel)
                             }
@@ -124,6 +137,19 @@ fun App(
                     }
                 }
             }
+
+            EditEntryPopup(
+                show = showEntryPopup,
+                onDismiss = { showEntryPopup = false },
+                onConfirm = { entryData ->
+                    sharedAnimeViewModel.upsertAnimeEntry(null, entryData)
+                    showEntryPopup = false
+                },
+                forceShowAutofillPopup = false,
+                alIdToBePassed = "",
+                initialValues = null,
+                forManga = entryPopupForManga
+            )
 
             DialogPopupHost()
         }

@@ -14,7 +14,7 @@ import org.anibeaver.anibeaver.Screens
 fun BottomNavBar(
     navController: NavHostController = rememberNavController()
 ) {
-    val startDestination = Screens.Home
+    val startDestination = Screens.Anime //TODO: rechange to home later
     var selectedDestination by rememberSaveable { mutableStateOf(startDestination.name) }
 
     // Update bottom bar when destination changes
