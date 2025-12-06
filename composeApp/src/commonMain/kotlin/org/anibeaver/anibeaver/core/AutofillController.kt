@@ -58,7 +58,8 @@ object AutofillController {
         mediaIds: List<String>,
         onResult: (ParsedAutofillData) -> Unit,
         scope: CoroutineScope,
-        priorityIndex: Int? = null
+        priorityIndex: Int? = null,
+        onError: ((String) -> Unit)? = null
     ) {
         fun inferAiringScheduleWeekday(airingAts: List<Long>, airingScheduleErrorRatio: Float): ReleaseSchedule {
             val weekdays = ReleaseSchedule.entries.filter { it != ReleaseSchedule.Irregular }
@@ -217,27 +218,36 @@ object AutofillController {
 
         val results = mutableListOf<AutofillData>()
         var completed = 0
+        var failed = false
         val validIds = mediaIds.filter { idIsValid(it) }
-        if (validIds.isEmpty()) { //for efficiency's sake, not to launch unneeded coroutines
+        if (validIds.isEmpty()) {
             onResult(parseAutofillDataList(results))
             return
         }
         scope.launch {
             for (mediaId in validIds) {
-                apiHandler.makeRequest(
-                    variables = mapOf("id" to mediaId),
-                    valueSetter = ValueSetter { mediaQuery: AutofillMediaQuery ->
-                        results.add(mediaQuery.data.media)
-                        completed++
-                        if (completed == validIds.size) {
-                            onResult(parseAutofillDataList(results))
-                        }
-                    },
-                    requestType = RequestType.AUTOFILL_MEDIA
-                )
+                try {
+                    apiHandler.makeRequest(
+                        variables = mapOf("id" to mediaId),
+                        valueSetter = ValueSetter { mediaQuery: AutofillMediaQuery ->
+                            if (!failed) {
+                                results.add(mediaQuery.data.media)
+                                completed++
+                                if (completed == validIds.size) {
+                                    onResult(parseAutofillDataList(results))
+                                }
+                            }
+                        },
+                        requestType = RequestType.AUTOFILL_MEDIA
+                    )
+                } catch (e: Exception) {
+                    if (!failed) {
+                        failed = true
+                        onError?.invoke("AniList ID $mediaId doesn't exist on AniList (404 error)")
+                    }
+                    break
+                }
             }
         }
     }
-
-
 }

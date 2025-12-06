@@ -26,6 +26,7 @@ import org.anibeaver.anibeaver.ui.components.basic.IntPicker
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.basic.YearPicker
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagChipInput
+import org.anibeaver.anibeaver.ui.components.showAlert
 
 //TODO: tiny windows not supported still
 @Composable
@@ -161,7 +162,11 @@ fun EditEntryPopup(
                 onPullFromAniList = { priorityIndex, onPulled ->
                     val referenceIds = references.map { it.alId }
                     AutofillController.pullParsedAutofill(
-                        referenceIds, { result -> onPulled(result) }, coroutineScope, priorityIndex
+                        referenceIds,
+                        { result -> onPulled(result) },
+                        coroutineScope,
+                        priorityIndex,
+                        onError = { errorMsg -> showAlert(errorMsg) }
                     )
                 },
                 forManga = forManga

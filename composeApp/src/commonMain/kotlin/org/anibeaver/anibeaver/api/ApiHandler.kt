@@ -105,6 +105,7 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
         catch(e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
+            throw e // Re-throw so can be passed to alert
         }
     }
 
