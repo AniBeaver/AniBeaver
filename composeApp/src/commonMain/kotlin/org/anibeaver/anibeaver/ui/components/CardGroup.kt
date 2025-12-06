@@ -13,11 +13,12 @@ import androidx.compose.ui.unit.sp
 import org.anibeaver.anibeaver.core.datastructures.Status
 
 @Composable
-fun CardSection(
+fun CardGroup(
     statusId: Int,
     invisible: Boolean,
     onCollapseClicked: () -> Unit,
-    cardSpacing: Dp
+    cardSpacing: Dp,
+    isExpanded: Boolean = true
 ) {
     if (invisible) return
 
@@ -28,15 +29,27 @@ fun CardSection(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = Status.fromId(statusId).toString(),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = if (isExpanded) "▼" else "▶",
+                fontSize = 14.sp,
+                color = androidx.compose.ui.graphics.Color.Gray
+            )
+            Text(
+                text = Status.fromId(statusId).toString(),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
-        Button(onClick = onCollapseClicked, modifier = Modifier.height(32.dp) ) {
-//            Text(if (isExpanded) "Collapse" else "Expand", fontSize = 12.sp)
-            Text("Collapse", fontSize = 12.sp)
+        Button(
+            onClick = onCollapseClicked,
+            modifier = Modifier.height(32.dp).width(100.dp)
+        ) {
+            Text(if (isExpanded) "Collapse" else "Expand", fontSize = 12.sp)
         }
     }
 }

@@ -18,7 +18,7 @@ import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
-import org.anibeaver.anibeaver.ui.components.CardSection
+import org.anibeaver.anibeaver.ui.components.CardGroup
 import org.anibeaver.anibeaver.ui.components.EntryCard
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
@@ -141,6 +141,14 @@ fun EntriesScreen(
 //                    EntriesController.addEntry(entryData = entryData)
                     viewModel.saveAnimeEntry()
                 }) { Text("Add Placeholder Entry") }
+
+                Button(onClick = { filterState.collapseAll() }) {
+                    Text("Collapse All")
+                }
+
+                Button(onClick = { filterState.expandAll() }) {
+                    Text("Expand All")
+                }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -196,6 +204,7 @@ fun EntriesScreen(
 
             EntryGrid(
                 entriesToShow = entriesToShow,
+                allEntriesOfType = allEntriesOfType,
                 columns = columns,
                 cardWidth = cardWidth,
                 cardSpacing = cardSpacing,
@@ -213,15 +222,42 @@ fun EntriesScreen(
 
 
 data class AnimeFilterState(
-    var filterData: FilterData? = null, val onFilterChange: (FilterData?) -> Unit
+    var filterData: FilterData? = null,
+    val onFilterChange: (FilterData?) -> Unit
 ) {
+    private val currentSelectedStatuses: List<Status>
+        get() = (filterData ?: defaultFilterData).selectedStatus.ifEmpty { defaultFilterData.selectedStatus }
+
     fun clear() = onFilterChange(defaultFilterData)
+
+    fun toggleStatusInFilter(status: Status) {
+        val statusSet = currentSelectedStatuses.toSet()
+        val newSelectedStatuses = if (status in statusSet) {
+            (statusSet - status).toList()
+        } else {
+            (statusSet + status).toList()
+        }
+        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = newSelectedStatuses))
+    }
+
+    fun isStatusInFilter(status: Status): Boolean = status in currentSelectedStatuses
+
+    fun collapseAll() {
+        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = emptyList()))
+    }
+
+    fun expandAll() {
+        onFilterChange((filterData ?: defaultFilterData).copy(selectedStatus = Status.entries.toList()))
+    }
 }
 
 @Composable
 fun rememberAnimeFilterState(): AnimeFilterState {
     var filterData by remember { mutableStateOf<FilterData?>(defaultFilterData) }
-    return AnimeFilterState(filterData) { filterData = it }
+    return AnimeFilterState(
+        filterData = filterData,
+        onFilterChange = { filterData = it }
+    )
 }
 
 private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType: SortingType): List<Entry> {
@@ -286,6 +322,7 @@ private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, o
 @Composable
 private fun EntryGrid(
     entriesToShow: List<Entry>,
+    allEntriesOfType: List<Entry>,
     columns: Int,
     cardWidth: Dp,
     cardSpacing: Dp,
@@ -295,43 +332,53 @@ private fun EntryGrid(
     filterState: AnimeFilterState,
     forManga: Boolean
 ) {
-
     val groupedEntries = entriesToShow.groupBy { entry ->
         if (groupByStatus) entry.entryData.status.id else -1
     }
 
-    fun updateOneGroupInFilterState(filterState: AnimeFilterState, status: Status) {
-        var tempSelectedStatus = filterState.filterData!!.selectedStatus
-        if (tempSelectedStatus.isEmpty()) tempSelectedStatus = defaultFilterData.selectedStatus
-        val newFilterData = filterState.filterData!!.copy(selectedStatus = tempSelectedStatus - status)
-        filterState.onFilterChange(newFilterData)
+    val allEntriesGroupedByStatus = allEntriesOfType.groupBy { entry ->
+        if (groupByStatus) entry.entryData.status.id else -1
+    }
+
+    val statusesToDisplay = if (groupByStatus) {
+        Status.entries
+    } else {
+        listOf(Status.fromId(-1)!!)
     }
 
     //TODO: perhaps separate filter state for manga?
 
-    groupedEntries.forEach { (statusId, entriesForStatus) ->
-        CardSection(
-            statusId = statusId,
-            onCollapseClicked = {
-                updateOneGroupInFilterState(filterState, Status.fromId(statusId)!!)
-            },
-            cardSpacing = cardSpacing,
-            invisible = !groupByStatus,
-        )
+    statusesToDisplay.forEach { status ->
+        val statusId = status.id
+        val entriesForThisStatus = groupedEntries[statusId] ?: emptyList()
+        val allEntriesForThisStatus = allEntriesGroupedByStatus[statusId] ?: emptyList()
+        val isStatusInFilter = filterState.isStatusInFilter(status)
+        val hasEntriesForStatus = allEntriesForThisStatus.isNotEmpty()
 
-        entriesForStatus.chunked(columns).forEach { rowEntries ->
-            Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
-                Spacer(Modifier.width(cardSpacing))
-                rowEntries.forEach { entry ->
-                    EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
-                    Spacer(Modifier.width(cardSpacing))
+        if (hasEntriesForStatus) {
+            CardGroup(
+                statusId = statusId,
+                onCollapseClicked = {
+                    filterState.toggleStatusInFilter(status)
+                },
+                cardSpacing = cardSpacing,
+                invisible = !groupByStatus,
+                isExpanded = isStatusInFilter
+            )
+
+            if (isStatusInFilter) {
+                entriesForThisStatus.chunked(columns).forEach { rowEntries ->
+                    Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
+                        Spacer(Modifier.width(cardSpacing))
+                        rowEntries.forEach { entry ->
+                            EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
+                            Spacer(Modifier.width(cardSpacing))
+                        }
+                        repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
+                    }
                 }
-                repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
             }
         }
-
-
     }
-
 
 }
