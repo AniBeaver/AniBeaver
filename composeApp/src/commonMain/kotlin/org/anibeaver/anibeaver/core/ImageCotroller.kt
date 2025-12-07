@@ -60,6 +60,7 @@ object ImageController {
 
     private suspend fun downloadImageToPath(link: String, destinationPath: String): PlatformFile {
         createImagesDir()
+        //TODO: seems like the downloaded images are very low res? !!!
         val imageBytes = downloadImageBytes(link)
         val destination = PlatformFile(destinationPath)
         destination.write(imageBytes)

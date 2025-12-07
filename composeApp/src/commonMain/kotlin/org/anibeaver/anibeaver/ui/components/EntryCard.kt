@@ -3,8 +3,12 @@ package org.anibeaver.anibeaver.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -98,77 +102,161 @@ fun EntryCard(
                 alpha = 0.2f,
             )
 
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(4.dp)
             ) {
-                Box(
-                    modifier = Modifier.size(64.dp),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ImageInput(
-                        modifier = Modifier.size(64.dp),
-                        art = entry.entryData.coverArt,
-                        onClick = { /* TODO */ }
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         name,
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                        fontSize = 16.sp,
-                        color = Color.White
+                        fontSize = 18.sp,
+                        color = Color.White,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 6.dp, top = 4.dp, end = 4.dp)
                     )
 
-                    val year = entry.entryData.releaseYear
                     val rating = entry.entryData.rating
-                    val status = entry.entryData.status.toString()
-                    val schedule = entry.entryData.releasingEvery.toString()
-                    val epsProgress = entry.entryData.episodesProgress
-                    val epsTotal = entry.entryData.episodesTotal
-                    val rewatches = entry.entryData.rewatches
                     val ratingText = if (rating > 0f) {
                         val rounded = (round(rating * 10f) / 10f)
                         if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
                     } else "-"
+
                     Text(
-                        "$year, Rating: $ratingText, Status: $status, Eps: $epsProgress/$epsTotal (rewatches: $rewatches), Schedule: $schedule",
-                        fontSize = 12.sp,
-                        color = Color.White
+                        "$ratingText★",
+                        fontSize = 18.sp,
+                        color = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.padding(end = 4.dp, top = 3.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-                    val tagsLine = listOf(
-                        genreTags.joinToString(", "),
-                        studioTags.joinToString(", "),
-                        authorTags.joinToString(", "),
-                        customTags.joinToString(", ")
-                    ).filter { it.isNotBlank() }.joinToString(", ")
-                    if (tagsLine.isNotBlank()) {
-                        Text(tagsLine, fontSize = 12.sp, color = Color.White)
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(description, fontSize = 13.sp, color = Color.White)
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.End
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Top
                 ) {
-                    Button(onClick = onEdit, modifier = Modifier.height(32.dp)) {
-                        Text("Edit", fontSize = 12.sp)
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .size(width = 62.dp, height = 94.dp)
+                            .padding(top = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ImageInput(
+                            modifier = Modifier.size(width = 62.dp, height = 94.dp),
+                            art = entry.entryData.coverArt,
+                            onClick = { /* TODO */ }
+                        )
                     }
-                    Button(onClick = onDelete, modifier = Modifier.height(32.dp)) {
-                        Text("Delete", fontSize = 12.sp)
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        val year = entry.entryData.releaseYear
+                        val status = entry.entryData.status.toString()
+                        val schedule = entry.entryData.releasingEvery.toString()
+                        val epsProgress = entry.entryData.episodesProgress
+                        val epsTotal = entry.entryData.episodesTotal
+                        val rewatches = entry.entryData.rewatches
+
+                        Text(
+                            "$epsProgress/$epsTotal eps (${rewatches}x) • $year • $schedule • $status",
+                            fontSize = 11.sp,
+                            color = Color.White.copy(alpha = 0.9f),
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+
+                        if (genreTags.isNotEmpty()) {
+                            Text(
+                                "Genres: ${genreTags.joinToString(", ")}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.85f),
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (studioTags.isNotEmpty()) {
+                            Text(
+                                "Studios: ${studioTags.joinToString(", ")}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.85f),
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (authorTags.isNotEmpty()) {
+                            Text(
+                                "Authors: ${authorTags.joinToString(", ")}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.85f),
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (customTags.isNotEmpty()) {
+                            Text(
+                                "Tags: ${customTags.joinToString(", ")}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.8f),
+                                maxLines = 2,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (description.isNotBlank()) {
+                            Text(
+                                description,
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.7f),
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) {
+                        Button(
+                            onClick = onEdit,
+                            modifier = Modifier.size(28.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Button(
+                            onClick = onDelete,
+                            modifier = Modifier.size(28.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }

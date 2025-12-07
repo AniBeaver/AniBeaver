@@ -84,7 +84,7 @@ fun EntriesScreen(
             ) {
 //                Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") } //FIXME: change back to home
 
-                Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
+//                Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
                 Button(onClick = { showManageTags = true }) { Text("Manage tags") }
                 Button(onClick = { showFilter = true }) { Text("Filter entries") }
 
