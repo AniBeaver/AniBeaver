@@ -7,15 +7,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun UpDownButtons(
-    onIncrement: () -> Unit,
-    onDecrement: () -> Unit,
+    onIncrement: (() -> Unit)? = null,
+    onDecrement: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     upContent: @Composable (() -> Unit)? = null,
     downContent: @Composable (() -> Unit)? = null
 ) {
     Column(modifier = modifier.padding(start = 4.dp)) {
         Button(
-            onClick = onIncrement,
+            onClick = { onIncrement?.invoke() },
+            enabled = onIncrement != null,
             modifier = Modifier
                 .height(24.dp)
                 .width(32.dp)
@@ -25,7 +26,8 @@ fun UpDownButtons(
             if (upContent != null) upContent() else Text("+", maxLines = 1)
         }
         Button(
-            onClick = onDecrement,
+            onClick = { onDecrement?.invoke() },
+            enabled = onDecrement != null,
             modifier = Modifier
                 .height(24.dp)
                 .width(32.dp)

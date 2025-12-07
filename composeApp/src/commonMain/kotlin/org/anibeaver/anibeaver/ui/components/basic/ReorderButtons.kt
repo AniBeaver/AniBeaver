@@ -12,8 +12,8 @@ fun ReorderButtons(
     modifier: Modifier = Modifier
 ) {
     UpDownButtons(
-        onIncrement = { onMoveUp?.invoke() },
-        onDecrement = { onMoveDown?.invoke() },
+        onIncrement = onMoveUp,
+        onDecrement = onMoveDown,
         modifier = modifier,
         upContent = { Icon(Icons.Filled.ArrowDropUp, contentDescription = "Move Up") },
         downContent = { Icon(Icons.Filled.ArrowDropDown, contentDescription = "Move Down") }
