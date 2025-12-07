@@ -55,10 +55,16 @@ data class ExportTag(
 )
 
 object ExportController {
+    private const val MAX_BACKUPS = 6 //TODO: make configurable
+    private const val BACKUP_INTERVAL_HOURS = 24 //TODO: make configurable
+
     private val json = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
     }
+
+    private val backupsDir = FileKit.filesDir / "backups"
+    private val lastBackupFile = backupsDir / ".last_backup_timestamp"
 
     suspend fun writeJsonToFile(file: PlatformFile, jsonString: String) {
         file.write(jsonString.toByteArray())
@@ -205,6 +211,58 @@ object ExportController {
             e.printStackTrace()
             null
         }
+    }
+
+    private fun createBackupsDir() {
+        if (!backupsDir.exists()) {
+            backupsDir.createDirectories()
+        }
+    }
+
+    private fun getBackupFiles(): List<PlatformFile> {
+        if (!backupsDir.exists()) {
+            return emptyList()
+        }
+
+        val backupsDirFile = java.io.File(backupsDir.path)
+        val files = backupsDirFile.listFiles() ?: return emptyList()
+
+        return files
+            .filter { it.isFile && it.name.startsWith("backup_") && it.name.endsWith(".json") }
+            .map { PlatformFile(it.absolutePath) }
+            .sortedBy { it.name }
+    }
+
+    private fun deleteOldestBackup(backupFiles: List<PlatformFile>) {
+        if (backupFiles.isNotEmpty()) {
+            val oldestBackup = backupFiles.first()
+            try {
+                java.io.File(oldestBackup.path).delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun createBackup(
+        entries: List<AnimeEntryEntity>,
+        referencesMap: Map<Int, List<ReferenceEntity>>,
+        tags: List<TagEntity>
+    ) {
+        createBackupsDir()
+
+        val backupFiles = getBackupFiles()
+        if (backupFiles.size >= MAX_BACKUPS) {
+            deleteOldestBackup(backupFiles)
+        }
+
+        val exportData = convertToExportData(entries, referencesMap, tags)
+        val jsonString = exportToJson(exportData)
+
+        val fileName = "backup_${System.currentTimeMillis()}.json"
+        val file = backupsDir / fileName
+
+        writeJsonToFile(file, jsonString)
     }
 }
 

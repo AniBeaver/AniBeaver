@@ -42,6 +42,18 @@ fun SettingsScreen(
 
         Button(
             onClick = {
+                coroutineScope.launch {
+                    viewModel.createBackup()
+                    showAlert("Backup created successfully!")
+                }
+            },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Create Backup")
+        }
+
+        Button(
+            onClick = {
                 if (viewModel.entryController.entries.isEmpty()) {
                     showAlert("No entries to delete.")
                 } else {

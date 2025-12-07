@@ -178,6 +178,16 @@ class AnimeViewModel(
         return ExportController.exportToFile(entries, referencesMap, tags)
     }
 
+    suspend fun createBackup() {
+        val entries = animeDao.getAll()
+        val referencesMap = entries.associate { entry ->
+            entry.id to referenceDao.getByEntryId(entry.id)
+        }
+        val tags = tagDao.getAllTags()
+
+        ExportController.createBackup(entries, referencesMap, tags)
+    }
+
     suspend fun importEntries(): Boolean {
         val exportData = ExportController.importFromFile() ?: return false
 
