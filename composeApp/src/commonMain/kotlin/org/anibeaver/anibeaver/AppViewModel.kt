@@ -2,12 +2,15 @@ package org.anibeaver.anibeaver
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import androidx.room.RoomDatabase
 import org.koin.core.component.inject
 import org.koin.core.component.KoinComponent
 
 import org.anibeaver.anibeaver.core.EntriesController
+import org.anibeaver.anibeaver.core.ExportController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.EntryData
@@ -32,6 +35,8 @@ class AppViewModel(
         viewModelScope.launch {
             loadTags()
             getAnimeEntries()
+            performAutoBackup()
+            startPeriodicBackup()
         }
     }
 
@@ -88,6 +93,29 @@ class AppViewModel(
                     references = references
                 )
             )
+        }
+    }
+
+    private suspend fun performAutoBackup() {
+        try {
+            val entries = animeDao.getAll()
+            val referencesMap = entries.associate { entry ->
+                entry.id to referenceDao.getByEntryId(entry.id)
+            }
+            val tags = tagDao.getAllTags()
+
+            ExportController.autoBackupIfNeeded(entries, referencesMap, tags)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun startPeriodicBackup() {
+        viewModelScope.launch {
+            while (isActive) {
+                delay(8 * 60 * 1000L) //TODO: make configurable - 8 minutes in milliseconds
+                performAutoBackup()
+            }
         }
     }
 }

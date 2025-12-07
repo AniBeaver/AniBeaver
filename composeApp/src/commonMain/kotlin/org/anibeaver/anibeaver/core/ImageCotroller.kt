@@ -2,7 +2,6 @@ package org.anibeaver.anibeaver.core
 
 import io.github.vinceglb.filekit.*
 
-import io.github.vinceglb.filekit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.anibeaver.anibeaver.core.datastructures.Art
@@ -14,9 +13,7 @@ object ImageController {
     val imagesDir = filesDir / "images"
 
     fun createImagesDir() {
-        if (!imagesDir.exists()) {
-            imagesDir.createDirectories()
-        }
+        FileController.createDirectory(imagesDir)
     }
 
     fun artFromImage(image: PlatformFile, source: String): Art {
@@ -134,16 +131,11 @@ object ImageController {
             )
         }.toSet()
 
-        val imagesDirFile = java.io.File(imagesDir.path)
-        val filesInDir = imagesDirFile.listFiles() ?: return
+        val filesInDir = FileController.listFiles(imagesDir)
 
         filesInDir.forEach { file ->
-            val filePath = file.absolutePath
-            if (filePath !in allUsedPaths) {
-                try {
-                    file.delete()
-                } catch (_: Exception) {
-                }
+            if (file.path !in allUsedPaths) {
+                FileController.deleteFile(file)
             }
         }
     }

@@ -55,8 +55,7 @@ data class ExportTag(
 )
 
 object ExportController {
-    private const val MAX_BACKUPS = 6 //TODO: make configurable
-    private const val BACKUP_INTERVAL_HOURS = 24 //TODO: make configurable
+    private const val MAX_BACKUPS = 16 //TODO: make configurable
 
     private val json = Json {
         prettyPrint = true
@@ -64,14 +63,14 @@ object ExportController {
     }
 
     private val backupsDir = FileKit.filesDir / "backups"
-    private val lastBackupFile = backupsDir / ".last_backup_timestamp"
+    private val lastBackupHashFile = backupsDir / ".last_backup_hash"
 
     suspend fun writeJsonToFile(file: PlatformFile, jsonString: String) {
-        file.write(jsonString.toByteArray())
+        FileController.textToFile(file, jsonString)
     }
 
     suspend fun readJsonFromFile(file: PlatformFile): String {
-        return file.readBytes().decodeToString()
+        return FileController.textToFile(file)
     }
 
     fun convertToExportData(
@@ -214,33 +213,18 @@ object ExportController {
     }
 
     private fun createBackupsDir() {
-        if (!backupsDir.exists()) {
-            backupsDir.createDirectories()
-        }
+        FileController.createDirectory(backupsDir)
     }
 
     private fun getBackupFiles(): List<PlatformFile> {
-        if (!backupsDir.exists()) {
-            return emptyList()
-        }
-
-        val backupsDirFile = java.io.File(backupsDir.path)
-        val files = backupsDirFile.listFiles() ?: return emptyList()
-
-        return files
-            .filter { it.isFile && it.name.startsWith("backup_") && it.name.endsWith(".json") }
-            .map { PlatformFile(it.absolutePath) }
-            .sortedBy { it.name }
+        return FileController.listFiles(backupsDir) { file ->
+            file.name.startsWith("backup_") && file.name.endsWith(".json")
+        }.sortedBy { it.name }
     }
 
     private fun deleteOldestBackup(backupFiles: List<PlatformFile>) {
         if (backupFiles.isNotEmpty()) {
-            val oldestBackup = backupFiles.first()
-            try {
-                java.io.File(oldestBackup.path).delete()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            FileController.deleteFile(backupFiles.first())
         }
     }
 
@@ -249,6 +233,7 @@ object ExportController {
         referencesMap: Map<Int, List<ReferenceEntity>>,
         tags: List<TagEntity>
     ) {
+        println("Backup made")
         createBackupsDir()
 
         val backupFiles = getBackupFiles()
@@ -263,6 +248,63 @@ object ExportController {
         val file = backupsDir / fileName
 
         writeJsonToFile(file, jsonString)
+        saveContentHash(jsonString)
+    }
+
+    private suspend fun getLastBackupHash(): String? {
+        return try {
+            if (lastBackupHashFile.exists()) {
+                FileController.textToFile(lastBackupHashFile)
+            } else {
+                null
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private suspend fun saveContentHash(jsonString: String) {
+        try {
+            createBackupsDir()
+            val hash = jsonString.hashCode().toString()
+            FileController.textToFile(lastBackupHashFile, hash)
+        } catch (_: Exception) {
+        }
+    }
+
+    private suspend fun hasContentChanged(
+        entries: List<AnimeEntryEntity>,
+        referencesMap: Map<Int, List<ReferenceEntity>>,
+        tags: List<TagEntity>
+    ): Boolean {
+        val exportData = convertToExportData(entries, referencesMap, tags)
+        val jsonString = exportToJson(exportData)
+        val currentHash = jsonString.hashCode().toString()
+        val lastHash = getLastBackupHash()
+
+        return lastHash == null || currentHash != lastHash
+    }
+
+    private suspend fun shouldCreateAutoBackup(
+        entries: List<AnimeEntryEntity>,
+        referencesMap: Map<Int, List<ReferenceEntity>>,
+        tags: List<TagEntity>
+    ): Boolean {
+        if (!hasContentChanged(entries, referencesMap, tags)) {
+            return false
+        }
+
+        return true
+    }
+
+    suspend fun autoBackupIfNeeded(
+        entries: List<AnimeEntryEntity>,
+        referencesMap: Map<Int, List<ReferenceEntity>>,
+        tags: List<TagEntity>
+    ) {
+        if (shouldCreateAutoBackup(entries, referencesMap, tags)) {
+            createBackup(entries, referencesMap, tags)
+        }
     }
 }
 
