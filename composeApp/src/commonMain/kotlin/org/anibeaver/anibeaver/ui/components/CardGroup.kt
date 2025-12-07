@@ -2,8 +2,8 @@ package org.anibeaver.anibeaver.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +47,7 @@ fun CardGroup(
             )
         }
 
-        Button( //TODO: buytton might not be needed anymore
+        TextButton( //TODO: button might not be needed anymore
 
             onClick = onCollapseClicked,
             modifier = Modifier.height(32.dp).width(100.dp)

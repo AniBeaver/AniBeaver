@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
@@ -58,8 +57,7 @@ fun EntriesScreen(
             if (forManga) viewModel.updateMangaCollapsedStatuses(it) else viewModel.updateAnimeCollapsedStatuses(
                 it
             )
-        }
-    )
+        })
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val cardWidth = 350.dp
@@ -77,90 +75,101 @@ fun EntriesScreen(
             Modifier.fillMaxSize()
         ) {
             Text(if (forManga) "Anime" else "Manga", style = Typography.headlineLarge)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.wrapContentWidth()
-            ) {
+
 //                Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") } //FIXME: change back to home
 
 //                Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
-                Button(onClick = { showManageTags = true }) { Text("Manage tags") }
-                Button(onClick = { showFilter = true }) { Text("Filter entries") }
 
-                Card(
-                    modifier = Modifier.padding(end = 4.dp).height(72.dp)
-                ) {
-                    Row(
-                        Modifier.padding(horizontal = 8.dp, vertical = 4.dp).fillMaxHeight(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        SimpleDropdown(
-                            options = SortingBy.entries,
-                            selectedOption = sortBy,
-                            onOptionSelected = { sortBy = it },
-                            label = "Sort by",
-                            modifier = Modifier.width(160.dp)
-                        )
-                        SimpleDropdown(
-                            options = SortingType.entries,
-                            selectedOption = sortOrder,
-                            onOptionSelected = { sortOrder = it },
-                            label = "Sort order",
-                            modifier = Modifier.width(160.dp)
-                        )
-                    }
-                }
-                Card(
-                    modifier = Modifier.padding(end = 4.dp).height(72.dp)
-                ) {
-                    Row(
-                        Modifier.fillMaxHeight().padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text("Group by status:")
-                        Checkbox(
-                            checked = groupByStatus, onCheckedChange = { checked -> groupByStatus = checked })
-
-                    }
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 QuickCreateEntryFromAl(quickAlId, { newQuickAlId -> quickAlId = newQuickAlId }, {
                     showEntryPopup(null, true)
                 })
-                Button(onClick = {
-//                    val entryData = EntryData(
-//                        animeName = "Placeholder Anime",
-//                        releaseYear = "2025",
-//                        studioIds = listOf(18), // Bones studio id
-//                        genreIds = listOf(7, 8, 9), // Action, Adventure, Fantasy genre ids
-//                        description = "This is a placeholder entry.",
-//                        rating = 8.5f,
-//                        status = Status.Completed,
-//                        releasingEvery = Schedule.Irregular,
-//                        tagIds = listOf(10, 11), // Shounen, Classic custom tag ids
-//                        coverArt = Art("", ""),
-//                        bannerArt = Art("", ""),
-//                        episodesTotal = 13,
-//                        episodesProgress = 13,
-//                        rewatches = 1
-//                        //references: e.g 179966
-//                    )
-//                    EntriesController.addEntry(entryData = entryData)
-                    viewModel.saveAnimeEntry()
-                }) { Text("Add Placeholder Entry") }
 
-                Button(onClick = { filterState.collapseAll() }) {
-                    Text("Collapse All")
-                }
-
-                Button(onClick = { filterState.expandAll() }) {
-                    Text("Expand All")
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Card(modifier = Modifier.height(72.dp)) {
+                        Row(
+                            Modifier.padding(horizontal = 8.dp, vertical = 4.dp).fillMaxHeight(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SimpleDropdown(
+                                options = SortingBy.entries,
+                                selectedOption = sortBy,
+                                onOptionSelected = { sortBy = it },
+                                label = "Sort by",
+                                modifier = Modifier.width(160.dp)
+                            )
+                            SimpleDropdown(
+                                options = SortingType.entries,
+                                selectedOption = sortOrder,
+                                onOptionSelected = { sortOrder = it },
+                                label = "Sort order",
+                                modifier = Modifier.width(160.dp)
+                            )
+                        }
+                    }
+                    Card(modifier = Modifier.height(72.dp)) {
+                        Row(
+                            Modifier.fillMaxHeight().padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text("Group by status:")
+                            Checkbox(
+                                checked = groupByStatus,
+                                onCheckedChange = { checked -> groupByStatus = checked }
+                            )
+                        }
+                    }
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { showManageTags = true }) {
+                        Text("Manage tags")
+                    }
+                    Button(onClick = { showFilter = true }) {
+                        Text("Filter entries")
+                    }
+
+                    FilterInfo(
+                        forManga = forManga,
+                        filterState = filterState,
+                        onClearFilters = { filterState.clear() }
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { filterState.collapseAll() }) {
+                        Text("Collapse All")
+                    }
+                    Button(onClick = { filterState.expandAll() }) {
+                        Text("Expand All")
+                    }
+                }
+            }
+
+//                Button(onClick = {
+//                    viewModel.saveAnimeEntry()
+//                }) { Text("Add Placeholder Entry") }
             if (showEditEntryPopup) {
                 EditEntryPopup(
                     show = showEditEntryPopup,
@@ -185,13 +194,10 @@ fun EntriesScreen(
                 onCreateTag = { showNewTagPopupFromManage = true })
 
             FilterPopup(
-                show = showFilter,
-                onDismiss = { showFilter = false },
-                onConfirm = { data ->
-                    filterState.onFilterChange(data)
-                    showFilter = false
-                },
-                initialFilter = filterState.filterData
+                show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
+                filterState.onFilterChange(data)
+                showFilter = false
+            }, initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,
@@ -210,7 +216,7 @@ fun EntriesScreen(
             val filteredEntries = entriesOfCurrentType.filter { it.matchesFilter(filterState.filterData) }
             val entriesToShow = sortEntries(filteredEntries, sortBy, sortOrder)
 
-            FilterInfoRow(entriesToShow, entriesOfCurrentType) { filterState.clear() }
+            Spacer(Modifier.height(8.dp))
 
             EntryGrid(
                 entriesToShow = entriesToShow,
@@ -221,11 +227,9 @@ fun EntriesScreen(
                 onDelete = { entryId ->
                     val entryName = EntriesController.getEntryDataById(entryId)?.title ?: "this entry"
                     showConfirmation(
-                        message = "Delete \"$entryName\"?",
-                        onAccept = {
+                        message = "Delete \"$entryName\"?", onAccept = {
                             viewModel.deleteAnimeEntry(entryId)
-                        }
-                    )
+                        })
                 },
                 groupByStatus = groupByStatus,
                 filterState = filterState,
@@ -308,28 +312,30 @@ private fun sortEntries(entries: List<Entry>, primarySortBy: SortingBy, sortType
 }
 
 @Composable
-private fun FilterInfoRow(entriesToShow: List<Entry>, allEntries: List<Entry>, onClear: () -> Unit) {
-    val hiddenCount = allEntries.size - entriesToShow.size
+private fun FilterInfo(
+    forManga: Boolean,
+    filterState: AnimeFilterState,
+    onClearFilters: () -> Unit
+) {
+    val allEntries = EntriesController.entries
+    val currentEntryType = if (forManga) EntryType.Manga else EntryType.Anime
+    val entriesOfCurrentType = allEntries.filter { it.entryData.type == currentEntryType }
+    val filteredEntries = entriesOfCurrentType.filter { it.matchesFilter(filterState.filterData) }
+    val hiddenCount = entriesOfCurrentType.size - filteredEntries.size
 
-    Box(modifier = Modifier.height(48.dp).fillMaxWidth()) {
-        if (hiddenCount > 0) {
-            val entryWord = if (entriesToShow.size == 1) "entry" else "entries"
-            val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                Text(
-                    "Showing ${entriesToShow.size} $entryWord. $hiddenCount $hiddenWord hidden.",
-                    color = Color.Gray
-                )
-                Spacer(Modifier.width(12.dp))
-                Button(onClick = onClear, modifier = Modifier.height(32.dp)) {
-                    Text(
-                        "Clear filters", fontSize = TextUnit.Unspecified
-                    ) //FIXME: clear filters no longer works for some reason – likely because some new attribute was added. Look in Entry.kt/FilterData - doesn't it?
-                }
-            }
+    if (hiddenCount > 0) {
+        val entryWord = if (filteredEntries.size == 1) "entry" else "entries"
+        val hiddenWord = if (hiddenCount == 1) "entry" else "entries"
+        Text(
+            "Showing ${filteredEntries.size} $entryWord. $hiddenCount $hiddenWord hidden.",
+            color = Color.Gray,
+            modifier = Modifier.padding(start = 12.dp)
+        )
+        Button(
+            onClick = onClearFilters,
+            modifier = Modifier.height(32.dp).padding(start = 8.dp)
+        ) {
+            Text("Clear filters", fontSize = TextUnit.Unspecified)
         }
     }
 }
@@ -367,13 +373,9 @@ private fun EntryGrid(
 
         if (hasFilteredEntries) {
             CardGroup(
-                statusId = statusId,
-                onCollapseClicked = {
+                statusId = statusId, onCollapseClicked = {
                     filterState.toggleStatusExpanded(statusId)
-                },
-                cardSpacing = cardSpacing,
-                invisible = !groupByStatus,
-                isExpanded = isStatusExpanded
+                }, cardSpacing = cardSpacing, invisible = !groupByStatus, isExpanded = isStatusExpanded
             )
 
             if (isStatusExpanded) {
