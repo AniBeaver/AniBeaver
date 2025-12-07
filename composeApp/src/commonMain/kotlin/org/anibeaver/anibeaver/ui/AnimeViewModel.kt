@@ -27,6 +27,7 @@ class AnimeViewModel(
     private val database = getRoomDatabase(databaseBuilder)
     val animeDao = database.getDao()
     private val tagDao: TagDao = database.tagDao()
+    private val referenceDao = database.referenceDao()
 
     val entryController = EntriesController
 
@@ -129,6 +130,19 @@ class AnimeViewModel(
                 entryData.genreIds.forEach { yield(EntryTagEntity(dbEntryId.toInt(), it)) }
             }.toList()
             tagDao.upsertEntryTags(tagLinks)
+
+            referenceDao.deleteByEntryId(dbEntryId.toInt())
+            val referenceEntities = entryData.references.mapIndexed { index, ref ->
+                org.anibeaver.anibeaver.db.entities.ReferenceEntity(
+                    entryId = dbEntryId.toInt(),
+                    name = ref.note,
+                    anilistId = ref.alId,
+                    orderIndex = index
+                )
+            }
+            if (referenceEntities.isNotEmpty()) {
+                referenceDao.insertAll(referenceEntities)
+            }
 
             EntriesController.updateEntry(dbEntryId.toInt(), entryData)
             EntriesController.entriesVersion++ // resort

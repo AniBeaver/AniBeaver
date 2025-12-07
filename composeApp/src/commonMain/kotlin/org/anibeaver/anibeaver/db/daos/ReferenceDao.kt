@@ -11,7 +11,7 @@ interface ReferenceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(references: List<ReferenceEntity>)
 
-    @Query("SELECT * FROM ReferenceEntity WHERE entryId = :entryId")
+    @Query("SELECT * FROM ReferenceEntity WHERE entryId = :entryId ORDER BY orderIndex ASC")
     suspend fun getByEntryId(entryId: Int): List<ReferenceEntity>
 
     @Query("DELETE FROM ReferenceEntity WHERE entryId = :entryId")

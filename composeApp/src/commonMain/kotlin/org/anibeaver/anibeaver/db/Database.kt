@@ -10,9 +10,11 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.db.daos.AnimeEntryDao
+import org.anibeaver.anibeaver.db.daos.ReferenceDao
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.entities.EntryTagEntity
+import org.anibeaver.anibeaver.db.entities.ReferenceEntity
 import org.anibeaver.anibeaver.db.entities.TagEntity
 
 
@@ -20,15 +22,17 @@ import org.anibeaver.anibeaver.db.entities.TagEntity
     entities = [
         AnimeEntryEntity::class,
         TagEntity::class,
-        EntryTagEntity::class
+        EntryTagEntity::class,
+        ReferenceEntity::class
     ],
-    version = 4
+    version = 5
 )
 @TypeConverters(DatabaseConverters::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): AnimeEntryDao
     abstract fun tagDao(): TagDao
+    abstract fun referenceDao(): ReferenceDao
 }
 
 class DatabaseConverters {

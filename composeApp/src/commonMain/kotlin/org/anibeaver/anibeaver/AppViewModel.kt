@@ -24,6 +24,7 @@ class AppViewModel(
     private val database = getRoomDatabase(databaseBuilder)
     private val animeDao = database.getDao()
     private val tagDao: TagDao = database.tagDao()
+    private val referenceDao = database.referenceDao()
     val entryController = EntriesController
     val entries = entryController.entries
 
@@ -55,6 +56,12 @@ class AppViewModel(
         for (entry in entries) {
             if (entryController.entries.any { it.id == entry.id }) continue
             val relation = tagsByEntry[entry.id]
+            val references = referenceDao.getByEntryId(entry.id).map {
+                org.anibeaver.anibeaver.core.datastructures.Reference(
+                    note = it.name,
+                    alId = it.anilistId
+                )
+            }
             entryController.addEntry(
                 entry.id,
                 EntryData(
@@ -77,7 +84,8 @@ class AppViewModel(
                     episodesTotal = entry.episodesTotal,
                     episodesProgress = entry.episodesProgress,
                     rewatches = entry.rewatches,
-                    type = EntryType.fromId(entry.type) ?: EntryData().type
+                    type = EntryType.fromId(entry.type) ?: EntryData().type,
+                    references = references
                 )
             )
         }
