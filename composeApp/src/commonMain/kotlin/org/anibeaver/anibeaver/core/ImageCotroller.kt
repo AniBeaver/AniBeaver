@@ -1,9 +1,8 @@
 package org.anibeaver.anibeaver.core
 
 import io.github.vinceglb.filekit.*
-import io.github.vinceglb.filekit.dialogs.FileKitMode
-import io.github.vinceglb.filekit.dialogs.FileKitType
-import io.github.vinceglb.filekit.dialogs.openFilePicker
+
+import io.github.vinceglb.filekit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.anibeaver.anibeaver.core.datastructures.Art
@@ -85,13 +84,7 @@ object ImageController {
             return destination
         }
 
-        val chosen: PlatformFile? = FileKit.openFilePicker(
-            mode = FileKitMode.Single, type = FileKitType.File(listOf("jpg", "jpeg", "png", "webp"))
-        )
-
-        if (chosen == null) {
-            return null
-        }
+        val chosen = FileController.chooseFile(listOf("jpg", "jpeg", "png", "webp")) ?: return null
 
         val resaved = resaveImage(chosen)
         return artFromImage(resaved, "custom")

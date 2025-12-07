@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.anibeaver.anibeaver.core.ExportController
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
@@ -15,6 +16,7 @@ import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.entities.EntryTagEntity
+import org.anibeaver.anibeaver.db.entities.ReferenceEntity
 import org.anibeaver.anibeaver.db.entities.TagEntity
 import org.anibeaver.anibeaver.db.getRoomDatabase
 import org.anibeaver.anibeaver.ui.modals.defaultFilterData
@@ -133,7 +135,7 @@ class AnimeViewModel(
 
             referenceDao.deleteByEntryId(dbEntryId.toInt())
             val referenceEntities = entryData.references.mapIndexed { index, ref ->
-                org.anibeaver.anibeaver.db.entities.ReferenceEntity(
+                ReferenceEntity(
                     entryId = dbEntryId.toInt(),
                     name = ref.note,
                     anilistId = ref.alId,
@@ -163,5 +165,119 @@ class AnimeViewModel(
             animeDao.deleteAll()
             EntriesController.clearAllEntries()
         }
+    }
+
+    //TODO: is this all (IMPORT/EXPORT funct) really supposed to be here? Maybe ExportController instead
+    suspend fun exportEntries(): String? {
+        val entries = animeDao.getAll()
+        val referencesMap = entries.associate { entry ->
+            entry.id to referenceDao.getByEntryId(entry.id)
+        }
+        val tags = tagDao.getAllTags()
+
+        return ExportController.exportToFile(entries, referencesMap, tags)
+    }
+
+    suspend fun importEntries(): Boolean {
+        val exportData = ExportController.importFromFile() ?: return false
+
+        return try {
+            animeDao.deleteAll()
+            EntriesController.clearAllEntries()
+
+            val tags = ExportController.convertTagsFromExportData(exportData.tags)
+            if (tags.isNotEmpty()) {
+                tagDao.upsertTags(tags)
+            }
+
+            val (entries, referencesMap) = ExportController.convertFromExportData(exportData)
+
+            entries.forEach { entry ->
+                importSingleEntry(entry, referencesMap[entry.id] ?: emptyList())
+            }
+
+            reloadTagsAndEntries()
+
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private suspend fun reloadTagsAndEntries() {
+        TagsController.clear()
+        val tags = tagDao.getAllTags()
+        TagsController.addAllTags(tags.map { tag ->
+            org.anibeaver.anibeaver.core.datastructures.Tag(
+                name = tag.name,
+                color = tag.color,
+                type = tag.type,
+                id = tag.id
+            )
+        })
+
+        val entryRelations = tagDao.getEntriesWithTags()
+        val tagsByEntry = entryRelations.associateBy { it.entry.id }
+        val entries = animeDao.getAll()
+
+        for (entry in entries) {
+            if (EntriesController.entries.any { it.id == entry.id }) continue
+            val relation = tagsByEntry[entry.id]
+            val references = referenceDao.getByEntryId(entry.id).map {
+                org.anibeaver.anibeaver.core.datastructures.Reference(
+                    note = it.name,
+                    alId = it.anilistId
+                )
+            }
+            EntriesController.addEntry(
+                entry.id,
+                EntryData(
+                    title = entry.animeName,
+                    releaseYear = entry.releaseYear,
+                    studioIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO)?.map { it.id }
+                        ?: entry.studioTagIds,
+                    authorIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.AUTHOR)?.map { it.id }
+                        ?: entry.authorTagIds,
+                    genreIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.GENRE)?.map { it.id }
+                        ?: entry.genreTagIds,
+                    description = entry.description,
+                    rating = entry.rating,
+                    status = Status.fromId(entry.status) ?: EntryData().status,
+                    releasingEvery = org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
+                    tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)?.map { it.id }
+                        ?: entry.customTagIds,
+                    coverArt = org.anibeaver.anibeaver.core.datastructures.Art(source = entry.coverArtSource, localPath = entry.coverArtLocalPath),
+                    bannerArt = org.anibeaver.anibeaver.core.datastructures.Art(source = entry.bannerArtSource, localPath = entry.bannerArtLocalPath),
+                    episodesTotal = entry.episodesTotal,
+                    episodesProgress = entry.episodesProgress,
+                    rewatches = entry.rewatches,
+                    type = org.anibeaver.anibeaver.core.datastructures.EntryType.fromId(entry.type) ?: EntryData().type,
+                    references = references
+                )
+            )
+        }
+    }
+
+    private suspend fun importSingleEntry(entry: AnimeEntryEntity, references: List<ReferenceEntity>) {
+        val entryId = animeDao.upsert(entry)
+
+        val tagLinks = buildTagLinks(entry, entryId.toInt())
+        if (tagLinks.isNotEmpty()) {
+            tagDao.upsertEntryTags(tagLinks)
+        }
+
+        if (references.isNotEmpty()) {
+            referenceDao.insertAll(references.map { it.copy(entryId = entryId.toInt()) })
+        }
+    }
+
+    private fun buildTagLinks(entry: AnimeEntryEntity, entryId: Int): List<EntryTagEntity> {
+        return sequence {
+            entry.customTagIds.forEach { yield(EntryTagEntity(entryId, it)) }
+            entry.studioTagIds.forEach { yield(EntryTagEntity(entryId, it)) }
+            entry.authorTagIds.forEach { yield(EntryTagEntity(entryId, it)) }
+            entry.genreTagIds.forEach { yield(EntryTagEntity(entryId, it)) }
+        }.toList()
     }
 }
