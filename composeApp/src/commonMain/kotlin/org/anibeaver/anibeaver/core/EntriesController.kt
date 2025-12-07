@@ -52,14 +52,28 @@ object EntriesController {
         }
     }
 
-    fun deleteEntry(id: Int?) {
+    /**
+     * WARNING: This only clears the in-memory entry.
+     * Call through AnimeViewModel.deleteAnimeEntry() to also delete from database.
+     */
+    internal fun deleteEntry(id: Int?) {
         if (id == null) {
             return
         }
         _entries.remove(id)
         entries.removeAll { it.id == id }
         entriesVersion++
-        //debugPrintIds()
+    }
+
+    /**
+     * WARNING: This only clears the in-memory entries.
+     * Call through AnimeViewModel.deleteAllEntries() to also delete from database.
+     */
+    internal fun clearAllEntries() {
+        _entries.clear()
+        entries.clear()
+        entriesVersion++
+        lastId = 0
     }
 
     fun getValidEntryId(): Int {

@@ -26,4 +26,7 @@ interface AnimeEntryDao {
 
     @Query("DELETE FROM AnimeEntryEntity WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM AnimeEntryEntity")
+    suspend fun deleteAll()
 }

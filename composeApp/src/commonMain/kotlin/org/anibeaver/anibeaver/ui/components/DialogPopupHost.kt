@@ -74,12 +74,12 @@ fun DialogPopupHost() {
                 show = true,
                 message = currentDialog.message,
                 onAccept = {
-                    currentDialog.onAccept()
                     DialogState.dismiss()
+                    currentDialog.onAccept()
                 },
                 onDiscard = {
-                    currentDialog.onDiscard()
                     DialogState.dismiss()
+                    currentDialog.onDiscard()
                 }
             )
         }

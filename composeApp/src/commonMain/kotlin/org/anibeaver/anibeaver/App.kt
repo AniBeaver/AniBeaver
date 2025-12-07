@@ -120,7 +120,7 @@ fun App(
                                 EntriesScreen(navController, forManga=true, viewModel = sharedAnimeViewModel)
                             }
                             composable(route = Screens.Settings.name) {
-                                SettingsScreen(navController)
+                                SettingsScreen(navController, sharedAnimeViewModel)
                             }
                             composable(route = Screens.Account.name) {
                                 AccountScreen(paddingValues, windowSizeClass)

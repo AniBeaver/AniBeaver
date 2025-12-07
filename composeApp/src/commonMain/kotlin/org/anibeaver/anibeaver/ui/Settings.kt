@@ -2,6 +2,7 @@ package org.anibeaver.anibeaver.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -9,16 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.core.ImageController
+import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.theme.Typography
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun SettingsScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController,
+    viewModel: AnimeViewModel
 ) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Settings", style = Typography.headlineLarge)
@@ -36,6 +35,52 @@ fun SettingsScreen(
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("Clean Up Unused Images")
+        }
+
+        Button(
+            onClick = {
+                showConfirmation(
+                    message = "Are you sure you want to delete ALL entries? This action cannot be undone!",
+                    onAccept = {
+                        showConfirmation(
+                            message = "This is your final warning! All entries will be permanently deleted. Continue?",
+                            onAccept = {
+                                viewModel.deleteAllEntries()
+                            }
+                        )
+                    }
+                )
+            },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Delete All Entries")
+        }
+
+        Button(
+            onClick = {
+                showConfirmation(
+                    message = "Are you sure you want to delete ALL entries? This action cannot be undone!",
+                    onAccept = {
+                        showConfirmation(
+                            message = "This is your final warning! All entries will be permanently deleted. Continue?",
+                            onAccept = {
+                                viewModel.deleteAllEntries()
+                            }
+                        )
+                    }
+                )
+            },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Import Entries")
+        }
+
+        Button(
+            onClick = {
+            },
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Export Entries")
         }
     }
 }

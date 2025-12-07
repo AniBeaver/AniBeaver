@@ -157,4 +157,11 @@ class AnimeViewModel(
             EntriesController.deleteEntry(entryId)
         }
     }
+
+    fun deleteAllEntries() {
+        viewModelScope.launch {
+            animeDao.deleteAll()
+            EntriesController.clearAllEntries()
+        }
+    }
 }
