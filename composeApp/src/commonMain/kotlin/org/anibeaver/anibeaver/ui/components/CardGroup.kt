@@ -1,5 +1,6 @@
 package org.anibeaver.anibeaver.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ fun CardGroup(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
+            modifier = Modifier.clickable(onClick = onCollapseClicked),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -45,7 +47,8 @@ fun CardGroup(
             )
         }
 
-        Button(
+        Button( //TODO: buytton might not be needed anymore
+
             onClick = onCollapseClicked,
             modifier = Modifier.height(32.dp).width(100.dp)
         ) {
