@@ -11,6 +11,7 @@ import org.koin.core.component.KoinComponent
 
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.ExportController
+import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.EntryData
@@ -33,6 +34,7 @@ class AppViewModel(
 
     init {
         viewModelScope.launch {
+            SettingsController.loadSettings()
             loadTags()
             getAnimeEntries()
             performAutoBackup()
@@ -113,7 +115,8 @@ class AppViewModel(
     private fun startPeriodicBackup() {
         viewModelScope.launch {
             while (isActive) {
-                delay(8 * 60 * 1000L) //TODO: make configurable - 8 minutes in milliseconds
+                val intervalMinutes = SettingsController.getBackupIntervalMinutes()
+                delay(intervalMinutes * 60 * 1000L)
                 performAutoBackup()
             }
         }

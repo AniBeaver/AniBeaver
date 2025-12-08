@@ -55,7 +55,6 @@ data class ExportTag(
 )
 
 object ExportController {
-    private const val MAX_BACKUPS = 16 //TODO: make configurable
 
     private val json = Json {
         prettyPrint = true
@@ -237,7 +236,8 @@ object ExportController {
         createBackupsDir()
 
         val backupFiles = getBackupFiles()
-        if (backupFiles.size >= MAX_BACKUPS) {
+        val maxBackups = SettingsController.getMaxBackupsToKeep()
+        if (backupFiles.size >= maxBackups) {
             deleteOldestBackup(backupFiles)
         }
 

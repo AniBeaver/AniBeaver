@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.coil.AsyncImage
 import org.anibeaver.anibeaver.core.ImageController
+import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
@@ -40,18 +41,18 @@ fun RatingText(
     } else "-"
 
     val ratingColor = when {
-        rating >= 10f -> Color(0xFFFFD700) // yellow
-        rating >= 9f -> Color(0xFFFFA500) // orange
-        rating >= 8f -> Color(0xFFCDFF00) // lime
-        rating >= 7f -> Color(0xFF7FFF00) // chartreuse
-        rating >= 6f -> Color(0xFF00FF00) // green
-        rating >= 5f -> Color(0xFF32CD32) // lime green
-        rating >= 4f -> Color(0xFF228B22) // forest green
-        rating >= 3f -> Color(0xFF006400) // dark green
-        rating >= 2f -> Color(0xFF008B8B) // dark cyan
-        rating >= 1f -> Color(0xFF4682B4) // steel blue
-        rating > 0f -> Color(0xFF4682B4) // steel blue (for ratings < 1)
-        else -> Color.White.copy(alpha = 0.9f) // no rating
+        rating >= 10f -> parseHexColor(SettingsController.getRatingColor(10) ?: "FFD700")
+        rating >= 9f -> parseHexColor(SettingsController.getRatingColor(9) ?: "FFA500")
+        rating >= 8f -> parseHexColor(SettingsController.getRatingColor(8) ?: "CDFF00")
+        rating >= 7f -> parseHexColor(SettingsController.getRatingColor(7) ?: "7FFF00")
+        rating >= 6f -> parseHexColor(SettingsController.getRatingColor(6) ?: "00FF00")
+        rating >= 5f -> parseHexColor(SettingsController.getRatingColor(5) ?: "32CD32")
+        rating >= 4f -> parseHexColor(SettingsController.getRatingColor(4) ?: "228B22")
+        rating >= 3f -> parseHexColor(SettingsController.getRatingColor(3) ?: "006400")
+        rating >= 2f -> parseHexColor(SettingsController.getRatingColor(2) ?: "008B8B")
+        rating >= 1f -> parseHexColor(SettingsController.getRatingColor(1) ?: "4682B4")
+        rating > 0f -> parseHexColor(SettingsController.getRatingColor(1) ?: "4682B4")
+        else -> Color.White.copy(alpha = 0.9f)
     }
 
     Text(
