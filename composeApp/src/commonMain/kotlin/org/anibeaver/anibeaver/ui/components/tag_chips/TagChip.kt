@@ -12,13 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun TagChip(
     label: String,
     color: Color = MaterialTheme.colorScheme.primary,
-    onDelete: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null,
+    fontSize: TextUnit = 14.sp
 ) {
     Surface(
         shape = MaterialTheme.shapes.small,
@@ -28,18 +31,22 @@ fun TagChip(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
         ) {
-            Text(label, color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                label,
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = fontSize
+            )
             if (onDelete != null) {
-                Spacer(Modifier.size(4.dp))
+                Spacer(Modifier.size(3.dp))
                 Text(
                     "✕",
                     color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = fontSize,
                     modifier = Modifier
-                        .size(16.dp)
                         .clickable { onDelete() }
-                        .padding(start = 2.dp)
+                        .padding(start = 1.dp)
                 )
             }
         }

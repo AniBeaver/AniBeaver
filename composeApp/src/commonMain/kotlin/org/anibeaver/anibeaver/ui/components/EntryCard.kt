@@ -25,7 +25,74 @@ import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.Art
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.ui.ImageInput
+import org.anibeaver.anibeaver.ui.components.tag_chips.TagChip
 import kotlin.math.round
+
+@Composable
+fun RatingText(
+    rating: Float,
+    modifier: Modifier = Modifier,
+    fontSize: androidx.compose.ui.unit.TextUnit = 18.sp
+) {
+    val ratingText = if (rating > 0f) {
+        val rounded = (round(rating * 10f) / 10f)
+        if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
+    } else "-"
+
+    val ratingColor = when {
+        rating >= 10f -> Color(0xFFFFD700) // yellow
+        rating >= 9f -> Color(0xFFFFA500) // orange
+        rating >= 8f -> Color(0xFFCDFF00) // lime
+        rating >= 7f -> Color(0xFF7FFF00) // chartreuse
+        rating >= 6f -> Color(0xFF00FF00) // green
+        rating >= 5f -> Color(0xFF32CD32) // lime green
+        rating >= 4f -> Color(0xFF228B22) // forest green
+        rating >= 3f -> Color(0xFF006400) // dark green
+        rating >= 2f -> Color(0xFF008B8B) // dark cyan
+        rating >= 1f -> Color(0xFF4682B4) // steel blue
+        rating > 0f -> Color(0xFF4682B4) // steel blue (for ratings < 1)
+        else -> Color.White.copy(alpha = 0.9f) // no rating
+    }
+
+    Text(
+        "$ratingText★",
+        fontSize = fontSize,
+        color = ratingColor,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun TagChipRow(
+    label: String,
+    tags: List<org.anibeaver.anibeaver.core.datastructures.Tag>,
+    modifier: Modifier = Modifier
+) {
+    if (tags.isEmpty()) return
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            "$label: ",
+            fontSize = 11.sp,
+            color = Color.White.copy(alpha = 0.85f)
+        )
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            tags.forEach { tag ->
+                TagChip(
+                    label = tag.name,
+                    color = parseHexColor(tag.color).copy(alpha = 0.8f),
+                    fontSize = 11.sp
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun BannerBackground(
@@ -82,13 +149,13 @@ fun EntryCard(
     val description = entry.entryData.description
 
     val studioTags = entry.entryData.studioIds
-        .mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+        .mapNotNull { id -> TagsController.tags.find { it.id == id } }
     val authorTags = entry.entryData.authorIds
-        .mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+        .mapNotNull { id -> TagsController.tags.find { it.id == id } }
     val genreTags = entry.entryData.genreIds
-        .mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+        .mapNotNull { id -> TagsController.tags.find { it.id == id } }
     val customTags = entry.entryData.tagIds
-        .mapNotNull { id -> TagsController.tags.find { it.id == id }?.name }
+        .mapNotNull { id -> TagsController.tags.find { it.id == id } }
 
     Card(shape = RoundedCornerShape(6.dp)) {
         Box(
@@ -123,16 +190,8 @@ fun EntryCard(
                             .padding(start = 6.dp, top = 4.dp, end = 4.dp)
                     )
 
-                    val rating = entry.entryData.rating
-                    val ratingText = if (rating > 0f) {
-                        val rounded = (round(rating * 10f) / 10f)
-                        if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
-                    } else "-"
-
-                    Text(
-                        "$ratingText★",
-                        fontSize = 18.sp,
-                        color = Color.White.copy(alpha = 0.9f),
+                    RatingText(
+                        rating = entry.entryData.rating,
                         modifier = Modifier.padding(end = 4.dp, top = 3.dp)
                     )
                 }
@@ -170,52 +229,17 @@ fun EntryCard(
                         val rewatches = entry.entryData.rewatches
 
                         Text(
-                            "$epsProgress/$epsTotal eps (${rewatches}x) • $year • $schedule • $status",
+                            "$epsProgress/$epsTotal eps (${rewatches}x) • $year • $schedule • [$status]",
                             fontSize = 11.sp,
                             color = Color.White.copy(alpha = 0.9f),
                             maxLines = 1,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                         )
 
-                        if (genreTags.isNotEmpty()) {
-                            Text(
-                                "Genres: ${genreTags.joinToString(", ")}",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.85f),
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        }
-
-                        if (studioTags.isNotEmpty()) {
-                            Text(
-                                "Studios: ${studioTags.joinToString(", ")}",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.85f),
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        }
-
-                        if (authorTags.isNotEmpty()) {
-                            Text(
-                                "Authors: ${authorTags.joinToString(", ")}",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.85f),
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        }
-
-                        if (customTags.isNotEmpty()) {
-                            Text(
-                                "Tags: ${customTags.joinToString(", ")}",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.8f),
-                                maxLines = 2,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        }
+                        TagChipRow("Genres", genreTags)
+                        TagChipRow("Studios", studioTags)
+                        TagChipRow("Authors", authorTags)
+                        TagChipRow("Tags", customTags)
 
                         if (description.isNotBlank()) {
                             Text(
