@@ -24,7 +24,8 @@ data class Settings(
         4 to "228B22",  // forest green
         3 to "006400",  // dark green
         2 to "008B8B",  // dark cyan
-        1 to "4682B4"   // steel blue
+        1 to "4682B4",  // steel blue
+        0 to "FFFFFF"   // white (no rating)
     )
 )
 
@@ -54,10 +55,11 @@ object SettingsController {
             }
 
             val jsonString = settingsFile.readBytes().decodeToString()
-            settings = json.decodeFromString<Settings>(jsonString)
+            settings = json.decodeFromString(Settings.serializer(), jsonString)
             println("[SettingsController] Settings loaded successfully")
         } catch (e: Exception) {
             println("[SettingsController] Failed to load settings: ${e.message}")
+            e.printStackTrace()
             // Keep default settings
         }
     }
@@ -65,11 +67,12 @@ object SettingsController {
     suspend fun saveSettings() {
         try {
             createSettingsDir()
-            val jsonString = json.encodeToString(settings)
+            val jsonString = json.encodeToString(Settings.serializer(), settings)
             settingsFile.write(jsonString.toByteArray())
             println("[SettingsController] Settings saved successfully")
         } catch (e: Exception) {
             println("[SettingsController] Failed to save settings: ${e.message}")
+            e.printStackTrace()
         }
     }
 

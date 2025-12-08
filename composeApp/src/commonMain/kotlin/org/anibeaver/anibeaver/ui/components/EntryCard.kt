@@ -40,19 +40,21 @@ fun RatingText(
         if (rounded % 1f == 0f) "${rounded.toInt()}.0" else rounded.toString()
     } else "-"
 
+    val ratingColors = SettingsController.settings.ratingColors
+
     val ratingColor = when {
-        rating >= 10f -> parseHexColor(SettingsController.getRatingColor(10) ?: "FFD700")
-        rating >= 9f -> parseHexColor(SettingsController.getRatingColor(9) ?: "FFA500")
-        rating >= 8f -> parseHexColor(SettingsController.getRatingColor(8) ?: "CDFF00")
-        rating >= 7f -> parseHexColor(SettingsController.getRatingColor(7) ?: "7FFF00")
-        rating >= 6f -> parseHexColor(SettingsController.getRatingColor(6) ?: "00FF00")
-        rating >= 5f -> parseHexColor(SettingsController.getRatingColor(5) ?: "32CD32")
-        rating >= 4f -> parseHexColor(SettingsController.getRatingColor(4) ?: "228B22")
-        rating >= 3f -> parseHexColor(SettingsController.getRatingColor(3) ?: "006400")
-        rating >= 2f -> parseHexColor(SettingsController.getRatingColor(2) ?: "008B8B")
-        rating >= 1f -> parseHexColor(SettingsController.getRatingColor(1) ?: "4682B4")
-        rating > 0f -> parseHexColor(SettingsController.getRatingColor(1) ?: "4682B4")
-        else -> Color.White.copy(alpha = 0.9f)
+        rating >= 10f -> parseHexColor(ratingColors[10] ?: "FFD700")
+        rating >= 9f -> parseHexColor(ratingColors[9] ?: "FFA500")
+        rating >= 8f -> parseHexColor(ratingColors[8] ?: "CDFF00")
+        rating >= 7f -> parseHexColor(ratingColors[7] ?: "7FFF00")
+        rating >= 6f -> parseHexColor(ratingColors[6] ?: "00FF00")
+        rating >= 5f -> parseHexColor(ratingColors[5] ?: "32CD32")
+        rating >= 4f -> parseHexColor(ratingColors[4] ?: "228B22")
+        rating >= 3f -> parseHexColor(ratingColors[3] ?: "006400")
+        rating >= 2f -> parseHexColor(ratingColors[2] ?: "008B8B")
+        rating >= 1f -> parseHexColor(ratingColors[1] ?: "4682B4")
+        rating > 0f -> parseHexColor(ratingColors[1] ?: "4682B4")
+        else -> parseHexColor(ratingColors[0] ?: "FFFFFF")
     }
 
     Text(
