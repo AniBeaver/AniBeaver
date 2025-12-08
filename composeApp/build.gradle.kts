@@ -15,8 +15,7 @@ plugins {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
@@ -78,6 +77,7 @@ kotlin {
             implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Extended
 
+
             implementation("io.insert-koin:koin-core:4.1.0")
 
             implementation("io.github.vinceglb:filekit-core:0.12.0")
@@ -97,8 +97,9 @@ kotlin {
             implementation("net.java.dev.jna:jna:5.14.0")
             implementation("net.java.dev.jna:jna-platform:5.14.0")
 
-        }
-        /*
+            implementation("com.attafitamim.krop:core-desktop:0.3.0-alpha01")
+            implementation("com.attafitamim.krop:ui-desktop:0.3.0-alpha01")
+        }/*
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
             implementation("com.liftric:kvault:1.12.0")

@@ -22,8 +22,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.ui.*
 import org.anibeaver.anibeaver.ui.components.DialogPopupHost
+import org.anibeaver.anibeaver.ui.components.ImageCropperHost
 import org.anibeaver.anibeaver.ui.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.layout.Sidebar
 import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
@@ -152,6 +154,11 @@ fun App(
             )
 
             DialogPopupHost()
+            ImageCropperHost(
+                onImageCropped = { bitmap ->
+                    ImageController.handleCroppedImage(bitmap)
+                }
+            )
         }
     }
 }

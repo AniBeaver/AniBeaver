@@ -1,16 +1,29 @@
 package org.anibeaver.anibeaver.core
 
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import io.github.vinceglb.filekit.*
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.anibeaver.anibeaver.core.datastructures.Art
 import java.net.URL
 import java.util.*
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 object ImageController {
     val filesDir = FileKit.filesDir
     val imagesDir = filesDir / "images"
+
+    private var pendingCropCallback: ((ImageBitmap?) -> Unit)? = null
+
+    fun handleCroppedImage(bitmap: ImageBitmap?) {
+        pendingCropCallback?.invoke(bitmap)
+        pendingCropCallback = null
+    }
 
     fun createImagesDir() {
         FileController.createDirectory(imagesDir)
@@ -65,28 +78,43 @@ object ImageController {
     }
 
     suspend fun chooseAndResaveNewArt(): Art? {
-        suspend fun resaveImage(image: PlatformFile): PlatformFile {
-            createImagesDir()
-
-            //if already in the directory
-            val parent = image.parent()
-            if (parent != null) {
-                if (parent.absolutePath() == imagesDir.absolutePath()) {
-                    return image
-                }
-            }
-
-            val extension = getExtensionFromFile(image)
-            val destination = getDestinationFile(extension)
-            image.copyTo(destination)
-            return destination
-        }
-
         val chosen = FileController.chooseFile(listOf("jpg", "jpeg", "png", "webp")) ?: return null
 
-        val resaved = resaveImage(chosen)
-        return artFromImage(resaved, "custom")
+        // Trigger crop dialog
+        ImageCropperController.requestCrop(chosen)
+
+        // Wait for crop result via callback
+        return kotlinx.coroutines.suspendCancellableCoroutine { continuation ->
+            pendingCropCallback = { croppedBitmap ->
+                if (croppedBitmap != null) {
+                    kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val savedFile = saveCroppedImage(croppedBitmap)
+                            val art = artFromImage(savedFile, "custom")
+                            continuation.resume(art) {}
+                        } catch (e: Exception) {
+                            continuation.resume(null) {}
+                        }
+                    }
+                } else {
+                    continuation.resume(null) {}
+                }
+            }
+        }
     }
+
+    private suspend fun saveCroppedImage(croppedBitmap: ImageBitmap): PlatformFile = withContext(Dispatchers.IO) {
+        createImagesDir()
+        val destination = getDestinationFile(".png")
+
+        val bufferedImage = croppedBitmap.toAwtImage()
+        val outputStream = ByteArrayOutputStream()
+        ImageIO.write(bufferedImage, "png", outputStream)
+        destination.write(outputStream.toByteArray())
+
+        destination
+    }
+
 
     suspend fun downloadNewArt(link: String): Art {
         createImagesDir()
