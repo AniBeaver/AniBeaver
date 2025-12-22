@@ -19,7 +19,7 @@ You can view our detailed roadmap and feature progress on our [GitHub Project Bo
 - [x] Remove Anime entries
 - [x] Edit Anime entries
 
-## Technologies Stack
+## Tech Stack
 
 - Kotlin (Multiplatform)
 - JetBrains Compose Multiplatform
