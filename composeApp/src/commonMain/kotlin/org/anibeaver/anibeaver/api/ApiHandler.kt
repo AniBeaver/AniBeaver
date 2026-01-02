@@ -279,5 +279,20 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
                 }
             }""",
         associateClass = UserProfileQuery::class
+    ),
+    PAGE(
+        query = """
+            query Query($page: Int, $perPage: Int, $search: String) {
+                Page(page: $page, perPage: $perPage) {
+                    media(search: $search, type: $type) {
+                        title {
+                            english
+                            native
+                        }
+                        id
+                    }
+                }
+            }""",
+        associateClass = PageQuery::class
     )
 }
