@@ -4,6 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,16 +25,18 @@ import org.anibeaver.anibeaver.NavItemPosition
 import org.anibeaver.anibeaver.Screens
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Sidebar(
     navController: NavHostController = rememberNavController(),
     colors: ColorScheme,
-    onCreateEntry: (forManga: Boolean) -> Unit = {}
+    onCreateEntry: (forManga: Boolean) -> Unit = {},
+    onQuickSearch: (forManga: Boolean, onSelected: (String) -> Unit) -> Unit = { _, _ -> }
 ) {
     val startDestination = Screens.Anime
     var selectedDestination by rememberSaveable { mutableStateOf(startDestination.name) }
 
-    // Update bottom bar when destination changes
+    // update bottom bar when destination changes
     navController.addOnDestinationChangedListener { _, destination, _ ->
         if (destination.route == selectedDestination) return@addOnDestinationChangedListener
         selectedDestination = destination.route ?: startDestination.name
@@ -49,7 +53,7 @@ fun Sidebar(
         ) {
             Image(
                 painter = painterResource(Res.drawable.abvr_icon),
-                contentDescription = null, // decorative element
+                contentDescription = null,
                 modifier = Modifier.size(60.dp)
             )
 
@@ -63,23 +67,50 @@ fun Sidebar(
                     selectedDestination
                 ) { newDest -> selectedDestination = newDest }
 
-                FilledIconButton(
-                    onClick = {
-                        when (selectedDestination) {
-                            Screens.Anime.name -> onCreateEntry(false)
-                            Screens.Manga.name -> onCreateEntry(true)
-                            else -> {} // Do nothing on other tabs
-                        }
-                    },
-                    colors = IconButtonDefaults.filledIconButtonColors(),
-                    shape = ShapeDefaults.Medium,
-                    modifier = Modifier.padding(top = 12.dp).size(48.dp)
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    tooltip = { PlainTooltip { Text("Quick add from AniList") } },
+                    state = rememberTooltipState()
                 ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = "Create new entry",
-                        modifier = Modifier.size(28.dp)
-                    )
+                    FilledIconButton(
+                        onClick = {
+                            when (selectedDestination) {
+                                Screens.Anime.name -> onQuickSearch(false) { }
+                                Screens.Manga.name -> onQuickSearch(true) { }
+                                else -> { }
+                            }
+                        },
+                        colors = IconButtonDefaults.filledIconButtonColors(),
+                        shape = ShapeDefaults.Medium,
+                        modifier = Modifier.size(52.dp)
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Icon(Icons.Filled.Search, null, Modifier.size(22.dp).offset(y = (-7).dp))
+                            Icon(Icons.Filled.Add, null, Modifier.size(22.dp).offset(x = (-7).dp, y = 5.dp))
+                            Icon(Icons.Filled.AutoAwesome, null, Modifier.size(22.dp).offset(x = 7.dp, y = 5.dp))
+                        }
+                    }
+                }
+
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    tooltip = { PlainTooltip { Text("Manually create entry") } },
+                    state = rememberTooltipState()
+                ) {
+                    FilledIconButton(
+                        onClick = {
+                            when (selectedDestination) {
+                                Screens.Anime.name -> onCreateEntry(false)
+                                Screens.Manga.name -> onCreateEntry(true)
+                                else -> { }
+                            }
+                        },
+                        colors = IconButtonDefaults.filledIconButtonColors(),
+                        shape = ShapeDefaults.Medium,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.Filled.Add, "Create new entry", Modifier.size(28.dp))
+                    }
                 }
             }
             Column {
@@ -137,9 +168,7 @@ fun SidebarNavItem(
 ) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = {
-            PlainTooltip { Text(destination.name) }
-        },
+        tooltip = { PlainTooltip { Text(destination.name) } },
         state = rememberTooltipState()
     ) {
         NavigationRailItem(
@@ -150,12 +179,7 @@ fun SidebarNavItem(
                     setDestination(destination.name)
                 }
             },
-            icon = {
-                Icon(
-                    destination.icon,
-                    contentDescription = destination.title,
-                )
-            }
+            icon = { Icon(destination.icon, destination.title) }
         )
     }
 }

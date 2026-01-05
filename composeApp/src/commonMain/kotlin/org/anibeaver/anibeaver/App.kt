@@ -24,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.anibeaver.anibeaver.ui.*
 import org.anibeaver.anibeaver.ui.components.DialogPopupHost
+import org.anibeaver.anibeaver.ui.components.anilist_searchbar.SearchOverlay
 import org.anibeaver.anibeaver.ui.layout.BottomNavBar
 import org.anibeaver.anibeaver.ui.layout.Sidebar
 import org.anibeaver.anibeaver.ui.modals.EditEntryPopup
@@ -72,6 +73,11 @@ fun App(
 
     var showEntryPopup by remember { mutableStateOf(false) }
     var entryPopupForManga by remember { mutableStateOf(false) }
+    var showQuickSearch by remember { mutableStateOf(false) }
+    var quickSearchForManga by remember { mutableStateOf(false) }
+    var quickSearchSelectedId by remember { mutableStateOf("") }
+    var forceShowAutofill by remember { mutableStateOf(false) }
+    var alIdToPass by remember { mutableStateOf("") }
 
     AniBeaverTheme(darkTheme = true) {
         Scaffold { padding ->
@@ -83,6 +89,10 @@ fun App(
                         onCreateEntry = { forManga ->
                             entryPopupForManga = forManga
                             showEntryPopup = true
+                        },
+                        onQuickSearch = { forManga, onSelected ->
+                            quickSearchForManga = forManga
+                            showQuickSearch = true
                         }
                     )
                 }
@@ -140,16 +150,36 @@ fun App(
 
             EditEntryPopup(
                 show = showEntryPopup,
-                onDismiss = { showEntryPopup = false },
+                onDismiss = {
+                    showEntryPopup = false
+                    forceShowAutofill = false
+                    alIdToPass = ""
+                },
                 onConfirm = { entryData ->
                     sharedAnimeViewModel.upsertAnimeEntry(null, entryData)
                     showEntryPopup = false
+                    forceShowAutofill = false
+                    alIdToPass = ""
                 },
-                forceShowAutofillPopup = false,
-                alIdToBePassed = "",
+                forceShowAutofillPopup = forceShowAutofill,
+                alIdToBePassed = alIdToPass,
                 initialValues = null,
                 forManga = entryPopupForManga
             )
+
+            if (showQuickSearch) {
+                SearchOverlay(
+                    type = if (quickSearchForManga) "MANGA" else "ANIME",
+                    onDismiss = { showQuickSearch = false },
+                    onSelect = { id, name ->
+                        showQuickSearch = false
+                        alIdToPass = id
+                        forceShowAutofill = true
+                        entryPopupForManga = quickSearchForManga
+                        showEntryPopup = true
+                    }
+                )
+            }
 
             DialogPopupHost()
         }
