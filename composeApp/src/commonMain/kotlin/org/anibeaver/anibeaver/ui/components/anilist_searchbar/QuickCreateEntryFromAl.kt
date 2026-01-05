@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,8 +18,10 @@ import org.anibeaver.anibeaver.core.AutofillController
 fun QuickCreateEntryFromAl(
     quickAlId: String,
     setQuickAlId: (String) -> Unit,
-    openQuickEntryCreation: () -> Unit
+    openQuickEntryCreation: () -> Unit,
+    forManga: Boolean = false
 ) {
+    var selectedName by remember { mutableStateOf("") }
 
     Card(
         modifier = Modifier
@@ -33,7 +35,15 @@ fun QuickCreateEntryFromAl(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AniListSearchBar(quickAlId, setQuickAlId)
+            AniListSearchBar(
+                alId = quickAlId,
+                selectedName = selectedName,
+                onSelectionChange = { id, name ->
+                    setQuickAlId(id)
+                    selectedName = name
+                },
+                type = if (forManga) "MANGA" else "ANIME"
+            )
             Column {
                 Button(onClick = {
                     if (AutofillController.idIsValid(quickAlId)) {

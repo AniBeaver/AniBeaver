@@ -163,7 +163,8 @@ fun AutofillPopup(
                             }
                         } else null,
                         isPriority = idx == priorityIndex,
-                        onPrioritySelected = { priorityIndex = idx }
+                        onPrioritySelected = { priorityIndex = idx },
+                        forManga = forManga
                     )
                     }
                 }

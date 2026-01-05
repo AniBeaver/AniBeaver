@@ -87,7 +87,7 @@ fun EntriesScreen(
             ) {
                 QuickCreateEntryFromAl(quickAlId, { newQuickAlId -> quickAlId = newQuickAlId }, {
                     showEntryPopup(null, true)
-                })
+                }, forManga)
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

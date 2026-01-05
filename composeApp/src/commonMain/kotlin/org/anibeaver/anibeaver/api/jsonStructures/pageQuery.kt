@@ -15,5 +15,17 @@ data class PageQueryData(
 
 @Serializable
 data class Page(
-    val media: List<Media>
+    val media: List<PageMedia>
+)
+
+@Serializable
+data class PageMedia(
+    val id: Int,
+    val title: PageTitle
+)
+
+@Serializable
+data class PageTitle(
+    val english: String?,
+    val native: String?
 )

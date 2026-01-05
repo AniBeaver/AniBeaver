@@ -282,9 +282,9 @@ enum class RequestType(val query : String, val associateClass : KClass<*>){
     ),
     PAGE(
         query = """
-            query Query($page: Int, $perPage: Int, $search: String) {
-                Page(page: $page, perPage: $perPage) {
-                    media(search: $search, type: $type) {
+            query Query(${'$'}page: Int, ${'$'}perPage: Int, ${'$'}search: String, ${'$'}type: MediaType) {
+                Page(page: ${'$'}page, perPage: ${'$'}perPage) {
+                    media(search: ${'$'}search, type: ${'$'}type) {
                         title {
                             english
                             native

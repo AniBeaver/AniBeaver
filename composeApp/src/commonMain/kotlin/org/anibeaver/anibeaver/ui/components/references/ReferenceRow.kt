@@ -7,6 +7,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,8 +32,11 @@ fun ReferenceRow(
     onMoveDown: (() -> Unit)? = null,
     isPriority: Boolean = false,
     onPrioritySelected: (() -> Unit)? = null,
+    forManga: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    var selectedName by remember { mutableStateOf("") }
+
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         RadioButton(
             selected = isPriority,
@@ -52,8 +59,13 @@ fun ReferenceRow(
         val uriHandler = LocalUriHandler.current
 
         AniListSearchBar(
-            alId,
-            onAlIdChange
+            alId = alId,
+            selectedName = selectedName,
+            onSelectionChange = { id, name ->
+                onAlIdChange(id)
+                selectedName = name
+            },
+            type = if (forManga) "MANGA" else "ANIME"
         )
         Box(
             modifier = Modifier.width(56.dp).align(Alignment.CenterVertically),
