@@ -89,6 +89,10 @@ object ImageController {
     }
 
     suspend fun downloadNewArt(link: String): Art {
+        if (link.isBlank()) {
+            return Art("empty", "")
+        }
+
         createImagesDir()
         val imageBytes = downloadImageBytes(link)
         val extension = getExtensionFromLink(link)

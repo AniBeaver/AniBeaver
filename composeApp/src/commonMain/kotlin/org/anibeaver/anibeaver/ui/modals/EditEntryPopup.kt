@@ -117,8 +117,6 @@ fun EditEntryPopup(
     suspend fun applyAutofillSelection(selection: AutofillResultSelection) {
         fun massCreateAndApplyTags(tagList: List<String>, newTagType: TagType) {
             for (newTagName in tagList) {
-                //TODO: in other places: maybe don't allow creating a tag by the same name as an existing one; Also add tag searching/sorting in tag menu (UI)
-
                 val newTagId = TagsController.safeCreateByName(newTagName, "#ffffff", newTagType)
                 applyTagToThisEntry(newTagId, newTagType)
             }
@@ -131,8 +129,23 @@ fun EditEntryPopup(
         if (selection.episodes != null) {
             episodesTotal = selection.episodes
         }
-        if (selection.cover != null) coverArt = ImageController.downloadNewArt(selection.cover)
-        if (selection.banner != null) bannerArt = ImageController.downloadNewArt(selection.banner)
+
+        try {
+            if (selection.cover != null && selection.cover.isNotBlank()) {
+                coverArt = ImageController.downloadNewArt(selection.cover)
+            }
+        } catch (e: Exception) {
+            showAlert("Failed to download cover image: ${e.message ?: "Unknown error"}")
+        }
+
+        try {
+            if (selection.banner != null && selection.banner.isNotBlank()) {
+                bannerArt = ImageController.downloadNewArt(selection.banner)
+            }
+        } catch (e: Exception) {
+            showAlert("Failed to download banner image: ${e.message ?: "Unknown error"}")
+        }
+
         massCreateAndApplyTags(selection.genres, TagType.GENRE)
         massCreateAndApplyTags(selection.studios, TagType.STUDIO)
         massCreateAndApplyTags(selection.tags, TagType.CUSTOM)
