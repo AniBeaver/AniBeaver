@@ -7,6 +7,22 @@ We strive to build an application which has good user experience, modern and cle
 
 If you want to help build the project (implementation, design, or just giving feedback/ideas) or want to chat with us, feel free to join our [Discord server](https://discord.gg/fknGNDGKJB). Keep in mind that we are currently in the process of building out an MVP, so we might not accept any external code contributions for the time being.
 
+## Quick Overview
+
+With AniBeaver, you can keep track of anime you watched and manga you've read by adding them as Entries. Along with your own rating and custom information like name, year released, studio/author etc, you can filter your entries by custom tags, set your own cover art, etc, track your episode/chapter progress, etc.
+By default, Entries are grouped by your current status like "Watching", "Planning" or "Dropped".
+
+Everything from the animation studios to the cover and banner artworks can be automatically ineferred and from the AniList database via a smart Reference feature. Optionally, an entry can have references to multiple seasons of the same series.
+
+With Quick Add, all you have to do is type in an anime name, and a Reference (along with all inferrable information) will be autocompleted. All that's left is to leave your rating, progress/status and Confirm!
+
+AniBeaver is offline-first, which means it is used locally on your computer and never records or uploads your data - only thing it does with the internet is pull data on anime entries for the autofill from AniList.
+
+This is a Beta version. There are plans for more functionality (sync with AniList, better navigation, UI rework, etc) and more compatability (Android, iOS beside Windows, Linux and MacOS support).
+
+Any and all concerns/suggestions with functionality/user experience are welcome in our Discord.
+
+
 ## Roadmap
 
 You can view our detailed roadmap and feature progress on our [GitHub Project Board](https://github.com/AniBeaver/AniBeaver/projects).
