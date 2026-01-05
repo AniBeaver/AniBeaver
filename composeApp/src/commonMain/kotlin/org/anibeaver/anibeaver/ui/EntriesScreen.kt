@@ -72,7 +72,7 @@ fun EntriesScreen(
         Column(
             Modifier.fillMaxSize()
         ) {
-            Text(if (forManga) "Anime" else "Manga", style = Typography.headlineLarge)
+            Text(if (forManga) "Manga" else "Anime", style = Typography.headlineLarge)
 
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
