@@ -80,6 +80,9 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
             val jsonBody : T = response.body()
             valueSetter.callValueSet(jsonBody)
         }
+        catch(e: kotlinx.coroutines.CancellationException) {
+            throw e
+        }
         catch(e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
@@ -102,10 +105,13 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
             val jsonBody : T = response.body()
             valueSetter.callValueSet(jsonBody)
         }
+        catch(e: kotlinx.coroutines.CancellationException) {
+            throw e
+        }
         catch(e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
-            throw e // Re-throw so can be passed to alert
+            throw e
         }
     }
 

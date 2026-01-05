@@ -10,11 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
@@ -36,15 +36,20 @@ fun AniListSearchBar(
             ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         } else {
             ButtonDefaults.buttonColors()
-        }
+        },
+        modifier = Modifier.width(120.dp).heightIn(min = 40.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            if (selectedName.isNotEmpty()) {
-                "✓ $selectedName"
-            } else {
-                "Quick search"
+            text = when {
+                selectedName.isNotEmpty() -> "✓ $selectedName"
+                alId.isNotEmpty() -> "ID: $alId"
+                else -> "Quick search"
             },
-            fontSize = 12.sp
+            fontSize = 11.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 12.sp
         )
     }
 
@@ -68,43 +73,45 @@ fun SearchOverlay(
     onSelect: (String, String) -> Unit
 ) {
     val apiHandler: ApiHandler = GlobalContext.get().get()
-    val scope = rememberCoroutineScope()
 
     var searchText by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf<List<SearchSuggestion>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
 
-    fun performSearch(query: String) {
-        if (query.isEmpty()) {
+    LaunchedEffect(searchText) {
+        if (searchText.isEmpty()) {
             suggestions = emptyList()
-            return
+            isSearching = false
+            return@LaunchedEffect
         }
 
-        isSearching = true
-        scope.launch {
-            try {
-                apiHandler.makeRequest(
-                    variables = mapOf(
-                        "page" to "1",
-                        "perPage" to "10",
-                        "search" to query,
-                        "type" to type
-                    ),
-                    valueSetter = ValueSetter { pageQuery: PageQuery ->
-                        suggestions = pageQuery.data.page.media.map { media ->
-                            SearchSuggestion(
-                                id = media.id.toString(),
-                                title = media.title.english ?: media.title.native ?: "Unknown"
-                            )
-                        }
-                        isSearching = false
-                    },
-                    requestType = RequestType.PAGE
-                )
-            } catch (e: Exception) {
-                isSearching = false
-                suggestions = emptyList()
-            }
+        try {
+            kotlinx.coroutines.delay(300)
+            isSearching = true
+
+            apiHandler.makeRequest(
+                variables = mapOf(
+                    "page" to "1",
+                    "perPage" to "10",
+                    "search" to searchText,
+                    "type" to type
+                ),
+                valueSetter = ValueSetter { pageQuery: PageQuery ->
+                    suggestions = pageQuery.data.page.media.map { media ->
+                        SearchSuggestion(
+                            id = media.id.toString(),
+                            title = media.title.english ?: media.title.native ?: "Unknown"
+                        )
+                    }
+                    isSearching = false
+                },
+                requestType = RequestType.PAGE
+            )
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Silently ignore cancellation - this is expected when typing
+        } catch (e: Exception) {
+            isSearching = false
+            suggestions = emptyList()
         }
     }
 
@@ -123,7 +130,10 @@ fun SearchOverlay(
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .width(600.dp)
-                    .clickable(enabled = false) { },
+                    .clickable(
+                        enabled = true,
+                        onClick = { }
+                    ),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(
@@ -149,7 +159,6 @@ fun SearchOverlay(
                         value = searchText,
                         onValueChange = { newValue ->
                             searchText = newValue
-                            performSearch(newValue)
                         },
                         placeholder = { Text("Type to search...") },
                         singleLine = true,

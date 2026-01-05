@@ -62,8 +62,9 @@ fun EditEntryPopup(
     var bannerArt: Art by remember { mutableStateOf(initialValues?.bannerArt ?: Art("empty", "")) }
     var coverArt: Art by remember { mutableStateOf(initialValues?.coverArt ?: Art("empty", "")) }
 
-    // Reset fields when initialValues changes (for editing)
-    LaunchedEffect(initialValues) {
+    LaunchedEffect(initialValues, show) {
+        if (!show) return@LaunchedEffect
+
         animeName = initialValues?.title ?: ""
         releaseYear = initialValues?.releaseYear ?: "2010"
         studioIds = initialValues?.studioIds ?: emptyList()
@@ -80,10 +81,14 @@ fun EditEntryPopup(
         rewatches = initialValues?.rewatches ?: 1
         bannerArt = initialValues?.bannerArt ?: Art("empty", "")
         coverArt = initialValues?.coverArt ?: Art("empty", "")
+    }
 
-        if (forceShowAutofillPopup) {
+    LaunchedEffect(forceShowAutofillPopup, alIdToBePassed) {
+        if (forceShowAutofillPopup && alIdToBePassed.isNotBlank()) {
             showAutofillPopup = true
-            if (references.isEmpty()) references = listOf(Reference(if (!forManga) "Se1" else "Main", alIdToBePassed))
+            if (references.isEmpty()) {
+                references = listOf(Reference(if (!forManga) "Se1" else "Main", alIdToBePassed))
+            }
         }
     }
 

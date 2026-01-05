@@ -151,9 +151,8 @@ fun EntriesScreen(
                 }
             }
 
-//                Button(onClick = {
-//                    viewModel.saveAnimeEntry()
-//                }) { Text("Add Placeholder Entry") }
+            Spacer(modifier = Modifier.height(8.dp))
+
             if (showEditEntryPopup) {
                 EditEntryPopup(
                     show = showEditEntryPopup,

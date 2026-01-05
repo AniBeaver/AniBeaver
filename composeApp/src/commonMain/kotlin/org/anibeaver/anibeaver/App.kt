@@ -75,7 +75,6 @@ fun App(
     var entryPopupForManga by remember { mutableStateOf(false) }
     var showQuickSearch by remember { mutableStateOf(false) }
     var quickSearchForManga by remember { mutableStateOf(false) }
-    var quickSearchSelectedId by remember { mutableStateOf("") }
     var forceShowAutofill by remember { mutableStateOf(false) }
     var alIdToPass by remember { mutableStateOf("") }
 
