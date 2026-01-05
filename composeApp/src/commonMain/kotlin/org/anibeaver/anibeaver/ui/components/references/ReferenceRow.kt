@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
@@ -37,25 +36,24 @@ fun ReferenceRow(
     forManga: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    var selectedName by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
+    var selectedName by remember(alId) { mutableStateOf("") }
     val apiHandler: ApiHandler = GlobalContext.get().get()
 
     LaunchedEffect(alId) {
-        if (alId.isNotBlank() && idIsValid(alId) && selectedName.isEmpty()) {
-            scope.launch {
-                try {
-                    apiHandler.makeRequest(
-                        variables = mapOf("id" to alId),
-                        valueSetter = ValueSetter { mediaQuery: MediaQuery ->
-                            selectedName = mediaQuery.data.media.title.english ?: ""
-                        },
-                        requestType = RequestType.MEDIA
-                    )
-                } catch (e: Exception) {
-                    // Silently fail - user will just see ID instead of name
-                }
+        if (alId.isNotBlank() && idIsValid(alId)) {
+            try {
+                apiHandler.makeRequest(
+                    variables = mapOf("mediaId" to alId),
+                    valueSetter = ValueSetter { mediaQuery: MediaQuery ->
+                        selectedName = mediaQuery.data.media.title.english ?: ""
+                    },
+                    requestType = RequestType.MEDIA
+                )
+            } catch (e: Exception) {
+                selectedName = ""
             }
+        } else {
+            selectedName = ""
         }
     }
 
