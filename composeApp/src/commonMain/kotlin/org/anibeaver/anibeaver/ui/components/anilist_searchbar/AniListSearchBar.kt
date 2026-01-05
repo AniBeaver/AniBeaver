@@ -130,10 +130,7 @@ fun SearchOverlay(
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .width(600.dp)
-                    .clickable(
-                        enabled = true,
-                        onClick = { }
-                    ),
+                    .clickable(enabled = true, onClick = { }),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(

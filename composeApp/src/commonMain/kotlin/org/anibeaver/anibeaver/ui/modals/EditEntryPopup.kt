@@ -40,27 +40,27 @@ fun EditEntryPopup(
     forManga: Boolean
 ) {
 
-    var animeName: String? by remember { mutableStateOf(initialValues?.title ?: "") }
-    var releaseYear by remember { mutableStateOf(initialValues?.releaseYear ?: "2010") }
-    var studioIds by remember { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
-    var authorIds by remember { mutableStateOf(initialValues?.authorIds ?: emptyList()) }
-    var genreIds by remember { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
-    var description by remember { mutableStateOf(initialValues?.description ?: "") }
-    var rating by remember { mutableStateOf(initialValues?.rating ?: 8.5f) }
-    var status by remember { mutableStateOf(initialValues?.status ?: Status.Planning) }
-    var releasingEvery by remember { mutableStateOf(initialValues?.releasingEvery ?: ReleaseSchedule.Monday) }
-    var tagsIds by remember { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
-    var references by remember { mutableStateOf(initialValues?.references ?: emptyList()) }
-    var showNewTagPopup by remember { mutableStateOf(false) }
-    var newTagInitialType by remember { mutableStateOf(TagType.CUSTOM) }
-    var newTagInitialName by remember { mutableStateOf("") }
-    var showAutofillPopup by remember { mutableStateOf(false) }
+    var animeName: String? by remember(show) { mutableStateOf(initialValues?.title ?: "") }
+    var releaseYear by remember(show) { mutableStateOf(initialValues?.releaseYear ?: "2010") }
+    var studioIds by remember(show) { mutableStateOf(initialValues?.studioIds ?: emptyList()) }
+    var authorIds by remember(show) { mutableStateOf(initialValues?.authorIds ?: emptyList()) }
+    var genreIds by remember(show) { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
+    var description by remember(show) { mutableStateOf(initialValues?.description ?: "") }
+    var rating by remember(show) { mutableStateOf(initialValues?.rating ?: 8.5f) }
+    var status by remember(show) { mutableStateOf(initialValues?.status ?: Status.Planning) }
+    var releasingEvery by remember(show) { mutableStateOf(initialValues?.releasingEvery ?: ReleaseSchedule.Monday) }
+    var tagsIds by remember(show) { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
+    var references by remember(show) { mutableStateOf(initialValues?.references ?: emptyList()) }
+    var showNewTagPopup by remember(show) { mutableStateOf(false) }
+    var newTagInitialType by remember(show) { mutableStateOf(TagType.CUSTOM) }
+    var newTagInitialName by remember(show) { mutableStateOf("") }
+    var showAutofillPopup by remember(show) { mutableStateOf(false) }
     val onManageAutofillClicked = { showAutofillPopup = true }
-    var episodesTotal by remember { mutableStateOf(initialValues?.episodesTotal ?: 1) }
-    var episodesProgress by remember { mutableStateOf(initialValues?.episodesProgress ?: 0) }
-    var rewatches by remember { mutableStateOf(initialValues?.rewatches ?: 1) }
-    var bannerArt: Art by remember { mutableStateOf(initialValues?.bannerArt ?: Art("empty", "")) }
-    var coverArt: Art by remember { mutableStateOf(initialValues?.coverArt ?: Art("empty", "")) }
+    var episodesTotal by remember(show) { mutableStateOf(initialValues?.episodesTotal ?: 1) }
+    var episodesProgress by remember(show) { mutableStateOf(initialValues?.episodesProgress ?: 0) }
+    var rewatches by remember(show) { mutableStateOf(initialValues?.rewatches ?: 1) }
+    var bannerArt: Art by remember(show) { mutableStateOf(initialValues?.bannerArt ?: Art("empty", "")) }
+    var coverArt: Art by remember(show) { mutableStateOf(initialValues?.coverArt ?: Art("empty", "")) }
 
     LaunchedEffect(initialValues, show) {
         if (!show) return@LaunchedEffect

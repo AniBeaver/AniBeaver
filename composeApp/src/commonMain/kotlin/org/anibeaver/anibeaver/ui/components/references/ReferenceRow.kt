@@ -6,20 +6,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import org.anibeaver.anibeaver.api.ApiHandler
+import org.anibeaver.anibeaver.api.RequestType
+import org.anibeaver.anibeaver.api.ValueSetter
+import org.anibeaver.anibeaver.api.jsonStructures.MediaQuery
 import org.anibeaver.anibeaver.core.AutofillController.idIsValid
 import org.anibeaver.anibeaver.ui.components.abstract.DeleteButton
 import org.anibeaver.anibeaver.ui.components.anilist_searchbar.AniListSearchBar
+import org.koin.core.context.GlobalContext
 
 @Composable
 fun ReferenceRow(
@@ -36,6 +38,26 @@ fun ReferenceRow(
     modifier: Modifier = Modifier
 ) {
     var selectedName by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val apiHandler: ApiHandler = GlobalContext.get().get()
+
+    LaunchedEffect(alId) {
+        if (alId.isNotBlank() && idIsValid(alId) && selectedName.isEmpty()) {
+            scope.launch {
+                try {
+                    apiHandler.makeRequest(
+                        variables = mapOf("id" to alId),
+                        valueSetter = ValueSetter { mediaQuery: MediaQuery ->
+                            selectedName = mediaQuery.data.media.title.english ?: ""
+                        },
+                        requestType = RequestType.MEDIA
+                    )
+                } catch (e: Exception) {
+                    // Silently fail - user will just see ID instead of name
+                }
+            }
+        }
+    }
 
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         RadioButton(
