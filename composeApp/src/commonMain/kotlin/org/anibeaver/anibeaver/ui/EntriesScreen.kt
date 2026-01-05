@@ -19,7 +19,6 @@ import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.*
 import org.anibeaver.anibeaver.ui.components.CardGroup
 import org.anibeaver.anibeaver.ui.components.EntryCard
-import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickCreateEntryFromAl
 import org.anibeaver.anibeaver.ui.components.basic.SimpleDropdown
 import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.modals.*
@@ -41,7 +40,6 @@ fun EntriesScreen(
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
-    var quickAlId by remember { mutableStateOf((if (!forManga) "97832" else "80145")) }
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
     var groupByStatus by remember { mutableStateOf(true) }
@@ -76,18 +74,28 @@ fun EntriesScreen(
         ) {
             Text(if (forManga) "Anime" else "Manga", style = Typography.headlineLarge)
 
-//                Button(onClick = { navController.navigate(Screens.Home.name) }) { Text("Go to Home") } //FIXME: change back to home
-
-//                Button(onClick = { showEntryPopup(null) }) { Text("New Entry") }
-
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                QuickCreateEntryFromAl(quickAlId, { newQuickAlId -> quickAlId = newQuickAlId }, {
-                    showEntryPopup(null, true)
-                }, forManga)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { showManageTags = true }, modifier = Modifier.height(48.dp)) {
+                        Text("Manage tags")
+                    }
+                    Button(onClick = { showFilter = true }, modifier = Modifier.height(48.dp)) {
+                        Text("Filter entries")
+                    }
+
+                    FilterInfo(
+                        forManga = forManga,
+                        filterState = filterState,
+                        onClearFilters = { filterState.clear() }
+                    )
+                }
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -129,39 +137,15 @@ fun EntriesScreen(
                         }
                     }
                 }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(onClick = { showManageTags = true }) {
-                        Text("Manage tags")
-                    }
-                    Button(onClick = { showFilter = true }) {
-                        Text("Filter entries")
-                    }
-
-                    FilterInfo(
-                        forManga = forManga,
-                        filterState = filterState,
-                        onClearFilters = { filterState.clear() }
-                    )
-                }
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(onClick = { filterState.collapseAll() }) {
+                    Button(onClick = { filterState.collapseAll() }, modifier = Modifier.height(48.dp)) {
                         Text("Collapse All")
                     }
-                    Button(onClick = { filterState.expandAll() }) {
+                    Button(onClick = { filterState.expandAll() }, modifier = Modifier.height(48.dp)) {
                         Text("Expand All")
                     }
                 }
@@ -176,13 +160,10 @@ fun EntriesScreen(
                     onDismiss = { showEditEntryPopup = false },
                     onConfirm = { entryData ->
                         viewModel.upsertAnimeEntry(currentEditedEntryId, entryData)
-
                         showEditEntryPopup = false
-
-                        if (showAutofillPopup) quickAlId = ""
                     },
                     forceShowAutofillPopup = showAutofillPopup,
-                    alIdToBePassed = quickAlId,
+                    alIdToBePassed = "",
                     initialValues = EntriesController.getEntryDataById(currentEditedEntryId),
                     forManga = forManga
                 )

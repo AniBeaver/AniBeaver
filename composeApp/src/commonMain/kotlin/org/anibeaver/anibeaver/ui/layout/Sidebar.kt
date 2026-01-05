@@ -82,12 +82,12 @@ fun Sidebar(
                         },
                         colors = IconButtonDefaults.filledIconButtonColors(),
                         shape = ShapeDefaults.Medium,
-                        modifier = Modifier.size(52.dp)
+                        modifier = Modifier.size(48.dp)
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Filled.Search, null, Modifier.size(22.dp).offset(y = (-7).dp))
-                            Icon(Icons.Filled.Add, null, Modifier.size(22.dp).offset(x = (-7).dp, y = 5.dp))
-                            Icon(Icons.Filled.AutoAwesome, null, Modifier.size(22.dp).offset(x = 7.dp, y = 5.dp))
+                            Icon(Icons.Filled.Search, null, Modifier.size(14.dp).offset(y = (-6).dp))
+                            Icon(Icons.Filled.Add, null, Modifier.size(14.dp).offset(x = (-6).dp, y = 4.dp))
+                            Icon(Icons.Filled.AutoAwesome, null, Modifier.size(14.dp).offset(x = 6.dp, y = 4.dp))
                         }
                     }
                 }
