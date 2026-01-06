@@ -202,15 +202,22 @@ object ExportController {
         return file.path
     }
 
-    suspend fun importFromFile(): ExportData? {
-        val file = FileController.chooseFile(listOf("json")) ?: return null
+    suspend fun importFromFile(): Result<ExportData> {
+        val file = FileController.chooseFile(listOf("json"))
+            ?: return Result.failure(Exception("No file selected"))
 
         return try {
             val jsonString = readJsonFromFile(file)
-            importFromJson(jsonString)
+            val data = importFromJson(jsonString)
+            Result.success(data)
         } catch (e: Exception) {
             e.printStackTrace()
-            null
+            val errorMessage = e.message ?: e.toString()
+            val simplifiedMessage = errorMessage
+                .replace("org.anibeaver.anibeaver.core.", "")
+                .replace("org.anibeaver.anibeaver.", "")
+                .replace("kotlinx.serialization.", "")
+            Result.failure(Exception(simplifiedMessage))
         }
     }
 

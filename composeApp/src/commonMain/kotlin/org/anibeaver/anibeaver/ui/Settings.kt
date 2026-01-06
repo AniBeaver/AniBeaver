@@ -80,11 +80,11 @@ fun SettingsScreen(
             Button(onClick = {
                 if (viewModel.entryController.entries.isEmpty()) {
                     coroutineScope.launch {
-                        val success = viewModel.importEntries()
-                        if (success) {
+                        val result = viewModel.importEntries()
+                        if (result.isSuccess) {
                             showAlert("Entries imported successfully!")
                         } else {
-                            showAlert("Failed to import entries.")
+                            showAlert("Failed to import entries.\n\n${result.exceptionOrNull()?.message ?: "Unknown error"}")
                         }
                     }
                 } else {
@@ -96,11 +96,11 @@ fun SettingsScreen(
                                 onAccept = {
                                     coroutineScope.launch {
                                         viewModel.deleteAllEntries()
-                                        val success = viewModel.importEntries()
-                                        if (success) {
+                                        val result = viewModel.importEntries()
+                                        if (result.isSuccess) {
                                             showAlert("Entries imported!")
                                         } else {
-                                            showAlert("Failed to import.")
+                                            showAlert("Failed to import.\n\n${result.exceptionOrNull()?.message ?: "Unknown error"}")
                                         }
                                     }
                                 }

@@ -189,8 +189,13 @@ class AnimeViewModel(
         ExportController.createBackup(entries, referencesMap, tags)
     }
 
-    suspend fun importEntries(): Boolean {
-        val exportData = ExportController.importFromFile() ?: return false
+    suspend fun importEntries(): Result<Unit> {
+        val importResult = ExportController.importFromFile()
+        if (importResult.isFailure) {
+            return Result.failure(importResult.exceptionOrNull()!!)
+        }
+
+        val exportData = importResult.getOrNull()!!
 
         return try {
             animeDao.deleteAll()
@@ -209,10 +214,15 @@ class AnimeViewModel(
 
             reloadTagsAndEntries()
 
-            true
+            Result.success(Unit)
         } catch (e: Exception) {
             e.printStackTrace()
-            false
+            val stackTrace = e.stackTraceToString()
+                .lines()
+                .filter { !it.contains("org.anibeaver.anibeaver.core") && !it.contains("org.anibeaver.anibeaver.ui") }
+                .take(10)
+                .joinToString("\n")
+            Result.failure(Exception("${e.message}\n\nStack trace:\n$stackTrace"))
         }
     }
 
