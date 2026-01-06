@@ -137,8 +137,9 @@ class AnimeViewModel(
             val referenceEntities = entryData.references.mapIndexed { index, ref ->
                 ReferenceEntity(
                     entryId = dbEntryId.toInt(),
-                    name = ref.note,
+                    note = ref.note,
                     anilistId = ref.alId,
+                    name = ref.name,
                     orderIndex = index
                 )
             }
@@ -236,8 +237,9 @@ class AnimeViewModel(
             val relation = tagsByEntry[entry.id]
             val references = referenceDao.getByEntryId(entry.id).map {
                 org.anibeaver.anibeaver.core.datastructures.Reference(
-                    note = it.name,
-                    alId = it.anilistId
+                    note = it.note,
+                    alId = it.anilistId,
+                    name = it.name
                 )
             }
             EntriesController.addEntry(

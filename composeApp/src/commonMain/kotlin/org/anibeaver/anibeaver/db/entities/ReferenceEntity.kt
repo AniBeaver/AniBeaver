@@ -20,7 +20,8 @@ data class ReferenceEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val entryId: Int,
-    val name: String,
+    val note: String,
     val anilistId: String,
+    val name: String = "",
     val orderIndex: Int
 )

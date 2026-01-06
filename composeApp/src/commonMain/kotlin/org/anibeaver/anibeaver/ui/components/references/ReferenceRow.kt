@@ -25,9 +25,11 @@ import org.koin.core.context.GlobalContext
 @Composable
 fun ReferenceRow(
     alId: String,
-    refNote: String,
+    refNote: String = "Se",
+    cachedName: String = "",
     onAlIdChange: (String) -> Unit,
     onRefNoteChange: (String) -> Unit,
+    onNameChange: (String) -> Unit,
     onDelete: () -> Unit,
     onMoveUp: (() -> Unit)? = null,
     onMoveDown: (() -> Unit)? = null,
@@ -36,22 +38,26 @@ fun ReferenceRow(
     forManga: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    var selectedName by remember(alId) { mutableStateOf("") }
+    var selectedName by remember(alId, cachedName) { mutableStateOf(cachedName) }
     val apiHandler: ApiHandler = GlobalContext.get().get()
 
     LaunchedEffect(alId) {
-        if (alId.isNotBlank() && idIsValid(alId)) {
+        if (alId.isNotBlank() && idIsValid(alId) && cachedName.isEmpty()) {
             try {
                 apiHandler.makeRequest(
                     variables = mapOf("mediaId" to alId),
                     valueSetter = ValueSetter { mediaQuery: MediaQuery ->
-                        selectedName = mediaQuery.data.media.title.english ?: ""
+                        val name = mediaQuery.data.media.title.english ?: "" //TODO: not only the english name! But how to decide which?
+                        selectedName = name
+                        onNameChange(name)
                     },
                     requestType = RequestType.MEDIA
                 )
             } catch (e: Exception) {
                 selectedName = ""
             }
+        } else if (cachedName.isNotEmpty()) {
+            selectedName = cachedName
         } else {
             selectedName = ""
         }
@@ -84,6 +90,7 @@ fun ReferenceRow(
             onSelectionChange = { id, name ->
                 onAlIdChange(id)
                 selectedName = name
+                onNameChange(name)
             },
             type = if (forManga) "MANGA" else "ANIME"
         )

@@ -41,8 +41,9 @@ data class ExportEntry(
 
 @Serializable
 data class ExportReference(
-    val name: String,
+    val note: String,
     val anilistId: String,
+    val name: String = "",
     val orderIndex: Int
 )
 
@@ -100,8 +101,9 @@ object ExportController {
                 type = entry.type,
                 references = references[entry.id]?.map { ref ->
                     ExportReference(
-                        name = ref.name,
+                        note = ref.note,
                         anilistId = ref.anilistId,
+                        name = ref.name,
                         orderIndex = ref.orderIndex
                     )
                 } ?: emptyList()
@@ -162,8 +164,9 @@ object ExportController {
             exportEntry.id to exportEntry.references.map { ref ->
                 ReferenceEntity(
                     entryId = exportEntry.id,
-                    name = ref.name,
+                    note = ref.note,
                     anilistId = ref.anilistId,
+                    name = ref.name,
                     orderIndex = ref.orderIndex
                 )
             }

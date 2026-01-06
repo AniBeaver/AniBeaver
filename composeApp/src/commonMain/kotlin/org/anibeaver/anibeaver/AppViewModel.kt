@@ -65,8 +65,9 @@ class AppViewModel(
             val relation = tagsByEntry[entry.id]
             val references = referenceDao.getByEntryId(entry.id).map {
                 org.anibeaver.anibeaver.core.datastructures.Reference(
-                    note = it.name,
-                    alId = it.anilistId
+                    note = it.note,
+                    alId = it.anilistId,
+                    name = it.name
                 )
             }
             entryController.addEntry(
