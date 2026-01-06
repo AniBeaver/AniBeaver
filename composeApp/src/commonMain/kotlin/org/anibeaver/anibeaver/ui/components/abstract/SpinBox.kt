@@ -3,7 +3,9 @@ package org.anibeaver.anibeaver.ui.components.abstract
 import UpDownButtons
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,12 +21,18 @@ fun SpinBox(
     modifier: Modifier = Modifier,
     filter: (String) -> String = { it },
     maxLength: Int = Int.MAX_VALUE,
-    label: String = ""
+    label: String = "",
+    highlightIfEmpty: Boolean = false
 ) {
-    var textValue by remember { mutableStateOf(value) }
-    LaunchedEffect(value) {
-        if (textValue != value) textValue = value
+    val isEmpty = value.isEmpty()
+    val displayValue = if (highlightIfEmpty && isEmpty) "" else value
+    var textValue by remember { mutableStateOf(displayValue) }
+    LaunchedEffect(displayValue) {
+        if (textValue != displayValue) textValue = displayValue
     }
+
+    val shouldHighlight = highlightIfEmpty && textValue.isEmpty()
+
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         OutlinedTextField(
             value = textValue,
@@ -40,7 +48,15 @@ fun SpinBox(
                 .widthIn(min = 48.dp, max = 72.dp),
             label = if (label.isNotEmpty()) {
                 { Text(label) }
-            } else null
+            } else null,
+            colors = if (shouldHighlight) {
+                OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                OutlinedTextFieldDefaults.colors()
+            }
         )
         UpDownButtons(
             onIncrement = onIncrement,

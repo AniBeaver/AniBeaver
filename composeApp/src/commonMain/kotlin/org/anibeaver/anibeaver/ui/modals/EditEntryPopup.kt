@@ -46,7 +46,7 @@ fun EditEntryPopup(
     var authorIds by remember(show) { mutableStateOf(initialValues?.authorIds ?: emptyList()) }
     var genreIds by remember(show) { mutableStateOf(initialValues?.genreIds ?: emptyList()) }
     var description by remember(show) { mutableStateOf(initialValues?.description ?: "") }
-    var rating by remember(show) { mutableStateOf(initialValues?.rating ?: 8.5f) }
+    var rating by remember(show) { mutableStateOf<Float?>(initialValues?.rating?.takeIf { it > 0f }) }
     var status by remember(show) { mutableStateOf(initialValues?.status ?: Status.Planning) }
     var releasingEvery by remember(show) { mutableStateOf(initialValues?.releasingEvery ?: ReleaseSchedule.Monday) }
     var tagsIds by remember(show) { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
@@ -71,7 +71,7 @@ fun EditEntryPopup(
         authorIds = initialValues?.authorIds ?: emptyList()
         genreIds = initialValues?.genreIds ?: emptyList()
         description = initialValues?.description ?: ""
-        rating = initialValues?.rating ?: 8.5f
+        rating = initialValues?.rating?.takeIf { it > 0f }
         status = initialValues?.status ?: Status.Planning
         releasingEvery = initialValues?.releasingEvery ?: ReleaseSchedule.Monday
         tagsIds = initialValues?.tagIds ?: emptyList()
@@ -201,7 +201,7 @@ fun EditEntryPopup(
                             authorIds = authorIds,
                             genreIds = genreIds,
                             description = description,
-                            rating = rating,
+                            rating = rating ?: 0f,
                             status = status,
                             releasingEvery = releasingEvery,
                             tagIds = tagsIds,
@@ -281,8 +281,9 @@ fun EditEntryPopup(
                                 FloatPicker(
                                     value = rating,
                                     onValueChange = { rating = it },
-                                    label = "Rating/Priority",
-                                    modifier = Modifier.weight(1f)
+                                    label = if (status == Status.Planning) "Priority" else "Rating",
+                                    modifier = Modifier.weight(1f),
+                                    highlightIfEmpty = true
                                 )
                                 Spacer(modifier = Modifier.width(16.dp))
                                 Button(onClick = onManageAutofillClicked, modifier = Modifier.weight(1f)) {
@@ -310,7 +311,7 @@ fun EditEntryPopup(
                             onValueChange = { episodesTotal = it },
                             onIncrement = { episodesTotal += 1 },
                             onDecrement = { episodesTotal = (episodesTotal - 1).coerceAtLeast(0) },
-                            label = if (forManga) "Chs Total" else "Eps Total",
+                            label = if (forManga) "Chs. Total" else "Eps Total",
                             modifier = Modifier.weight(1f)
                         )
                         IntPicker(

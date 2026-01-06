@@ -6,24 +6,26 @@ import org.anibeaver.anibeaver.ui.components.abstract.SpinBox
 
 @Composable
 fun FloatPicker(
-    value: Float,
-    onValueChange: (Float) -> Unit,
+    value: Float?,
+    onValueChange: (Float?) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = ""
+    label: String = "",
+    highlightIfEmpty: Boolean = false
 ) {
     SpinBox(
-        value = if (value % 1 == 0f) value.toInt().toString() else value.toString(),
+        value = value?.let { "%.1f".format(it) } ?: "",
         onValueChange = { filtered ->
-            filtered.toFloatOrNull()?.let { onValueChange(it) }
+            onValueChange(filtered.toFloatOrNull())
         },
-        onIncrement = { onValueChange(value + 0.5f) },
-        onDecrement = { onValueChange(value - 0.5f) },
+        onIncrement = { onValueChange(if (value == null) 8.0f else value + 0.5f) },
+        onDecrement = { onValueChange(if (value == null) 8.0f else (value - 0.5f).coerceAtLeast(0f)) },
         modifier = modifier,
         filter = { input ->
             input.filterIndexed { idx, c ->
                 c.isDigit() || (c == '.' && !input.take(idx).contains('.'))
             }
         },
-        label = label
+        label = label,
+        highlightIfEmpty = highlightIfEmpty
     )
 }
