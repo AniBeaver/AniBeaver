@@ -246,6 +246,7 @@ class AnimeViewModel(
             if (EntriesController.entries.any { it.id == entry.id }) continue
             val relation = tagsByEntry[entry.id]
             val references = referenceDao.getByEntryId(entry.id).map {
+                println("[DEBUG] Loading reference: note='${it.note}', alId='${it.anilistId}', name='${it.name}'")
                 org.anibeaver.anibeaver.core.datastructures.Reference(
                     note = it.note,
                     alId = it.anilistId,

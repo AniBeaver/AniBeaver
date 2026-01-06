@@ -39,27 +39,32 @@ fun ReferenceRow(
     modifier: Modifier = Modifier
 ) {
     var selectedName by remember(alId, cachedName) { mutableStateOf(cachedName) }
+    var hasFetchedName by remember(alId, cachedName) { mutableStateOf(cachedName.isNotEmpty()) }
     val apiHandler: ApiHandler = GlobalContext.get().get()
 
-    LaunchedEffect(alId) {
-        if (alId.isNotBlank() && idIsValid(alId) && cachedName.isEmpty()) {
+    LaunchedEffect(alId, cachedName) {
+        if (cachedName.isNotEmpty()) {
+            selectedName = cachedName
+            hasFetchedName = true
+        } else if (alId.isNotBlank() && idIsValid(alId) && !hasFetchedName) {
             try {
                 apiHandler.makeRequest(
                     variables = mapOf("mediaId" to alId),
                     valueSetter = ValueSetter { mediaQuery: MediaQuery ->
-                        val name = mediaQuery.data.media.title.english ?: "" //TODO: not only the english name! But how to decide which?
+                        val name = mediaQuery.data.media.title.english ?: ""  //TODO: not only the english name! But how to decide which?
                         selectedName = name
                         onNameChange(name)
+                        hasFetchedName = true
                     },
                     requestType = RequestType.MEDIA
                 )
             } catch (e: Exception) {
                 selectedName = ""
+                hasFetchedName = true
             }
-        } else if (cachedName.isNotEmpty()) {
-            selectedName = cachedName
-        } else {
+        } else if (alId.isBlank()) {
             selectedName = ""
+            hasFetchedName = false
         }
     }
 
@@ -91,6 +96,7 @@ fun ReferenceRow(
                 onAlIdChange(id)
                 selectedName = name
                 onNameChange(name)
+                hasFetchedName = true
             },
             type = if (forManga) "MANGA" else "ANIME"
         )

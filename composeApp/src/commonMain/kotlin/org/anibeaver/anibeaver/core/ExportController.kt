@@ -60,6 +60,7 @@ object ExportController {
     private val json = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
+        encodeDefaults = true
     }
 
     private val backupsDir = FileKit.filesDir / "backups"

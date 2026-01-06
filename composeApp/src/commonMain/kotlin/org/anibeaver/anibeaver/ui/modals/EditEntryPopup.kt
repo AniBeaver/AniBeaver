@@ -62,7 +62,7 @@ fun EditEntryPopup(
     var bannerArt: Art by remember(show) { mutableStateOf(initialValues?.bannerArt ?: Art("empty", "")) }
     var coverArt: Art by remember(show) { mutableStateOf(initialValues?.coverArt ?: Art("empty", "")) }
 
-    LaunchedEffect(initialValues, show) {
+    LaunchedEffect(show) {
         if (!show) return@LaunchedEffect
 
         animeName = initialValues?.title ?: ""
@@ -81,6 +81,11 @@ fun EditEntryPopup(
         rewatches = initialValues?.rewatches ?: 1
         bannerArt = initialValues?.bannerArt ?: Art("empty", "")
         coverArt = initialValues?.coverArt ?: Art("empty", "")
+
+        println("[EditEntryPopup] Loaded ${references.size} references from initialValues")
+        references.forEach { ref ->
+            println("[EditEntryPopup] Initial reference: note='${ref.note}', alId='${ref.alId}', name='${ref.name}'")
+        }
     }
 
     LaunchedEffect(forceShowAutofillPopup, alIdToBePassed) {
@@ -193,6 +198,10 @@ fun EditEntryPopup(
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
             Button(
                 onClick = {
+                    // Debug: Print references before saving
+                    references.forEach { ref ->
+                        println("[EditEntryPopup] Confirming with reference: note='${ref.note}', alId='${ref.alId}', name='${ref.name}'")
+                    }
                     onConfirm(
                         EntryData(
                             title = animeName,
