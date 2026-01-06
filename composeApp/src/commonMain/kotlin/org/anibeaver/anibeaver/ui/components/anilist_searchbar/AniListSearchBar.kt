@@ -9,7 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -106,6 +109,12 @@ fun SearchOverlay(
     var suggestions by remember { mutableStateOf<List<SearchSuggestion>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
     var hasNetworkError by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(100)
+        focusRequester.requestFocus()
+    }
 
     LaunchedEffect(searchText) {
         if (searchText.isEmpty()) {
@@ -145,8 +154,11 @@ fun SearchOverlay(
     }
 
     Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        onDismissRequest = { },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress = false
+        )
     ) {
         Box(
             modifier = Modifier
@@ -184,7 +196,22 @@ fun SearchOverlay(
                         onValueChange = { searchText = it },
                         placeholder = { Text("Type to search...") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
+                            .onKeyEvent { keyEvent ->
+                                when {
+                                    keyEvent.key == Key.Escape && keyEvent.type == KeyEventType.KeyDown -> {
+                                        onDismiss()
+                                        true
+                                    }
+                                    keyEvent.type == KeyEventType.KeyDown -> {
+                                        // Consume all key down events to prevent them from reaching Dialog
+                                        true
+                                    }
+                                    else -> false
+                                }
+                            }
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
