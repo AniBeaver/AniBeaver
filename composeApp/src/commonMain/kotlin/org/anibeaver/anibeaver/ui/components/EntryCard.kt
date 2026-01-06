@@ -2,7 +2,9 @@ package org.anibeaver.anibeaver.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -146,7 +148,8 @@ fun BannerBackground(
 fun EntryCard(
     entry: Entry,
     onEdit: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
+    forManga: Boolean = false
 ) {
     val name = entry.entryData.title.toString()
     val description = entry.entryData.description
@@ -221,7 +224,9 @@ fun EntryCard(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.Top
                     ) {
                         val year = entry.entryData.releaseYear
@@ -230,9 +235,11 @@ fun EntryCard(
                         val epsProgress = entry.entryData.episodesProgress
                         val epsTotal = entry.entryData.episodesTotal
                         val rewatches = entry.entryData.rewatches
+                        val unitLabel = if (forManga) "chs" else "eps"
+                        val rereadLabel = if (forManga) "rereads" else "rewatches"
 
                         Text(
-                            "$epsProgress/$epsTotal eps (${rewatches}x) • $year • $schedule • [$status]",
+                            "$epsProgress/$epsTotal $unitLabel (${rewatches}x $rereadLabel) • $year • $schedule • [$status]",
                             fontSize = 11.sp,
                             color = Color.White.copy(alpha = 0.9f),
                             maxLines = 1,

@@ -109,7 +109,8 @@ fun HomeScreen(
                             EntryCard(
                                 entry = entry,
                                 onEdit = { },
-                                onDelete = { }
+                                onDelete = { },
+                                forManga = false
                             )
                             if (entry != watchingAnime.last()) {
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -144,7 +145,8 @@ fun HomeScreen(
                             EntryCard(
                                 entry = entry,
                                 onEdit = { },
-                                onDelete = { }
+                                onDelete = { },
+                                forManga = true
                             )
                             if (entry != readingManga.last()) {
                                 Spacer(modifier = Modifier.width(8.dp))

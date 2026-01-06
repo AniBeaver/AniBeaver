@@ -363,7 +363,12 @@ private fun EntryGrid(
                     Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(cardSpacing)) {
                         Spacer(Modifier.width(cardSpacing))
                         rowEntries.forEach { entry ->
-                            EntryCard(entry = entry, onEdit = { onEdit(entry.id) }, onDelete = { onDelete(entry.id) })
+                            EntryCard(
+                                entry = entry,
+                                onEdit = { onEdit(entry.id) },
+                                onDelete = { onDelete(entry.id) },
+                                forManga = forManga
+                            )
                             Spacer(Modifier.width(cardSpacing))
                         }
                         repeat(columns - rowEntries.size) { Spacer(Modifier.width(cardWidth + cardSpacing)) }
