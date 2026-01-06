@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,8 +22,9 @@ import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.PageQuery
 import org.koin.core.context.GlobalContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AniListSearchBar(
+fun QuickSearchAddButton(
     alId: String,
     selectedName: String,
     onSelectionChange: (String, String) -> Unit,
@@ -30,27 +32,43 @@ fun AniListSearchBar(
 ) {
     var showSearchOverlay by remember { mutableStateOf(false) }
 
-    Button(
-        onClick = { showSearchOverlay = true },
-        colors = if (alId.isNotEmpty()) {
-            ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        } else {
-            ButtonDefaults.buttonColors()
-        },
-        modifier = Modifier.width(120.dp).heightIn(min = 40.dp),
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+    val displayText = when {
+        selectedName.isNotEmpty() -> selectedName
+        alId.isNotEmpty() -> "✓ $alId"
+        else -> "Quick search"
+    }
+
+    val isSelected = selectedName.isNotEmpty() || alId.isNotEmpty()
+    val hasCheckmark = selectedName.isNotEmpty()
+
+    val buttonText = formatButtonText(displayText, hasCheckmark, maxChars = 30)
+    val fullText = (if (hasCheckmark) "✓ " else "") + displayText
+
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(fullText) } },
+        state = rememberTooltipState()
     ) {
-        Text(
-            text = when {
-                selectedName.isNotEmpty() -> "✓ $selectedName"
-                alId.isNotEmpty() -> "ID: $alId"
-                else -> "Quick search"
+        Button(
+            onClick = { showSearchOverlay = true },
+            colors = if (isSelected) {
+                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            } else {
+                ButtonDefaults.buttonColors()
             },
-            fontSize = 11.sp,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            lineHeight = 12.sp
-        )
+            modifier = Modifier.width(120.dp).heightIn(min = 40.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = buttonText,
+                fontSize = 11.sp,
+                lineHeight = 13.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 
     if (showSearchOverlay) {
@@ -65,6 +83,20 @@ fun AniListSearchBar(
     }
 }
 
+private fun formatButtonText(text: String, hasCheckmark: Boolean, maxChars: Int): String {
+    val prefix = if (hasCheckmark) "✓ " else ""
+    val prefixLength = prefix.length
+
+    return when {
+        text.length + prefixLength <= maxChars -> prefix + text
+        text.length <= maxChars - 3 - prefixLength -> prefix + text
+        else -> {
+            val availableChars = maxChars - prefixLength - 3
+            prefix + "..." + text.takeLast(availableChars)
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchOverlay(
@@ -73,7 +105,6 @@ fun SearchOverlay(
     onSelect: (String, String) -> Unit
 ) {
     val apiHandler: ApiHandler = GlobalContext.get().get()
-
     var searchText by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf<List<SearchSuggestion>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
@@ -85,10 +116,10 @@ fun SearchOverlay(
             return@LaunchedEffect
         }
 
-        try {
-            kotlinx.coroutines.delay(300)
-            isSearching = true
+        isSearching = true
+        kotlinx.coroutines.delay(300)
 
+        try {
             apiHandler.makeRequest(
                 variables = mapOf(
                     "page" to "1",
@@ -107,11 +138,8 @@ fun SearchOverlay(
                 },
                 requestType = RequestType.PAGE
             )
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            // Silently ignore cancellation - this is expected when typing
         } catch (e: Exception) {
             isSearching = false
-            suggestions = emptyList()
         }
     }
 
@@ -130,12 +158,10 @@ fun SearchOverlay(
                 modifier = Modifier
                     .padding(top = 100.dp)
                     .width(600.dp)
-                    .clickable(enabled = true, onClick = { }),
+                    .clickable(enabled = false, onClick = {}),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -154,9 +180,7 @@ fun SearchOverlay(
 
                     OutlinedTextField(
                         value = searchText,
-                        onValueChange = { newValue ->
-                            searchText = newValue
-                        },
+                        onValueChange = { searchText = it },
                         placeholder = { Text("Type to search...") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -164,47 +188,45 @@ fun SearchOverlay(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    if (isSearching) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                    when {
+                        isSearching -> {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
                         }
-                    } else if (suggestions.isEmpty() && searchText.isNotEmpty()) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().height(200.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("No results found", color = Color.Gray)
+                        suggestions.isEmpty() && searchText.isNotEmpty() -> {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("No results found", color = Color.Gray)
+                            }
                         }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 400.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            items(suggestions) { suggestion ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            onSelect(suggestion.id, suggestion.title)
-                                        }
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(12.dp)
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                items(suggestions) { suggestion ->
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { onSelect(suggestion.id, suggestion.title) }
                                     ) {
-                                        Text(
-                                            suggestion.title,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                        Text(
-                                            "ID: ${suggestion.id}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.Gray
-                                        )
+                                        Column(modifier = Modifier.padding(12.dp)) {
+                                            Text(
+                                                suggestion.title,
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                            Text(
+                                                "ID: ${suggestion.id}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Color.Gray
+                                            )
+                                        }
                                     }
                                 }
                             }

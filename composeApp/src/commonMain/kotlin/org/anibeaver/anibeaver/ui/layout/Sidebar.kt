@@ -69,7 +69,7 @@ fun Sidebar(
 
                 TooltipBox(
                     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text("Quick add from AniList") } },
+                    tooltip = { PlainTooltip { Text("Quick add entry") } },
                     state = rememberTooltipState()
                 ) {
                     FilledIconButton(
@@ -94,7 +94,7 @@ fun Sidebar(
 
                 TooltipBox(
                     positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text("Manually create entry") } },
+                    tooltip = { PlainTooltip { Text("Manual add entry") } },
                     state = rememberTooltipState()
                 ) {
                     FilledIconButton(
@@ -168,7 +168,8 @@ fun SidebarNavItem(
 ) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(destination.name) } },
+//        tooltip = { PlainTooltip { Text(destination.name) } },
+        tooltip = {},
         state = rememberTooltipState()
     ) {
         NavigationRailItem(

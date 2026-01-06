@@ -35,7 +35,7 @@ fun QuickCreateEntryFromAl(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AniListSearchBar(
+            QuickSearchAddButton(
                 alId = quickAlId,
                 selectedName = selectedName,
                 onSelectionChange = { id, name ->

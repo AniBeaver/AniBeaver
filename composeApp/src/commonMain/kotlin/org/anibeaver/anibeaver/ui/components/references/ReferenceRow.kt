@@ -19,7 +19,7 @@ import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.MediaQuery
 import org.anibeaver.anibeaver.core.AutofillController.idIsValid
 import org.anibeaver.anibeaver.ui.components.abstract.DeleteButton
-import org.anibeaver.anibeaver.ui.components.anilist_searchbar.AniListSearchBar
+import org.anibeaver.anibeaver.ui.components.anilist_searchbar.QuickSearchAddButton
 import org.koin.core.context.GlobalContext
 
 @Composable
@@ -78,7 +78,7 @@ fun ReferenceRow(
         )
         val uriHandler = LocalUriHandler.current
 
-        AniListSearchBar(
+        QuickSearchAddButton(
             alId = alId,
             selectedName = selectedName,
             onSelectionChange = { id, name ->
