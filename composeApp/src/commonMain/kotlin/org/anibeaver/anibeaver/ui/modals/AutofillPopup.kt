@@ -268,6 +268,12 @@ private fun AutofillSelectorUI(
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            Text(
+                "Which of the pulled data to sync?",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = nameChecked, onCheckedChange = { checked -> onNameCheckedChange(checked) })
                 Text("Sync name:", style = MaterialTheme.typography.titleMedium)

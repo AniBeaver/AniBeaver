@@ -20,6 +20,7 @@ import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.RequestType
 import org.anibeaver.anibeaver.api.ValueSetter
 import org.anibeaver.anibeaver.api.jsonStructures.PageQuery
+import org.anibeaver.anibeaver.ui.components.basic.DarkTooltipBox
 import org.koin.core.context.GlobalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,11 +45,7 @@ fun QuickSearchAddButton(
     val buttonText = formatButtonText(displayText, hasCheckmark, maxChars = 30)
     val fullText = (if (hasCheckmark) "✓ " else "") + displayText
 
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(fullText) } },
-        state = rememberTooltipState()
-    ) {
+    DarkTooltipBox(tooltip = fullText) {
         Button(
             onClick = { showSearchOverlay = true },
             colors = if (isSelected) {

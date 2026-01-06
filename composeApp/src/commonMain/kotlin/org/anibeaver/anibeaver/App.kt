@@ -128,6 +128,9 @@ fun App(
                             composable(route = Screens.Manga.name) {
                                 EntriesScreen(navController, forManga=true, viewModel = sharedAnimeViewModel)
                             }
+//                            composable(route = Screens.Info.name) {
+//                                InfoScreen(paddingValues)
+//                            }
                             composable(route = Screens.Settings.name) {
                                 SettingsScreen(navController, sharedAnimeViewModel)
                             }

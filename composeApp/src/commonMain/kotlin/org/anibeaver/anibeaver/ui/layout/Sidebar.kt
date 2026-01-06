@@ -23,6 +23,7 @@ import anibeaver.composeapp.generated.resources.abvr_icon
 
 import org.anibeaver.anibeaver.NavItemPosition
 import org.anibeaver.anibeaver.Screens
+import org.anibeaver.anibeaver.ui.components.basic.DarkTooltipBox
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,11 +68,9 @@ fun Sidebar(
                     selectedDestination
                 ) { newDest -> selectedDestination = newDest }
 
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text("Quick add entry") } },
-                    state = rememberTooltipState()
-                ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                DarkTooltipBox(tooltip = "Quick add entry") {
                     FilledIconButton(
                         onClick = {
                             when (selectedDestination) {
@@ -92,11 +91,7 @@ fun Sidebar(
                     }
                 }
 
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-                    tooltip = { PlainTooltip { Text("Manual add entry") } },
-                    state = rememberTooltipState()
-                ) {
+                DarkTooltipBox(tooltip = "Manual add entry") {
                     FilledIconButton(
                         onClick = {
                             when (selectedDestination) {
@@ -158,7 +153,6 @@ fun BottomSidebarEntries(
         }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SidebarNavItem(
     navController: NavHostController,
@@ -166,12 +160,7 @@ fun SidebarNavItem(
     currentlySelectedDestination: String,
     setDestination: (String) -> Unit
 ) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-//        tooltip = { PlainTooltip { Text(destination.name) } },
-        tooltip = {},
-        state = rememberTooltipState()
-    ) {
+    DarkTooltipBox(tooltip = destination.name) {
         NavigationRailItem(
             selected = destination.name == currentlySelectedDestination,
             onClick = {

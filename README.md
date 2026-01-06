@@ -18,9 +18,9 @@ With Quick Add, all you have to do is type in an anime name, and a Reference (al
 
 AniBeaver is offline-first, which means it is used locally on your computer and never records or uploads your data - only thing it does with the internet is pull data on anime entries for the autofill from AniList.
 
-This is a Beta version. There are plans for more functionality (sync with AniList, better navigation, UI rework, etc) and more compatability (Android, iOS beside Windows, Linux and MacOS support).
+This is a Beta version. There are plans for more functionality (sync with AniList, better navigation, UI rework, etc) and more compatability (Android, iOS beside Windows, Linux and MacOS support). Please Export from Settings to back-up your entry collection! Just in case. 
 
-Any and all concerns/suggestions with functionality/user experience are welcome in our Discord.
+Any and all concerns/suggestions with functionality/user experience/potential bugs are welcome in our Discord.
 
 
 ## Roadmap
