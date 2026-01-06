@@ -87,7 +87,7 @@ fun EditEntryPopup(
         if (forceShowAutofillPopup && alIdToBePassed.isNotBlank()) {
             showAutofillPopup = true
             if (references.isEmpty()) {
-                references = listOf(Reference(if (!forManga) "Se1" else "Main", alIdToBePassed))
+                references = listOf(Reference("Season", alIdToBePassed))
             }
         }
     }

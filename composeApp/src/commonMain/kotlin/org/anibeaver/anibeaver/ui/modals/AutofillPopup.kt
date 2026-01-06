@@ -65,6 +65,7 @@ fun AutofillPopup(
     LaunchedEffect(autofillData) {
         if (autofillData != null) {
             selectedStudios = autofillData!!.studios.filter { it.isNotBlank() }.toSet()
+            selectedAuthor = autofillData!!.author.filter { it.isNotBlank() }.toSet()
             selectedGenres = emptySet()
             selectedTags = emptySet()
             coverChecked = true

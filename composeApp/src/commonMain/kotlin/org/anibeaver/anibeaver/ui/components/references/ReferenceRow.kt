@@ -25,7 +25,7 @@ import org.koin.core.context.GlobalContext
 @Composable
 fun ReferenceRow(
     alId: String,
-    refNote: String = "Se",
+    refNote: String = "Season",
     cachedName: String = "",
     onAlIdChange: (String) -> Unit,
     onRefNoteChange: (String) -> Unit,

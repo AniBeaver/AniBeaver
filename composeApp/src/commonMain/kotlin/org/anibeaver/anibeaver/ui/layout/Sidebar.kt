@@ -70,6 +70,8 @@ fun Sidebar(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                val buttonsEnabled = selectedDestination == Screens.Anime.name || selectedDestination == Screens.Manga.name
+
                 DarkTooltipBox(tooltip = "Quick add entry") {
                     FilledIconButton(
                         onClick = {
@@ -79,6 +81,7 @@ fun Sidebar(
                                 else -> { }
                             }
                         },
+                        enabled = buttonsEnabled,
                         colors = IconButtonDefaults.filledIconButtonColors(),
                         shape = ShapeDefaults.Medium,
                         modifier = Modifier.size(48.dp)
@@ -100,6 +103,7 @@ fun Sidebar(
                                 else -> { }
                             }
                         },
+                        enabled = buttonsEnabled,
                         colors = IconButtonDefaults.filledIconButtonColors(),
                         shape = ShapeDefaults.Medium,
                         modifier = Modifier.size(48.dp)
