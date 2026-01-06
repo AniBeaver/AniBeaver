@@ -82,7 +82,14 @@ fun Sidebar(
                             }
                         },
                         enabled = buttonsEnabled,
-                        colors = IconButtonDefaults.filledIconButtonColors(),
+                        colors = if (buttonsEnabled) {
+                            IconButtonDefaults.filledIconButtonColors()
+                        } else {
+                            IconButtonDefaults.filledIconButtonColors(
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        },
                         shape = ShapeDefaults.Medium,
                         modifier = Modifier.size(48.dp)
                     ) {
@@ -104,7 +111,14 @@ fun Sidebar(
                             }
                         },
                         enabled = buttonsEnabled,
-                        colors = IconButtonDefaults.filledIconButtonColors(),
+                        colors = if (buttonsEnabled) {
+                            IconButtonDefaults.filledIconButtonColors()
+                        } else {
+                            IconButtonDefaults.filledIconButtonColors(
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        },
                         shape = ShapeDefaults.Medium,
                         modifier = Modifier.size(48.dp)
                     ) {

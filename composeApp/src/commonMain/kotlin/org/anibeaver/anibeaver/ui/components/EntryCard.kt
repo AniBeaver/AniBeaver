@@ -1,8 +1,10 @@
 package org.anibeaver.anibeaver.ui.components
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -223,43 +225,62 @@ fun EntryCard(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        val year = entry.entryData.releaseYear
-                        val status = entry.entryData.status.toString()
-                        val schedule = entry.entryData.releasingEvery.toString()
-                        val epsProgress = entry.entryData.episodesProgress
-                        val epsTotal = entry.entryData.episodesTotal
-                        val rewatches = entry.entryData.rewatches
-                        val unitLabel = if (forManga) "chs" else "eps"
-                        val rereadLabel = if (forManga) "rereads" else "rewatches"
+                    Box(modifier = Modifier.weight(1f)) {
+                        val scrollState = rememberScrollState()
 
-                        Text(
-                            "$epsProgress/$epsTotal $unitLabel (${rewatches}x $rereadLabel) • $year • $schedule • [$status]",
-                            fontSize = 11.sp,
-                            color = Color.White.copy(alpha = 0.9f),
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState),
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            val year = entry.entryData.releaseYear
+                            val status = entry.entryData.status.toString()
+                            val schedule = entry.entryData.releasingEvery.toString()
+                            val epsProgress = entry.entryData.episodesProgress
+                            val epsTotal = entry.entryData.episodesTotal
+                            val rewatches = entry.entryData.rewatches
+                            val unitLabel = if (forManga) "chs" else "eps"
+                            val rereadLabel = if (forManga) "rereads" else "rewatches"
 
-                        TagChipRow("Genres", genreTags)
-                        TagChipRow("Studios", studioTags)
-                        TagChipRow("Authors", authorTags)
-                        TagChipRow("Tags", customTags)
-
-                        if (description.isNotBlank()) {
                             Text(
-                                description,
+                                "$epsProgress/$epsTotal $unitLabel (${rewatches}x $rereadLabel) • $year • $schedule • [$status]",
                                 fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.7f),
+                                color = Color.White.copy(alpha = 0.9f),
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
+
+                            TagChipRow("Genres", genreTags)
+                            TagChipRow("Studios", studioTags)
+                            TagChipRow("Authors", authorTags)
+                            TagChipRow("Tags", customTags)
+
+                            if (description.isNotBlank()) {
+                                Text(
+                                    description,
+                                    fontSize = 11.sp,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
                         }
+
+                        VerticalScrollbar(
+                            adapter = rememberScrollbarAdapter(scrollState),
+                            style = androidx.compose.foundation.ScrollbarStyle(
+                                minimalHeight = 16.dp,
+                                thickness = 6.dp,
+                                shape = RoundedCornerShape(3.dp),
+                                hoverDurationMillis = 300,
+                                unhoverColor = Color.LightGray.copy(alpha = 0.5f),
+                                hoverColor = Color.LightGray.copy(alpha = 0.7f)
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .fillMaxHeight()
+                        )
                     }
 
                     Spacer(modifier = Modifier.width(4.dp))

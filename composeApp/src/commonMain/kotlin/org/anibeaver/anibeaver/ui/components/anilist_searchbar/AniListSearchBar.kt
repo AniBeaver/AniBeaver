@@ -105,15 +105,18 @@ fun SearchOverlay(
     var searchText by remember { mutableStateOf("") }
     var suggestions by remember { mutableStateOf<List<SearchSuggestion>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
+    var hasNetworkError by remember { mutableStateOf(false) }
 
     LaunchedEffect(searchText) {
         if (searchText.isEmpty()) {
             suggestions = emptyList()
             isSearching = false
+            hasNetworkError = false
             return@LaunchedEffect
         }
 
         isSearching = true
+        hasNetworkError = false
         kotlinx.coroutines.delay(300)
 
         try {
@@ -137,6 +140,7 @@ fun SearchOverlay(
             )
         } catch (e: Exception) {
             isSearching = false
+            hasNetworkError = true
         }
     }
 
@@ -191,7 +195,17 @@ fun SearchOverlay(
                                 modifier = Modifier.fillMaxWidth().height(200.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    CircularProgressIndicator()
+                                    if (hasNetworkError) {
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            "No internet connection?",
+                                            color = Color.Gray,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
                             }
                         }
                         suggestions.isEmpty() && searchText.isNotEmpty() -> {
@@ -199,7 +213,17 @@ fun SearchOverlay(
                                 modifier = Modifier.fillMaxWidth().height(200.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("No results found", color = Color.Gray)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text("No results found", color = Color.Gray)
+                                    if (hasNetworkError) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            "No internet connection?",
+                                            color = Color.Gray,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
                             }
                         }
                         else -> {

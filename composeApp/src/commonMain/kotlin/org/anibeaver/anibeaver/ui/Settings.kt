@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
+import org.anibeaver.anibeaver.core.FileController
 import org.anibeaver.anibeaver.core.ImageController
 import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.core.Settings
@@ -57,18 +58,20 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = {
-                ImageController.cleanUpImagesDir()
-                showAlert("Cleaned up unused images!")
-            }) {
-                Text("Clean Up Images")
-            }
+
 
             Button(onClick = {
                 coroutineScope.launch {
-                    val result = viewModel.exportEntries()
-                    if (result != null) {
-                        showAlert("Entries exported successfully!")
+                    val filePath = viewModel.exportEntries()
+                    if (filePath != null) {
+                        showConfirmation(
+                            message = "Entries exported successfully!\n\nFile: $filePath\n\nOpen containing folder?",
+                            onAccept = {
+                                FileController.openFileInExplorer(filePath)
+                            },
+                            acceptText = "Open Folder",
+                            cancelText = "Close"
+                        )
                     } else {
                         showAlert("Export cancelled or failed.")
                     }
@@ -132,8 +135,23 @@ fun SettingsScreen(
             }) {
                 Text("Delete All Entries")
             }
-        }
 
+
+            Button(onClick = {
+                ImageController.cleanUpImagesDir()
+                showAlert("Cleaned up unused images!")
+            }) {
+                Text("Clean Up Images")
+            }
+
+
+            Button(onClick = {
+                val appDataPath = FileController.getAppDataDirectory()
+                FileController.openFolderInExplorer(appDataPath)
+            }) {
+                Text("Open Data Folder")
+            }
+        }
         Spacer(modifier = Modifier.height(8.dp))
 
         // Auto Backup

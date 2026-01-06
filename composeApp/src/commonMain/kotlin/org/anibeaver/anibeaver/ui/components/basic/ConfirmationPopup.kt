@@ -12,6 +12,8 @@ fun ConfirmationPopup(
     message: String,
     onAccept: () -> Unit,
     onDiscard: () -> Unit,
+    acceptText: String = "Yes",
+    cancelText: String = "No",
     modifier: Modifier = Modifier
 ) {
     DialoguePopup(
@@ -20,12 +22,12 @@ fun ConfirmationPopup(
         onDismiss = onDiscard,
         dismissButton = {
             Button(onClick = onDiscard) {
-                Text("No")
+                Text(cancelText)
             }
         },
         confirmButton = {
             Button(onClick = onAccept) {
-                Text("Yes")
+                Text(acceptText)
             }
         },
         modifier = modifier

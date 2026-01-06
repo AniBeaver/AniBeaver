@@ -55,5 +55,38 @@ object FileController {
             directory.createDirectories()
         }
     }
+
+    fun openFolderInExplorer(folderPath: String) {
+        try {
+            val os = System.getProperty("os.name").lowercase()
+            when {
+                os.contains("win") -> {
+                    Runtime.getRuntime().exec("explorer.exe \"$folderPath\"")
+                }
+                os.contains("mac") -> {
+                    Runtime.getRuntime().exec("open \"$folderPath\"")
+                }
+                else -> { // Linux and others
+                    Runtime.getRuntime().exec("xdg-open \"$folderPath\"")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun openFileInExplorer(filePath: String) {
+        try {
+            val file = java.io.File(filePath)
+            val parentPath = file.parent ?: return
+            openFolderInExplorer(parentPath)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun getAppDataDirectory(): String {
+        return FileKit.filesDir.path
+    }
 }
 

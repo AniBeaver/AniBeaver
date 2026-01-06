@@ -18,9 +18,11 @@ object DialogState {
     fun showConfirmation(
         message: String,
         onAccept: () -> Unit,
-        onDiscard: () -> Unit = {}
+        onDiscard: () -> Unit = {},
+        acceptText: String = "Accept",
+        cancelText: String = "Discard"
     ) {
-        currentDialog = DialogConfig.Confirmation(message, onAccept, onDiscard)
+        currentDialog = DialogConfig.Confirmation(message, onAccept, onDiscard, acceptText, cancelText)
     }
 
     fun dismiss() {
@@ -37,7 +39,9 @@ sealed class DialogConfig {
     data class Confirmation(
         val message: String,
         val onAccept: () -> Unit,
-        val onDiscard: () -> Unit
+        val onDiscard: () -> Unit,
+        val acceptText: String = "Accept",
+        val cancelText: String = "Discard"
     ) : DialogConfig()
 }
 
@@ -48,9 +52,11 @@ fun showAlert(message: String, onDismiss: () -> Unit = {}) {
 fun showConfirmation(
     message: String,
     onAccept: () -> Unit,
-    onDiscard: () -> Unit = {}
+    onDiscard: () -> Unit = {},
+    acceptText: String = "Accept",
+    cancelText: String = "Discard"
 ) {
-    DialogState.showConfirmation(message, onAccept, onDiscard)
+    DialogState.showConfirmation(message, onAccept, onDiscard, acceptText, cancelText)
 }
 
 @Composable
@@ -80,7 +86,9 @@ fun DialogPopupHost() {
                 onDiscard = {
                     DialogState.dismiss()
                     currentDialog.onDiscard()
-                }
+                },
+                acceptText = currentDialog.acceptText,
+                cancelText = currentDialog.cancelText
             )
         }
 
