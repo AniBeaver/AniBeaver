@@ -28,7 +28,7 @@ fun AutofillPopup(
     onConfirm: (AutofillResultSelection?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
     autoTriggerPull: Boolean,
-    onPullFromAniList: (priorityIndex: Int, onPulled: (ParsedAutofillData) -> Unit) -> Unit,
+    onPullFromAniList: (Int, (ParsedAutofillData) -> Unit) -> Unit,
     forManga: Boolean
 ) {
     var _autoTriggerPull = autoTriggerPull
@@ -36,7 +36,9 @@ fun AutofillPopup(
 
     if (!show) return
 
-    var priorityIndex by remember { mutableStateOf(0) }
+    var priorityIndex by remember(references) {
+        mutableStateOf(references.indexOfFirst { it.isPriority }.takeIf { it >= 0 } ?: 0)
+    }
     var autofillData by remember { mutableStateOf<ParsedAutofillData?>(null) }
     var autofillDataList by remember { mutableStateOf<List<AutofillData>>(emptyList()) }
     var showSelector by remember { mutableStateOf(false) }
@@ -60,6 +62,7 @@ fun AutofillPopup(
         autofillData = data
         showSelector = true
     }
+
 
     // update when autofillData changes
     LaunchedEffect(autofillData) {
@@ -135,17 +138,26 @@ fun AutofillPopup(
                             cachedName = ref.name,
                             onAlIdChange = { newAlIdStr ->
                                 val newList = references.toMutableList()
-                                newList[idx] = Reference(ref.note, newAlIdStr, ref.name)
+                                val current = newList[idx]
+                                newList[idx] = Reference(current.note, newAlIdStr, current.name, current.isPriority)
                                 onConfirmReorder(newList)
                             },
                             onRefNoteChange = { newNote ->
                                 val newList = references.toMutableList()
-                                newList[idx] = Reference(newNote, ref.alId, ref.name)
+                                val current = newList[idx]
+                                newList[idx] = Reference(newNote, current.alId, current.name, current.isPriority)
                                 onConfirmReorder(newList)
                             },
                             onNameChange = { newName ->
                                 val newList = references.toMutableList()
-                                newList[idx] = Reference(ref.note, ref.alId, newName)
+                                val current = newList[idx]
+                                newList[idx] = Reference(current.note, current.alId, newName, current.isPriority)
+                                onConfirmReorder(newList)
+                            },
+                            onAlIdAndNameChange = { newAlId, newName ->
+                                val newList = references.toMutableList()
+                                val current = newList[idx]
+                                newList[idx] = Reference(current.note, newAlId, newName, current.isPriority)
                                 onConfirmReorder(newList)
                             },
                             onDelete = {
@@ -154,36 +166,44 @@ fun AutofillPopup(
                                 onConfirmReorder(newList)
                             },
                             onMoveUp = if (idx > 0) {
-                            {
-                                val newList = references.toMutableList()
-                                newList.removeAt(idx)
-                                newList.add(idx - 1, ref)
-                                onConfirmReorder(newList)
-                            }
-                        } else null,
-                        onMoveDown = if (idx < references.lastIndex) {
-                            {
-                                val newList = references.toMutableList()
-                                newList.removeAt(idx)
-                                newList.add(idx + 1, ref)
-                                onConfirmReorder(newList)
-                            }
-                        } else null,
-                        isPriority = idx == priorityIndex,
-                        onPrioritySelected = { priorityIndex = idx },
-                        forManga = forManga
-                    )
+                                {
+                                    val newList = references.toMutableList()
+                                    val item = newList.removeAt(idx)
+                                    newList.add(idx - 1, item)
+                                    onConfirmReorder(newList)
+                                }
+                            } else null,
+                            onMoveDown = if (idx < references.lastIndex) {
+                                {
+                                    val newList = references.toMutableList()
+                                    val item = newList.removeAt(idx)
+                                    newList.add(idx + 1, item)
+                                    onConfirmReorder(newList)
+                                }
+                            } else null,
+                            isPriority = idx == priorityIndex,
+                            onPrioritySelected = {
+                                priorityIndex = idx
+                                val updatedList = references.mapIndexed { i, ref ->
+                                    ref.copy(isPriority = i == idx)
+                                }
+                                onConfirmReorder(updatedList)
+                            },
+                            forManga = forManga
+                        )
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Button(onClick = {
+                        // Add with Season default then place at end; user can set priority and it will reorder
                         onAddReference(
                             Reference(
-                                "",
-                                ""
+                                note = "Season",
+                                alId = "",
+                                name = ""
                             )
                         )
-                    }) { Text("Add Reference") } //FIXME: either reload or hide the AutofillSelectorUI, because it doesn't get updated by itself. Potentially annoying logic for preselected parts
+                    }) { Text("Add Reference") }
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         onClick = {
@@ -475,4 +495,3 @@ private fun SectionWithCheckAll(
         }
     }
 }
-

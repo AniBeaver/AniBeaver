@@ -67,7 +67,8 @@ class AppViewModel(
                 org.anibeaver.anibeaver.core.datastructures.Reference(
                     note = it.note,
                     alId = it.anilistId,
-                    name = it.name
+                    name = it.name,
+                    isPriority = it.isPriority
                 )
             }
             entryController.addEntry(

@@ -140,7 +140,8 @@ class AnimeViewModel(
                     note = ref.note,
                     anilistId = ref.alId,
                     name = ref.name,
-                    orderIndex = index
+                    orderIndex = index,
+                    isPriority = ref.isPriority
                 )
             }
             if (referenceEntities.isNotEmpty()) {
@@ -250,7 +251,8 @@ class AnimeViewModel(
                 org.anibeaver.anibeaver.core.datastructures.Reference(
                     note = it.note,
                     alId = it.anilistId,
-                    name = it.name
+                    name = it.name,
+                    isPriority = it.isPriority
                 )
             }
             EntriesController.addEntry(

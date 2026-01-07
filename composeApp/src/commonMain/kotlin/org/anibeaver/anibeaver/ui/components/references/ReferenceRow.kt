@@ -36,6 +36,7 @@ fun ReferenceRow(
     isPriority: Boolean = false,
     onPrioritySelected: (() -> Unit)? = null,
     forManga: Boolean = false,
+    onAlIdAndNameChange: ((String, String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var selectedName by remember(alId, cachedName) { mutableStateOf(cachedName) }
@@ -93,10 +94,15 @@ fun ReferenceRow(
             alId = alId,
             selectedName = selectedName,
             onSelectionChange = { id, name ->
-                onAlIdChange(id)
                 selectedName = name
-                onNameChange(name)
                 hasFetchedName = true
+                // Use atomic update if available to avoid race condition
+                if (onAlIdAndNameChange != null) {
+                    onAlIdAndNameChange(id, name)
+                } else {
+                    onAlIdChange(id)
+                    onNameChange(name)
+                }
             },
             type = if (forManga) "MANGA" else "ANIME"
         )

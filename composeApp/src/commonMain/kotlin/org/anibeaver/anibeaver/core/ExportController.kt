@@ -44,7 +44,8 @@ data class ExportReference(
     val note: String,
     val anilistId: String,
     val name: String = "",
-    val orderIndex: Int
+    val orderIndex: Int,
+    val isPriority: Boolean = false
 )
 
 @Serializable
@@ -105,7 +106,8 @@ object ExportController {
                         note = ref.note,
                         anilistId = ref.anilistId,
                         name = ref.name,
-                        orderIndex = ref.orderIndex
+                        orderIndex = ref.orderIndex,
+                        isPriority = ref.isPriority
                     )
                 } ?: emptyList()
             )
@@ -168,7 +170,8 @@ object ExportController {
                     note = ref.note,
                     anilistId = ref.anilistId,
                     name = ref.name,
-                    orderIndex = ref.orderIndex
+                    orderIndex = ref.orderIndex,
+                    isPriority = ref.isPriority
                 )
             }
         }

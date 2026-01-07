@@ -23,5 +23,6 @@ data class ReferenceEntity(
     val note: String,
     val anilistId: String,
     val name: String = "",
-    val orderIndex: Int
+    val orderIndex: Int,
+    val isPriority: Boolean = false
 )

@@ -25,7 +25,7 @@ import org.anibeaver.anibeaver.db.entities.TagEntity
         EntryTagEntity::class,
         ReferenceEntity::class
     ],
-    version = 6
+    version = 7
 )
 @TypeConverters(DatabaseConverters::class)
 @ConstructedBy(AppDatabaseConstructor::class)
