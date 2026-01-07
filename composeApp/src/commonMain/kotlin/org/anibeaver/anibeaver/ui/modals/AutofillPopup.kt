@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.api.jsonStructures.AutofillData
 import org.anibeaver.anibeaver.core.AutofillController
@@ -54,6 +56,7 @@ fun AutofillPopup(
     var yearChecked by remember { mutableStateOf(true) }
 
     var hasEverPulled by remember { mutableStateOf(false) }
+    var isOutdated by remember { mutableStateOf(false) }
 
     if (!show) return
 
@@ -61,13 +64,15 @@ fun AutofillPopup(
 //    val runtime = autofillData?.runtime ?: 0 // FIXME: why this unused?
 
     LaunchedEffect(references) {
-        showSelector = false
-        autofillData = null
+        if (autofillData != null) {
+            isOutdated = true
+        }
     }
 
     fun onPull(data: ParsedAutofillData) {
         autofillData = data
         showSelector = true
+        isOutdated = false
         if (!hasEverPulled) {
             hasEverPulled = true
             selectedStudios = data.studios.filter { it.isNotBlank() }.toSet()
@@ -91,28 +96,31 @@ fun AutofillPopup(
         confirmButton = {
 
             if (autofillData != null) {
-                Button(onClick = {
-                    val year = if (yearRadioIdx == 0) autofillData!!.startYear else autofillData!!.endYear
-                    val name = nameOptions.getOrNull(selectedNameIdx) ?: ""
-                    val selection = AutofillResultSelection(
-                        year = year,
-                        name = name,
-                        studios = selectedStudios.toList(),
-                        author = selectedAuthor.toList(),
-                        genres = selectedGenres.toList(),
-                        tags = selectedTags.toList(),
-                        cover = if (coverChecked) autofillData!!.cover_link else null,
-                        banner = if (bannerChecked) autofillData!!.banner_link else null,
-                        airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else ReleaseSchedule.Monday,
-                        episodes = if (epsChecked) totalEpisodes else null
-                    )
-                    showConfirmation(
-                        message = "Apply autofill data to this entry? This will overwrite existing data.",
-                        onAccept = {
-                            onConfirm(selection)
-                        }
-                    )
-                }) {
+                Button(
+                    onClick = {
+                        val year = if (yearRadioIdx == 0) autofillData!!.startYear else autofillData!!.endYear
+                        val name = nameOptions.getOrNull(selectedNameIdx) ?: ""
+                        val selection = AutofillResultSelection(
+                            year = year,
+                            name = name,
+                            studios = selectedStudios.toList(),
+                            author = selectedAuthor.toList(),
+                            genres = selectedGenres.toList(),
+                            tags = selectedTags.toList(),
+                            cover = if (coverChecked) autofillData!!.cover_link else null,
+                            banner = if (bannerChecked) autofillData!!.banner_link else null,
+                            airingSchedule = if (airingChecked) autofillData!!.airingScheduleWeekday else ReleaseSchedule.Monday,
+                            episodes = if (epsChecked) totalEpisodes else null
+                        )
+                        showConfirmation(
+                            message = "Apply autofill data to this entry? This will overwrite existing data.",
+                            onAccept = {
+                                onConfirm(selection)
+                            }
+                        )
+                    },
+                    enabled = !isOutdated
+                ) {
                     Text("Update Entry With These")
                 }
             }
@@ -193,7 +201,6 @@ fun AutofillPopup(
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Button(onClick = {
-                        // Add with Season default then place at end; user can set priority and it will reorder
                         onAddReference(
                             Reference(
                                 note = "Season",
@@ -203,14 +210,25 @@ fun AutofillPopup(
                         )
                     }) { Text("Add Reference") }
                     Spacer(modifier = Modifier.weight(1f))
+                    if (isOutdated) {
+                        Text(
+                            "Outdated information.\nPlease re-pull:",
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Right,
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     Button(
                         onClick = {
                             onPullFromAniList(priorityIndex) { data -> onPull(data) }
                         },
                         enabled = references.isNotEmpty() &&
                                   references.any { it.alId.isNotBlank() } &&
-                                  references.all { it.alId.isBlank() || AutofillController.idIsValid(it.alId) }
-                    ) { Text("Pull from AniList") }
+                                  references.all { it.alId.isBlank() || AutofillController.idIsValid(it.alId) },
+                        modifier = Modifier.width(200.dp)
+                    ) {
+                        Text("Pull from AniList")
+                    }
                 }
                 if (showSelector && autofillData != null) {
                     AutofillSelectorUI(
@@ -242,7 +260,8 @@ fun AutofillPopup(
                         onNameCheckedChange = { nameChecked = it },
                         yearChecked = yearChecked,
                         onYearCheckedChange = { yearChecked = it },
-                        forManga = forManga
+                        forManga = forManga,
+                        isOutdated = isOutdated
                     )
                 }
             }
@@ -280,7 +299,8 @@ private fun AutofillSelectorUI(
     onNameCheckedChange: (Boolean) -> Unit,
     yearChecked: Boolean,
     onYearCheckedChange: (Boolean) -> Unit,
-    forManga: Boolean
+    forManga: Boolean,
+    isOutdated: Boolean
 ) {
 
     val scrollState = rememberScrollState()
@@ -290,7 +310,8 @@ private fun AutofillSelectorUI(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
-                .padding(8.dp),
+                .padding(8.dp)
+                .alpha(if (isOutdated) 0.5f else 1f),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
