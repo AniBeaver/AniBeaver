@@ -162,39 +162,37 @@ fun EditEntryPopup(
     if (show) {
         val coroutineScope = rememberCoroutineScope()
 
-        if (showAutofillPopup) {
-            AutofillPopup(
-                show = showAutofillPopup,
-                references = references,
-                onAddReference = { newRef -> references = references + newRef },
-                onDeleteReference = { ref -> references = references.filter { it != ref } },
-                onUpdateReference = { oldRef, newRef ->
-                    references = references.map { if (it == oldRef) newRef else it }
-                },
-                onDismiss = { showAutofillPopup = false },
-                onConfirm = { selection ->
-                    showAutofillPopup = false
-                    selection?.let {
-                        coroutineScope.launch {
-                            applyAutofillSelection(it)
-                        }
+        AutofillPopup(
+            show = showAutofillPopup,
+            references = references,
+            onAddReference = { newRef -> references = references + newRef },
+            onDeleteReference = { ref -> references = references.filter { it != ref } },
+            onUpdateReference = { oldRef, newRef ->
+                references = references.map { if (it == oldRef) newRef else it }
+            },
+            onDismiss = { showAutofillPopup = false },
+            onConfirm = { selection ->
+                showAutofillPopup = false
+                selection?.let {
+                    coroutineScope.launch {
+                        applyAutofillSelection(it)
                     }
-                },
-                onConfirmReorder = { newList -> references = newList },
-                autoTriggerPull = forceShowAutofillPopup,
-                onPullFromAniList = { priorityIndex, onPulled ->
-                    val referenceIds = references.map { it.alId }
-                    AutofillController.pullParsedAutofill(
-                        referenceIds,
-                        { result -> onPulled(result) },
-                        coroutineScope,
-                        priorityIndex,
-                        onError = { errorMsg -> showAlert(errorMsg) }
-                    )
-                },
-                forManga = forManga
-            )
-        }
+                }
+            },
+            onConfirmReorder = { newList -> references = newList },
+            autoTriggerPull = false, // forceShowAutofillPopup, //TODO: maybe revert this; Changed it because happened not only once but multiple times
+            onPullFromAniList = { priorityIndex, onPulled ->
+                val referenceIds = references.map { it.alId }
+                AutofillController.pullParsedAutofill(
+                    referenceIds,
+                    { result -> onPulled(result) },
+                    coroutineScope,
+                    priorityIndex,
+                    onError = { errorMsg -> showAlert(errorMsg) }
+                )
+            },
+            forManga = forManga
+        )
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
             Button(
                 onClick = {

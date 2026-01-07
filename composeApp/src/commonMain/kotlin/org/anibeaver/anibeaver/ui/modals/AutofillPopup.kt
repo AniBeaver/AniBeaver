@@ -33,9 +33,6 @@ fun AutofillPopup(
 ) {
     var _autoTriggerPull = autoTriggerPull
 
-
-    if (!show) return
-
     var priorityIndex by remember(references) {
         mutableStateOf(references.indexOfFirst { it.isPriority }.takeIf { it >= 0 } ?: 0)
     }
@@ -43,7 +40,7 @@ fun AutofillPopup(
     var autofillDataList by remember { mutableStateOf<List<AutofillData>>(emptyList()) }
     var showSelector by remember { mutableStateOf(false) }
     var selectedNameIdx by remember { mutableStateOf(0) }
-    var yearRadioIdx by remember { mutableStateOf(0) } // 0 = start, 1 = end
+    var yearRadioIdx by remember { mutableStateOf(0) }
 
     var selectedStudios by remember { mutableStateOf(emptySet<String>()) }
     var selectedAuthor by remember { mutableStateOf(emptySet<String>()) }
@@ -55,29 +52,30 @@ fun AutofillPopup(
     var epsChecked by remember { mutableStateOf(true) }
     var nameChecked by remember { mutableStateOf(true) }
     var yearChecked by remember { mutableStateOf(true) }
+
+    var hasEverPulled by remember { mutableStateOf(false) }
+
+    if (!show) return
+
     val totalEpisodes = autofillData?.eps_total ?: 0
 //    val runtime = autofillData?.runtime ?: 0 // FIXME: why this unused?
+
+    LaunchedEffect(references) {
+        showSelector = false
+        autofillData = null
+    }
 
     fun onPull(data: ParsedAutofillData) {
         autofillData = data
         showSelector = true
+        if (!hasEverPulled) {
+            hasEverPulled = true
+            selectedStudios = data.studios.filter { it.isNotBlank() }.toSet()
+            selectedAuthor = data.author.filter { it.isNotBlank() }.toSet()
+        }
     }
 
-
-    // update when autofillData changes
     LaunchedEffect(autofillData) {
-        if (autofillData != null) {
-            selectedStudios = autofillData!!.studios.filter { it.isNotBlank() }.toSet()
-            selectedAuthor = autofillData!!.author.filter { it.isNotBlank() }.toSet()
-            selectedGenres = emptySet()
-            selectedTags = emptySet()
-            coverChecked = true
-            bannerChecked = true
-            airingChecked = true
-            epsChecked = true
-            nameChecked = true
-            yearChecked = true
-        }
         if (_autoTriggerPull) onPullFromAniList(
             0,
             { data -> _autoTriggerPull = false; onPull(data) }) //FIXME: here, auto trigger pull doesn't work
