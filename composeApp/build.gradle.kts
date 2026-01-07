@@ -120,7 +120,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
     }
     packaging {
         resources {
@@ -159,9 +159,26 @@ compose.desktop {
         mainClass = "org.anibeaver.anibeaver.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "org.anibeaver.anibeaver"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
+            packageName = "AniBeaver"
             packageVersion = "1.0.0"
+
+            windows {
+                menuGroup = "AniBeaver"
+                upgradeUuid = "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6"
+            }
+
+            macOS {
+                bundleID = "org.anibeaver.anibeaver"
+            }
+
+            linux {
+                packageName = "anibeaver"
+            }
+        }
+
+        buildTypes.release.proguard {
+            isEnabled.set(false)
         }
 
         jvmArgs += "-Dapple.awt.application.appearance=NSAppearanceNameDarkAqua"
