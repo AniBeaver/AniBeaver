@@ -120,7 +120,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "0.1.0"
     }
     packaging {
         resources {
@@ -161,19 +161,25 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "AniBeaver"
-            packageVersion = "1.0.0"
+            packageVersion = "0.1.0"
+
+            modules("java.instrument", "java.management", "jdk.unsupported")
 
             windows {
                 menuGroup = "AniBeaver"
                 upgradeUuid = "a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6"
+                iconFile.set(project.file("src/desktopMain/resources/abvr_icon.ico"))
             }
 
             macOS {
                 bundleID = "org.anibeaver.anibeaver"
+                packageVersion = "1.0.0"  // macOS requires MAJOR version > 0
+                iconFile.set(project.file("src/desktopMain/resources/abvr_icon.png"))
             }
 
             linux {
                 packageName = "anibeaver"
+                iconFile.set(project.file("src/desktopMain/resources/abvr_icon.png"))
             }
         }
 
