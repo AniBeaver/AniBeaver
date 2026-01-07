@@ -320,7 +320,7 @@ private fun AutofillSelectorUI(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.offset(x = (-10).dp)) {
                 Checkbox(checked = nameChecked, onCheckedChange = { checked -> onNameCheckedChange(checked) })
                 Text("Sync name:", style = MaterialTheme.typography.titleMedium)
             }
@@ -340,33 +340,34 @@ private fun AutofillSelectorUI(
                     }
                 }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.offset(x = (-10).dp)) {
                 Checkbox(checked = yearChecked, onCheckedChange = { checked -> onYearCheckedChange(checked) })
                 Text("Sync year:", style = MaterialTheme.typography.titleMedium)
-
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                RadioButton(
-                    selected = yearRadioIdx == 0,
-                    onClick = { onYearRadioIdxChange(0) },
-                    enabled = yearChecked
-                )
-                Text("Start: ${autofill.startYear}")
-                Spacer(modifier = Modifier.width(16.dp))
-                RadioButton(
-                    selected = yearRadioIdx == 1,
-                    onClick = { onYearRadioIdxChange(1) },
-                    enabled = yearChecked
-
-                )
-                Text("End: ${autofill.endYear}")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = yearRadioIdx == 0,
+                        onClick = { onYearRadioIdxChange(0) },
+                        enabled = yearChecked
+                    )
+                    Text("Start: ${autofill.startYear}")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = yearRadioIdx == 1,
+                        onClick = { onYearRadioIdxChange(1) },
+                        enabled = yearChecked
+                    )
+                    Text("End: ${autofill.endYear}")
+                }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                Text("Sync:", style = MaterialTheme.typography.titleMedium)
+                Text("General:", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     onClick = {
@@ -444,7 +445,7 @@ private fun AutofillSelectorUI(
                 onSelectionChange = onSelectedTagsChange
             )
             Text(
-                "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The " + if (forManga) "manga has a total of ${autofill.runtime} volumes." else "anime has a total runtime of ${
+                "Note: the community score is: ${formatOneDecimal(autofill.avg_score)}%. The " + if (forManga) "manga has a total of ${autofill.runtime} volumes." else "anime has a total runtime of ~${
                     formatMinutes(
                         autofill.runtime
                     )
