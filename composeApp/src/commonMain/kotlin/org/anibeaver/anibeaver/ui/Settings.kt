@@ -12,10 +12,10 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.anibeaver.anibeaver.core.FileController
 import org.anibeaver.anibeaver.core.ImageController
-import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.core.Settings
-import org.anibeaver.anibeaver.ui.components.basic.IntPicker
+import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.ui.components.ColorPicker
+import org.anibeaver.anibeaver.ui.components.basic.IntPicker
 import org.anibeaver.anibeaver.ui.components.showAlert
 import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.theme.Typography

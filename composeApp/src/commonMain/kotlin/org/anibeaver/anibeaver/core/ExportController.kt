@@ -3,7 +3,7 @@ package org.anibeaver.anibeaver.core
 import io.github.vinceglb.filekit.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.anibeaver.anibeaver.core.datastructures.*
+import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
 import org.anibeaver.anibeaver.db.entities.ReferenceEntity
 import org.anibeaver.anibeaver.db.entities.TagEntity

@@ -2,25 +2,20 @@ package org.anibeaver.anibeaver
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.RoomDatabase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import androidx.room.RoomDatabase
-import org.koin.core.component.inject
-import org.koin.core.component.KoinComponent
-
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.ExportController
 import org.anibeaver.anibeaver.core.SettingsController
 import org.anibeaver.anibeaver.core.TagsController
-import org.anibeaver.anibeaver.core.datastructures.Art
-import org.anibeaver.anibeaver.core.datastructures.EntryData
-import org.anibeaver.anibeaver.core.datastructures.EntryType
-import org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule
-import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.datastructures.*
+import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.getRoomDatabase
-import org.anibeaver.anibeaver.db.AppDatabase
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class AppViewModel(
 ) : ViewModel(), KoinComponent  {

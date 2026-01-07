@@ -1,6 +1,6 @@
 package org.anibeaver.anibeaver.api
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
 
 abstract class ApiAuthorizationHandler (private val context: Any?){
     abstract fun openUrl (url : String)

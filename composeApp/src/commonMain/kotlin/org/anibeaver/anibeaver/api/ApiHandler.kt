@@ -1,20 +1,16 @@
 package org.anibeaver.anibeaver.api
 
-import org.anibeaver.anibeaver.api.jsonStructures.*
-import org.anibeaver.anibeaver.api.ApiAuthorizationHandler
-
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Contextual
-
+import kotlinx.serialization.json.Json
+import org.anibeaver.anibeaver.api.jsonStructures.*
 import kotlin.reflect.KClass
 
 class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){

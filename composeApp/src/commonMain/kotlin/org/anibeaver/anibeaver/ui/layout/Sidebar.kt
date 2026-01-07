@@ -4,8 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,7 +20,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import anibeaver.composeapp.generated.resources.Res
 import anibeaver.composeapp.generated.resources.abvr_icon
-
 import org.anibeaver.anibeaver.NavItemPosition
 import org.anibeaver.anibeaver.Screens
 import org.anibeaver.anibeaver.ui.components.basic.DarkTooltipBox
