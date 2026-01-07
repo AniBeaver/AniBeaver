@@ -260,20 +260,31 @@ class AnimeViewModel(
                 EntryData(
                     title = entry.animeName,
                     releaseYear = entry.releaseYear,
-                    studioIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO)?.map { it.id }
+                    studioIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO)
+                        ?.map { it.id }
                         ?: entry.studioTagIds,
-                    authorIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.AUTHOR)?.map { it.id }
+                    authorIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.AUTHOR)
+                        ?.map { it.id }
                         ?: entry.authorTagIds,
-                    genreIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.GENRE)?.map { it.id }
+                    genreIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.GENRE)
+                        ?.map { it.id }
                         ?: entry.genreTagIds,
                     description = entry.description,
                     rating = entry.rating,
                     status = Status.fromId(entry.status) ?: EntryData().status,
-                    releasingEvery = org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
-                    tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)?.map { it.id }
+                    releasingEvery = org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule.fromId(entry.releasingEvery)
+                        ?: EntryData().releasingEvery,
+                    tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)
+                        ?.map { it.id }
                         ?: entry.customTagIds,
-                    coverArt = org.anibeaver.anibeaver.core.datastructures.Art(source = entry.coverArtSource, localPath = entry.coverArtLocalPath),
-                    bannerArt = org.anibeaver.anibeaver.core.datastructures.Art(source = entry.bannerArtSource, localPath = entry.bannerArtLocalPath),
+                    coverArt = org.anibeaver.anibeaver.core.datastructures.Art(
+                        source = entry.coverArtSource,
+                        localPath = entry.coverArtLocalPath
+                    ),
+                    bannerArt = org.anibeaver.anibeaver.core.datastructures.Art(
+                        source = entry.bannerArtSource,
+                        localPath = entry.bannerArtLocalPath
+                    ),
                     episodesTotal = entry.episodesTotal,
                     episodesProgress = entry.episodesProgress,
                     rewatches = entry.rewatches,

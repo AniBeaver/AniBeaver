@@ -61,9 +61,11 @@ object FileController {
                 os.contains("win") -> {
                     Runtime.getRuntime().exec("explorer.exe \"$folderPath\"")
                 }
+
                 os.contains("mac") -> {
                     Runtime.getRuntime().exec("open \"$folderPath\"")
                 }
+
                 else -> { // Linux and others
                     Runtime.getRuntime().exec("xdg-open \"$folderPath\"")
                 }

@@ -28,7 +28,8 @@ class OAuthLocalServer(
         return Base64.UrlSafe.encode(bytes).replace("=", "")
     }
 
-    @Serializable private data class FinishPayload(val token: String, val nonce: String)
+    @Serializable
+    private data class FinishPayload(val token: String, val nonce: String)
 
     private val server = embeddedServer(CIO, port = port, host = "127.0.0.1") {
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
@@ -46,7 +47,7 @@ class OAuthLocalServer(
                         httpOnly = false, // must be readable by the callback page JS
                         extensions = (
                                 mapOf("SameSite" to "Lax")
-                        )
+                                )
                     )
                 )
                 // You open this in the browser; AniList will redirect back to /callback#access_token=...

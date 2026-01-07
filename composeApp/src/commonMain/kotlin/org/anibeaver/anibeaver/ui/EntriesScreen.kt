@@ -175,9 +175,9 @@ fun EntriesScreen(
 
             FilterPopup(
                 show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
-                filterState.onFilterChange(data)
-                showFilter = false
-            }, initialFilter = filterState.filterData
+                    filterState.onFilterChange(data)
+                    showFilter = false
+                }, initialFilter = filterState.filterData
             )
             NewTagPopup(
                 show = showNewTagPopupFromManage,

@@ -6,7 +6,6 @@ class Entry internal constructor(
     var entryData: EntryData = EntryData(), id: Int? = null
 ) {
     internal val id: Int = id ?: retrieveValidId()
-        get() = field
 
     private fun retrieveValidId(): Int {
         return EntriesController.getValidEntryId()
@@ -22,7 +21,9 @@ class Entry internal constructor(
         val minYear = filterData.minYear?.toIntOrNull() ?: -1
         val maxYear = filterData.maxYear?.toIntOrNull() ?: Int.MAX_VALUE
         val entryYear = entryData.releaseYear.toIntOrNull() ?: 0
-        if ((entryYear < minYear || entryYear > maxYear) && entryYear != 0) { return false } //FIXME: for now, 0 year means undefined, so true for all filters - but maybe add better constraints (UI/core)
+        if ((entryYear < minYear || entryYear > maxYear) && entryYear != 0) {
+            return false
+        } //FIXME: for now, 0 year means undefined, so true for all filters - but maybe add better constraints (UI/core)
 
         val minRating: Float = (filterData.minRating ?: -1) as Float
         val maxRating = filterData.maxRating ?: Float.MAX_VALUE
@@ -35,13 +36,13 @@ class Entry internal constructor(
         val selectedGenreTags = filterData.selectedTagIds.filter { Tag.getTypeById(it) == TagType.GENRE }
 
         val customMatch = selectedCustomTags.isEmpty() || selectedCustomTags.any { it in entryData.tagIds }
-        val studioMatch = entryData.type == EntryType.Manga || selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
-        val authorMatch = entryData.type == EntryType.Anime ||selectedAuthorTags.isEmpty() || selectedAuthorTags.any { it in entryData.authorIds }
+        val studioMatch =
+            entryData.type == EntryType.Manga || selectedStudioTags.isEmpty() || selectedStudioTags.any { it in entryData.studioIds }
+        val authorMatch =
+            entryData.type == EntryType.Anime || selectedAuthorTags.isEmpty() || selectedAuthorTags.any { it in entryData.authorIds }
         val genreMatch = selectedGenreTags.isEmpty() || selectedGenreTags.any { it in entryData.genreIds }
 
-        if (!customMatch || !studioMatch || !authorMatch || !genreMatch) { return false }
-
-        return true
+        return !(!customMatch || !studioMatch || !authorMatch || !genreMatch)
     }
 }
 

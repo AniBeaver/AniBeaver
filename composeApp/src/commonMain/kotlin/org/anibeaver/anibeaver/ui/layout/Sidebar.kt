@@ -69,7 +69,8 @@ fun Sidebar(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                val buttonsEnabled = selectedDestination == Screens.Anime.name || selectedDestination == Screens.Manga.name
+                val buttonsEnabled =
+                    selectedDestination == Screens.Anime.name || selectedDestination == Screens.Manga.name
 
                 DarkTooltipBox(tooltip = "Quick add entry") {
                     FilledIconButton(
@@ -77,7 +78,7 @@ fun Sidebar(
                             when (selectedDestination) {
                                 Screens.Anime.name -> onQuickSearch(false) { }
                                 Screens.Manga.name -> onQuickSearch(true) { }
-                                else -> { }
+                                else -> {}
                             }
                         },
                         enabled = buttonsEnabled,
@@ -106,7 +107,7 @@ fun Sidebar(
                             when (selectedDestination) {
                                 Screens.Anime.name -> onCreateEntry(false)
                                 Screens.Manga.name -> onCreateEntry(true)
-                                else -> { }
+                                else -> {}
                             }
                         },
                         enabled = buttonsEnabled,

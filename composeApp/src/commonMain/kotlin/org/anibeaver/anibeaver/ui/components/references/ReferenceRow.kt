@@ -52,7 +52,8 @@ fun ReferenceRow(
                 apiHandler.makeRequest(
                     variables = mapOf("mediaId" to alId),
                     valueSetter = ValueSetter { mediaQuery: MediaQuery ->
-                        val name = mediaQuery.data.media.title.english ?: ""  //TODO: not only the english name! But how to decide which?
+                        val name = mediaQuery.data.media.title.english
+                            ?: ""  //TODO: not only the english name! But how to decide which?
                         selectedName = name
                         onNameChange(name)
                         hasFetchedName = true
@@ -117,6 +118,7 @@ fun ReferenceRow(
                     color = Color.Gray,
                     fontWeight = FontWeight.Normal
                 )
+
                 idIsValid(alId) -> Text(
                     text = "Link",
                     color = Color(0xFF1976D2),

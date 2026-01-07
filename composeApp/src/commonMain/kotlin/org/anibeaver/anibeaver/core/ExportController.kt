@@ -304,11 +304,7 @@ object ExportController {
         referencesMap: Map<Int, List<ReferenceEntity>>,
         tags: List<TagEntity>
     ): Boolean {
-        if (!hasContentChanged(entries, referencesMap, tags)) {
-            return false
-        }
-
-        return true
+        return hasContentChanged(entries, referencesMap, tags)
     }
 
     suspend fun autoBackupIfNeeded(

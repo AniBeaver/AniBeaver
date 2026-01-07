@@ -100,7 +100,8 @@ fun AutofillPopup(
 
     LaunchedEffect(show) {
         if (show && autofillData == null && references.isNotEmpty() &&
-            references.any { it.alId.isNotBlank() && AutofillController.idIsValid(it.alId) }) {
+            references.any { it.alId.isNotBlank() && AutofillController.idIsValid(it.alId) }
+        ) {
             onPullFromAniList(priorityIndex) { data -> onPull(data) }
         }
     }
@@ -242,8 +243,8 @@ fun AutofillPopup(
                             onPullFromAniList(priorityIndex) { data -> onPull(data) }
                         },
                         enabled = references.isNotEmpty() &&
-                                  references.any { it.alId.isNotBlank() } &&
-                                  references.all { it.alId.isBlank() || AutofillController.idIsValid(it.alId) },
+                                references.any { it.alId.isNotBlank() } &&
+                                references.all { it.alId.isBlank() || AutofillController.idIsValid(it.alId) },
                         modifier = Modifier.width(200.dp)
                     ) {
                         Text("Pull from AniList")

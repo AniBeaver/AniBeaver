@@ -18,7 +18,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AppViewModel(
-) : ViewModel(), KoinComponent  {
+) : ViewModel(), KoinComponent {
     private val databaseBuilder: RoomDatabase.Builder<AppDatabase> by inject()
     private val database = getRoomDatabase(databaseBuilder)
     private val animeDao = database.getDao()
@@ -41,7 +41,7 @@ class AppViewModel(
         TagsController.clear()
         val tags = tagDao.getAllTags()
         TagsController.addAllTags(tags.map { tag ->
-            org.anibeaver.anibeaver.core.datastructures.Tag(
+            Tag(
                 name = tag.name,
                 color = tag.color,
                 type = tag.type,
@@ -59,7 +59,7 @@ class AppViewModel(
             if (entryController.entries.any { it.id == entry.id }) continue
             val relation = tagsByEntry[entry.id]
             val references = referenceDao.getByEntryId(entry.id).map {
-                org.anibeaver.anibeaver.core.datastructures.Reference(
+                Reference(
                     note = it.note,
                     alId = it.anilistId,
                     name = it.name,
@@ -71,17 +71,21 @@ class AppViewModel(
                 EntryData(
                     title = entry.animeName,
                     releaseYear = entry.releaseYear,
-                    studioIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO)?.map { it.id }
+                    studioIds = relation?.tagsByType(TagType.STUDIO)
+                        ?.map { it.id }
                         ?: entry.studioTagIds,
-                    authorIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.AUTHOR)?.map { it.id }
+                    authorIds = relation?.tagsByType(TagType.AUTHOR)
+                        ?.map { it.id }
                         ?: entry.authorTagIds,
-                    genreIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.GENRE)?.map { it.id }
+                    genreIds = relation?.tagsByType(TagType.GENRE)
+                        ?.map { it.id }
                         ?: entry.genreTagIds,
                     description = entry.description,
                     rating = entry.rating,
                     status = Status.fromId(entry.status) ?: EntryData().status,
                     releasingEvery = ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
-                    tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)?.map { it.id }
+                    tagIds = relation?.tagsByType(TagType.CUSTOM)
+                        ?.map { it.id }
                         ?: entry.customTagIds,
                     coverArt = Art(source = entry.coverArtSource, localPath = entry.coverArtLocalPath),
                     bannerArt = Art(source = entry.bannerArtSource, localPath = entry.bannerArtLocalPath),

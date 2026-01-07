@@ -22,6 +22,7 @@ data class MediaListCollection(
 data class MediaList(
     val entries: List<MediaEntry>
 )
+
 @Serializable
 data class MediaEntry(
     val media: Media

@@ -66,7 +66,7 @@ fun App(
 
     // On app start, populate the EntryController with the entries from the database
     // While our app is open, the EntryController is the source of truth for entries
-    val appViewModel: AppViewModel = remember { AppViewModel() }
+    remember { AppViewModel() }
     val sharedAnimeViewModel: AnimeViewModel = remember { AnimeViewModel() }
 
     var showEntryPopup by remember { mutableStateOf(false) }
@@ -100,31 +100,31 @@ fun App(
                     Box(modifier = Modifier.weight(1f).padding(padding)) {
                         NavHost(
                             navController = navController, startDestination = Screens.Anime.name, enterTransition = {
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                            )
-                        }, exitTransition = {
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
-                            )
-                        }, popEnterTransition = {
-                            slideIntoContainer(
-                                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                            )
-                        }, popExitTransition = {
-                            slideOutOfContainer(
-                                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-                            )
-                        }, modifier = Modifier.fillMaxHeight(1f).verticalScroll(rememberScrollState())
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                                )
+                            }, exitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
+                                )
+                            }, popEnterTransition = {
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                                )
+                            }, popExitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                                )
+                            }, modifier = Modifier.fillMaxHeight(1f).verticalScroll(rememberScrollState())
                         ) {
 //                            composable(route = Screens.Home.name) {
 //                                HomeScreen(navController, sharedAnimeViewModel)
 //                            }
                             composable(route = Screens.Anime.name) {
-                                EntriesScreen(navController, forManga=false, viewModel = sharedAnimeViewModel)
+                                EntriesScreen(navController, forManga = false, viewModel = sharedAnimeViewModel)
                             }
                             composable(route = Screens.Manga.name) {
-                                EntriesScreen(navController, forManga=true, viewModel = sharedAnimeViewModel)
+                                EntriesScreen(navController, forManga = true, viewModel = sharedAnimeViewModel)
                             }
                             composable(route = Screens.Info.name) {
                                 InfoScreen(paddingValues)

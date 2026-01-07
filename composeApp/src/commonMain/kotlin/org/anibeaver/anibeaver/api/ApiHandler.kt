@@ -13,9 +13,9 @@ import kotlinx.serialization.json.Json
 import org.anibeaver.anibeaver.api.jsonStructures.*
 import kotlin.reflect.KClass
 
-class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
+class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler) {
 
-    val client : HttpClient? = HttpClient(CIO){
+    val client: HttpClient? = HttpClient(CIO) {
         engine {
             // this: CIOEngineConfig
             maxConnectionsCount = 1000
@@ -45,24 +45,29 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
         apiAuthorizationHandler.authCodeStorage.accessToken = null
     }
 
-    inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
-        val requestType : RequestType? = getRequestTypeByClass(T::class)
-        check(requestType!=null){"No valid requestType was found. Try giving request type manually"}
+    suspend inline fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>) {
+        val requestType: RequestType? = getRequestTypeByClass(T::class)
+        check(requestType != null) { "No valid requestType was found. Try giving request type manually" }
         makeAuthorizedRequest(variables = variables, valueSetter = valueSetter, requestType = requestType)
     }
-    inline suspend fun <reified T> makeAuthorizedRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>, requestType: RequestType){
+
+    suspend inline fun <reified T> makeAuthorizedRequest(
+        variables: Map<String, String>,
+        valueSetter: ValueSetter<T>,
+        requestType: RequestType
+    ) {
         try {
-            if(apiAuthorizationHandler.authCodeStorage.accessToken==null){
+            if (apiAuthorizationHandler.authCodeStorage.accessToken == null) {
                 apiAuthorizationHandler.getValidAccessToken()
             }
-            check(apiAuthorizationHandler.authCodeStorage.accessToken!=null){"Access token was null"}
-            
-            var response : HttpResponse = makeManualRequest(
+            check(apiAuthorizationHandler.authCodeStorage.accessToken != null) { "Access token was null" }
+
+            var response: HttpResponse = makeManualRequest(
                 query = requestType.query,
                 variables = variables,
                 accessToken = apiAuthorizationHandler.authCodeStorage.accessToken
             )
-            if(isExpiredTokenResponse(response)){
+            if (isExpiredTokenResponse(response)) {
                 println("Access token no longer valid. Retrying ...")
                 apiAuthorizationHandler.getValidAccessToken()
                 response = makeManualRequest(
@@ -72,39 +77,39 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
                 )
             }
 
-            check(isValidResponse(response)){"Invalid Http Response: " + response.status.toString()}
-            val jsonBody : T = response.body()
+            check(isValidResponse(response)) { "Invalid Http Response: " + response.status.toString() }
+            val jsonBody: T = response.body()
             valueSetter.callValueSet(jsonBody)
-        }
-        catch(e: kotlinx.coroutines.CancellationException) {
+        } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
-        }
-        catch(e: Exception) {
+        } catch (e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
         }
     }
 
-    inline suspend fun <reified T> makeRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>){
-        val requestType : RequestType? = getRequestTypeByClass(T::class)
-        check(requestType!=null){"No valid requestType was found. Try giving request type manually"}
+    suspend inline fun <reified T> makeRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>) {
+        val requestType: RequestType? = getRequestTypeByClass(T::class)
+        check(requestType != null) { "No valid requestType was found. Try giving request type manually" }
         makeRequest(variables = variables, valueSetter = valueSetter, requestType = requestType)
     }
 
-    inline suspend fun <reified T> makeRequest(variables: Map<String, String>, valueSetter: ValueSetter<T>, requestType: RequestType){
+    suspend inline fun <reified T> makeRequest(
+        variables: Map<String, String>,
+        valueSetter: ValueSetter<T>,
+        requestType: RequestType
+    ) {
         try {
-            val response : HttpResponse = makeManualRequest(
+            val response: HttpResponse = makeManualRequest(
                 query = requestType.query,
                 variables = variables
             )
-            check(isValidResponse(response)){"Invalid Http Response: " + response.status.toString()}
-            val jsonBody : T = response.body()
+            check(isValidResponse(response)) { "Invalid Http Response: " + response.status.toString() }
+            val jsonBody: T = response.body()
             valueSetter.callValueSet(jsonBody)
-        }
-        catch(e: kotlinx.coroutines.CancellationException) {
+        } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
-        }
-        catch(e: Exception) {
+        } catch (e: Exception) {
             println("Api request failed with following error:")
             println(e.toString())
             throw e
@@ -112,34 +117,50 @@ class ApiHandler(val apiAuthorizationHandler: ApiAuthorizationHandler){
     }
 
     suspend fun makeManualRequest(
-        query : String = "",
+        query: String = "",
         variables: Map<String, String>,
         url: String = "https://graphql.anilist.co",
         accessToken: String? = null
-    ):HttpResponse {
-        require(query!=null){"Null was passed as query"}
-        require(!query.isEmpty()){"An empty String has been passed as query"}
-        require(isValidQuery(query)){"An invalid query has been passed"}
-        require(client != null){"Client was null while trying to make a Api request."}
-        require(variables.size!=0){"No variables were passed"}
+    ): HttpResponse {
+        require(query != null) { "Null was passed as query" }
+        require(!query.isEmpty()) { "An empty String has been passed as query" }
+        require(isValidQuery(query)) { "An invalid query has been passed" }
+        require(client != null) { "Client was null while trying to make a Api request." }
+        require(variables.size != 0) { "No variables were passed" }
 
         val response = client.post(url) {
             contentType(ContentType.Application.Json)
-            if(accessToken != null){header("Authorization", "Bearer " + accessToken)}
-            setBody(GraphQLRequest(
-                query = query.trimIndent(), 
-                variables = variables))
+            if (accessToken != null) {
+                header("Authorization", "Bearer " + accessToken)
+            }
+            setBody(
+                GraphQLRequest(
+                    query = query.trimIndent(),
+                    variables = variables
+                )
+            )
         }
 
         return response
     }
-    private fun isValidQuery(query: String): Boolean{return true}
-    fun isValidResponse(response: HttpResponse): Boolean{return (response.status.value==200)}
-    fun isExpiredTokenResponse(response: HttpResponse): Boolean{return (response.status.value==404)}
 
-    suspend fun getRequestTypeByClass(expectedClass : KClass<*>) : RequestType?{
-        for(requestType in RequestType.entries){
-            if(requestType.associateClass == expectedClass){return requestType}
+    private fun isValidQuery(query: String): Boolean {
+        return true
+    }
+
+    fun isValidResponse(response: HttpResponse): Boolean {
+        return (response.status.value == 200)
+    }
+
+    fun isExpiredTokenResponse(response: HttpResponse): Boolean {
+        return (response.status.value == 404)
+    }
+
+    suspend fun getRequestTypeByClass(expectedClass: KClass<*>): RequestType? {
+        for (requestType in RequestType.entries) {
+            if (requestType.associateClass == expectedClass) {
+                return requestType
+            }
         }
         return null
     }
@@ -151,9 +172,9 @@ data class GraphQLRequest(
     val variables: Map<String, String>
 )
 
-class ValueSetter<T>(val callValueSet : (T) -> Unit)
+class ValueSetter<T>(val callValueSet: (T) -> Unit)
 
-enum class RequestType(val query : String, val associateClass : KClass<*>){
+enum class RequestType(val query: String, val associateClass: KClass<*>) {
     MEDIA_LIST_COLLECTION(
         query = """
             query (${'$'}userName: String, ${'$'}type: MediaType, ${'$'}status: MediaListStatus, ${'$'}userId: Int, ${'$'}chunk: Int, ${'$'}perChunk: Int) {

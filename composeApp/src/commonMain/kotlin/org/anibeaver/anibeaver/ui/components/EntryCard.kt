@@ -265,7 +265,7 @@ fun EntryCard(
 
                         VerticalScrollbar(
                             adapter = rememberScrollbarAdapter(scrollState),
-                            style = androidx.compose.foundation.ScrollbarStyle(
+                            style = ScrollbarStyle(
                                 minimalHeight = 16.dp,
                                 thickness = 6.dp,
                                 shape = RoundedCornerShape(3.dp),

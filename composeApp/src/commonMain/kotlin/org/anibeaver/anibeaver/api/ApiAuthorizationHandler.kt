@@ -2,25 +2,24 @@ package org.anibeaver.anibeaver.api
 
 import kotlinx.coroutines.delay
 
-abstract class ApiAuthorizationHandler (private val context: Any?){
-    abstract fun openUrl (url : String)
+abstract class ApiAuthorizationHandler(private val context: Any?) {
+    abstract fun openUrl(url: String)
 
     val authCodeStorage: AuthCodeStorage = AuthCodeStorage(context)
 
-    suspend fun getValidAccessToken(){
+    suspend fun getValidAccessToken() {
         try {
             doAuthorizationRoutine()
-        }
-        catch(e:Exception) {
+        } catch (e: Exception) {
             println("Authorization failed")
             println(e.toString())
         }
     }
 
-    private suspend fun doAuthorizationRoutine(){
+    private suspend fun doAuthorizationRoutine() {
         var oAuthLocalServer: OAuthLocalServer? = null
 
-        if(authCodeStorage.accessToken==null){
+        if (authCodeStorage.accessToken == null) {
             try {
                 println("Starting local server to get authentication code...")
                 oAuthLocalServer = OAuthLocalServer(authCodeStorage)
@@ -28,10 +27,9 @@ abstract class ApiAuthorizationHandler (private val context: Any?){
                 println("Server started successfully. Waiting for authorization...")
                 // Keep the server running until we get the access token
                 // The server will be stopped after the access token is received
-            }
-            catch(e: Exception) {
+            } catch (e: Exception) {
                 println("Failed running Server")
-                throw(e)
+                throw (e)
             }
 
             try {
@@ -39,17 +37,16 @@ abstract class ApiAuthorizationHandler (private val context: Any?){
                 getAccessToken()
                 val timeOutTries = 1000
                 var counter = timeOutTries
-                while(authCodeStorage.accessToken == null && (counter>0)){
+                while (authCodeStorage.accessToken == null && (counter > 0)) {
                     delay(200)
                     counter -= 1
                 }
-                check(counter>0){"Timeout while doing Authorization"}
-            }
-            catch(e: Exception) {
+                check(counter > 0) { "Timeout while doing Authorization" }
+            } catch (e: Exception) {
                 println("Acquiring authorisation code failed.")
                 println("Stopping local OAuth callback server...")
                 oAuthLocalServer.stop()
-                throw(e)
+                throw (e)
             }
         }
 
@@ -63,15 +60,14 @@ abstract class ApiAuthorizationHandler (private val context: Any?){
                 val tokenStore = tokenStore("org.anibeaver.anibeaver", "anilist", context)
                 tokenStore.save(authCodeStorage.accessToken ?: "")
                 println("Token saved successfully.")
-            }
-            catch(e: Exception) {
+            } catch (e: Exception) {
                 println("Failed stopping local server")
-                throw(e)
+                throw (e)
             }
         }
     }
 
-    private fun getAccessToken(){
+    private fun getAccessToken() {
         openUrl("http://127.0.0.1:8080/start")
     }
 }

@@ -60,6 +60,7 @@ fun RenderMarkdown(markdown: String) {
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                     )
                 }
+
                 line.startsWith("## ") -> {
                     Text(
                         text = line.removePrefix("## "),
@@ -68,6 +69,7 @@ fun RenderMarkdown(markdown: String) {
                         modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
                     )
                 }
+
                 line.startsWith("### ") -> {
                     Text(
                         text = line.removePrefix("### "),
@@ -76,6 +78,7 @@ fun RenderMarkdown(markdown: String) {
                         modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
                 }
+
                 line.startsWith("- ") || line.startsWith("* ") -> {
                     Row(modifier = Modifier.padding(start = 16.dp)) {
                         Text("• ", fontSize = 16.sp)
@@ -86,12 +89,15 @@ fun RenderMarkdown(markdown: String) {
                         )
                     }
                 }
+
                 line.startsWith("[//]: #") -> {
                     // Skip markdown comments
                 }
+
                 line.isBlank() -> {
                     Spacer(modifier = Modifier.height(4.dp))
                 }
+
                 else -> {
                     Text(
                         text = line,

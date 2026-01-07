@@ -205,10 +205,12 @@ fun SearchOverlay(
                                         onDismiss()
                                         true
                                     }
+
                                     keyEvent.type == KeyEventType.KeyDown -> {
                                         // Consume all key down events to prevent them from reaching Dialog
                                         true
                                     }
+
                                     else -> false
                                 }
                             }
@@ -235,6 +237,7 @@ fun SearchOverlay(
                                 }
                             }
                         }
+
                         suggestions.isEmpty() && searchText.isNotEmpty() -> {
                             Box(
                                 modifier = Modifier.fillMaxWidth().height(200.dp),
@@ -253,6 +256,7 @@ fun SearchOverlay(
                                 }
                             }
                         }
+
                         else -> {
                             LazyColumn(
                                 modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),

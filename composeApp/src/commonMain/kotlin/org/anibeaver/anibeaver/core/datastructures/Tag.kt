@@ -25,6 +25,7 @@ data class Tag(
             }
             return type
         }
+
         fun clearTypeCache() {
             idToTypeCache.clear()
         }
