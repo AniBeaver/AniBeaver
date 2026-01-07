@@ -29,12 +29,9 @@ fun AutofillPopup(
     onDismiss: () -> Unit,
     onConfirm: (AutofillResultSelection?) -> Unit,
     onConfirmReorder: (List<Reference>) -> Unit,
-    autoTriggerPull: Boolean,
     onPullFromAniList: (Int, (ParsedAutofillData) -> Unit) -> Unit,
     forManga: Boolean
 ) {
-    var _autoTriggerPull = autoTriggerPull
-
     var priorityIndex by remember(references) {
         mutableStateOf(references.indexOfFirst { it.isPriority }.takeIf { it >= 0 } ?: 0)
     }
@@ -57,22 +54,43 @@ fun AutofillPopup(
 
     var hasEverPulled by remember { mutableStateOf(false) }
     var isOutdated by remember { mutableStateOf(false) }
+    var lastReferencesSnapshot by remember { mutableStateOf(references) }
+    var lastPriorityIndex by remember { mutableStateOf(priorityIndex) }
 
     if (!show) return
 
     val totalEpisodes = autofillData?.eps_total ?: 0
 //    val runtime = autofillData?.runtime ?: 0 // FIXME: why this unused?
 
-    LaunchedEffect(references) {
+    LaunchedEffect(references, priorityIndex) {
         if (autofillData != null) {
-            isOutdated = true
+            val currentValidIds = references
+                .filter { it.alId.isNotBlank() && AutofillController.idIsValid(it.alId) }
+                .map { it.alId }
+                .toSet()
+
+            val previousValidIds = lastReferencesSnapshot
+                .filter { it.alId.isNotBlank() && AutofillController.idIsValid(it.alId) }
+                .map { it.alId }
+                .toSet()
+
+            val priorityChanged = priorityIndex != lastPriorityIndex
+            val idsChanged = currentValidIds != previousValidIds
+
+            if (idsChanged || priorityChanged) {
+                isOutdated = true
+            }
         }
+        lastReferencesSnapshot = references
+        lastPriorityIndex = priorityIndex
     }
 
     fun onPull(data: ParsedAutofillData) {
         autofillData = data
         showSelector = true
         isOutdated = false
+        lastReferencesSnapshot = references
+        lastPriorityIndex = priorityIndex
         if (!hasEverPulled) {
             hasEverPulled = true
             selectedStudios = data.studios.filter { it.isNotBlank() }.toSet()
@@ -80,10 +98,11 @@ fun AutofillPopup(
         }
     }
 
-    LaunchedEffect(autofillData) {
-        if (_autoTriggerPull) onPullFromAniList(
-            0,
-            { data -> _autoTriggerPull = false; onPull(data) }) //FIXME: here, auto trigger pull doesn't work
+    LaunchedEffect(show) {
+        if (show && autofillData == null && references.isNotEmpty() &&
+            references.any { it.alId.isNotBlank() && AutofillController.idIsValid(it.alId) }) {
+            onPullFromAniList(priorityIndex) { data -> onPull(data) }
+        }
     }
 
     val nameOptions =

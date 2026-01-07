@@ -73,6 +73,7 @@ fun ReferenceRow(
         RadioButton(
             selected = isPriority,
             onClick = { onPrioritySelected?.invoke() },
+            enabled = alId.isNotBlank(),
             modifier = Modifier.align(Alignment.CenterVertically)
         )
         ReorderButtons(
@@ -111,7 +112,11 @@ fun ReferenceRow(
             contentAlignment = Alignment.Center
         ) {
             when {
-                alId.isBlank() -> {}
+                alId.isBlank() -> Text(
+                    text = "Empty",
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Normal
+                )
                 idIsValid(alId) -> Text(
                     text = "Link",
                     color = Color(0xFF1976D2),

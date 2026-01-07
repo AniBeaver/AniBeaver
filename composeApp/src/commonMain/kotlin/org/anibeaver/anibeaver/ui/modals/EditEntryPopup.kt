@@ -180,7 +180,6 @@ fun EditEntryPopup(
                 }
             },
             onConfirmReorder = { newList -> references = newList },
-            autoTriggerPull = false, // forceShowAutofillPopup, //TODO: maybe revert this; Changed it because happened not only once but multiple times
             onPullFromAniList = { priorityIndex, onPulled ->
                 val referenceIds = references.map { it.alId }
                 AutofillController.pullParsedAutofill(
@@ -196,10 +195,7 @@ fun EditEntryPopup(
         AlertDialog(onDismissRequest = onDismiss, confirmButton = {
             Button(
                 onClick = {
-                    // Debug: Print references before saving
-                    references.forEach { ref ->
-                        println("[EditEntryPopup] Confirming with reference: note='${ref.note}', alId='${ref.alId}', name='${ref.name}'")
-                    }
+
                     onConfirm(
                         EntryData(
                             title = animeName,
