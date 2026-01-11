@@ -122,7 +122,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "0.1.0"
+        versionName = "0.2.0"
     }
     packaging {
         resources {
@@ -163,7 +163,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "AniBeaver"
-            packageVersion = "0.1.0"
+            packageVersion = "0.2.0"
 
             modules("java.instrument", "java.management", "jdk.unsupported")
 
