@@ -85,11 +85,11 @@ fun FilterPopup(
 
     AlertDialog(
         modifier = Modifier.width(700.dp).height(800.dp),
-        onDismissRequest = {}, confirmButton = {
+        onDismissRequest = {},
+        confirmButton = {
             Button(
                 onClick = {
                     onConfirm(
-
                         FilterData(
                             state.selectedStatus,
                             state.selectedSchedule,
@@ -99,27 +99,42 @@ fun FilterPopup(
                             state.maxRating,
                             state.selectedTagIds
                         )
-
                     )
                 }) {
                 Text("Filter")
             }
-        }, dismissButton = {
-            Button(
-                onClick = {
-                    state = state.copy(
-                        selectedStatus = FilterDefaults.defaultStatus(),
-                        selectedSchedule = FilterDefaults.defaultSchedule(),
-                        minYear = FilterDefaults.DEFAULT_MIN_YEAR,
-                        maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
-                        minRating = FilterDefaults.DEFAULT_MIN_RATING,
-                        maxRating = FilterDefaults.DEFAULT_MAX_RATING,
-                        selectedTagIds = listOf() //TODO : there's a duplicate of this state object, get from same source
-                    )
-                }) {
-                Text("Reset all filters")
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Close")
             }
-        }, title = { Text("Filter Entries") }, text = {
+        },
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Filter Entries")
+                Button(
+                    onClick = {
+                        state = state.copy(
+                            selectedStatus = FilterDefaults.defaultStatus(),
+                            selectedSchedule = FilterDefaults.defaultSchedule(),
+                            minYear = FilterDefaults.DEFAULT_MIN_YEAR,
+                            maxYear = FilterDefaults.DEFAULT_MAX_YEAR,
+                            minRating = FilterDefaults.DEFAULT_MIN_RATING,
+                            maxRating = FilterDefaults.DEFAULT_MAX_RATING,
+                            selectedTagIds = listOf()
+                        )
+                    },
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Text("Reset all filters")
+                }
+            }
+        },
+        text = {
             Column(
                 modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

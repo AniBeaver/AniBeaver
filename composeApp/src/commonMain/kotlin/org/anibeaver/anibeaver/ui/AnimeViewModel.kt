@@ -12,6 +12,7 @@ import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.EntryData
 import org.anibeaver.anibeaver.core.datastructures.FilterData
 import org.anibeaver.anibeaver.core.datastructures.Status
+import org.anibeaver.anibeaver.core.datastructures.TagType
 import org.anibeaver.anibeaver.db.AppDatabase
 import org.anibeaver.anibeaver.db.daos.TagDao
 import org.anibeaver.anibeaver.db.entities.AnimeEntryEntity
@@ -159,6 +160,53 @@ class AnimeViewModel(
         viewModelScope.launch {
             animeDao.deleteById(entryId.toLong())
             EntriesController.deleteEntry(entryId)
+        }
+    }
+
+    fun updateTagType(tagId: Int, oldType: TagType, newType: TagType) {
+        viewModelScope.launch {
+            tagDao.upsertTag(TagEntity(
+                id = tagId,
+                name = TagsController.tags.first { it.id == tagId }.name,
+                color = TagsController.tags.first { it.id == tagId }.color,
+                type = newType
+            ))
+
+            val allEntries = animeDao.getAll()
+            allEntries.forEach { entry ->
+                val affectedEntry = when (oldType) {
+                    TagType.CUSTOM -> tagId in entry.customTagIds
+                    TagType.GENRE -> tagId in entry.genreTagIds
+                    TagType.STUDIO -> tagId in entry.studioTagIds
+                    TagType.AUTHOR -> tagId in entry.authorTagIds
+                }
+
+                if (affectedEntry) {
+                    val updatedEntry = entry.copy(
+                        customTagIds = when {
+                            oldType == TagType.CUSTOM -> entry.customTagIds - tagId
+                            newType == TagType.CUSTOM -> entry.customTagIds + tagId
+                            else -> entry.customTagIds
+                        },
+                        genreTagIds = when {
+                            oldType == TagType.GENRE -> entry.genreTagIds - tagId
+                            newType == TagType.GENRE -> entry.genreTagIds + tagId
+                            else -> entry.genreTagIds
+                        },
+                        studioTagIds = when {
+                            oldType == TagType.STUDIO -> entry.studioTagIds - tagId
+                            newType == TagType.STUDIO -> entry.studioTagIds + tagId
+                            else -> entry.studioTagIds
+                        },
+                        authorTagIds = when {
+                            oldType == TagType.AUTHOR -> entry.authorTagIds - tagId
+                            newType == TagType.AUTHOR -> entry.authorTagIds + tagId
+                            else -> entry.authorTagIds
+                        }
+                    )
+                    animeDao.upsert(updatedEntry)
+                }
+            }
         }
     }
 

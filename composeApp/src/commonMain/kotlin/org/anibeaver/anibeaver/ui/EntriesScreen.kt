@@ -175,7 +175,9 @@ fun EntriesScreen(
                 onCreateTag = { tagType ->
                     newTagTypeFromManage = tagType
                     showNewTagPopupFromManage = true
-                })
+                },
+                viewModel = viewModel
+            )
 
             FilterPopup(
                 show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->

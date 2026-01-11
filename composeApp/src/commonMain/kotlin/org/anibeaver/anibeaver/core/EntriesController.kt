@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.anibeaver.anibeaver.core.datastructures.Entry
 import org.anibeaver.anibeaver.core.datastructures.EntryData
+import org.anibeaver.anibeaver.core.datastructures.TagType
 
 object EntriesController {
     private var lastId = 0
@@ -84,6 +85,80 @@ object EntriesController {
 
     fun getEntryDataById(id: Int?): EntryData? {
         return _entries.get(id)?.entryData ?: null
+    }
+
+    fun moveTagBetweenCategories(tagId: Int, oldType: TagType, newType: TagType) {
+        if (oldType == newType) return
+
+        entries.forEachIndexed { index, entry ->
+            val oldData = entry.entryData
+
+            val hasTagInOldCategory = when (oldType) {
+                TagType.CUSTOM -> tagId in oldData.tagIds
+                TagType.GENRE -> tagId in oldData.genreIds
+                TagType.STUDIO -> tagId in oldData.studioIds
+                TagType.AUTHOR -> tagId in oldData.authorIds
+            }
+
+            if (hasTagInOldCategory) {
+                val newTagIds = when (oldType) {
+                    TagType.CUSTOM -> oldData.tagIds - tagId
+                    else -> oldData.tagIds
+                } + when (newType) {
+                    TagType.CUSTOM -> listOf(tagId)
+                    else -> emptyList()
+                }
+
+                val newGenreIds = when (oldType) {
+                    TagType.GENRE -> oldData.genreIds - tagId
+                    else -> oldData.genreIds
+                } + when (newType) {
+                    TagType.GENRE -> listOf(tagId)
+                    else -> emptyList()
+                }
+
+                val newStudioIds = when (oldType) {
+                    TagType.STUDIO -> oldData.studioIds - tagId
+                    else -> oldData.studioIds
+                } + when (newType) {
+                    TagType.STUDIO -> listOf(tagId)
+                    else -> emptyList()
+                }
+
+                val newAuthorIds = when (oldType) {
+                    TagType.AUTHOR -> oldData.authorIds - tagId
+                    else -> oldData.authorIds
+                } + when (newType) {
+                    TagType.AUTHOR -> listOf(tagId)
+                    else -> emptyList()
+                }
+
+                val newEntryData = EntryData(
+                    title = oldData.title,
+                    releaseYear = oldData.releaseYear,
+                    studioIds = newStudioIds,
+                    authorIds = newAuthorIds,
+                    genreIds = newGenreIds,
+                    description = oldData.description,
+                    rating = oldData.rating,
+                    status = oldData.status,
+                    releasingEvery = oldData.releasingEvery,
+                    coverArt = oldData.coverArt,
+                    bannerArt = oldData.bannerArt,
+                    tagIds = newTagIds,
+                    episodesTotal = oldData.episodesTotal,
+                    episodesProgress = oldData.episodesProgress,
+                    rewatches = oldData.rewatches,
+                    type = oldData.type,
+                    references = oldData.references
+                )
+
+                val newEntry = Entry(newEntryData, entry.id)
+                _entries[entry.id] = newEntry
+                entries[index] = newEntry
+            }
+        }
+        entriesVersion++
     }
 
     fun debugPrintIds() {

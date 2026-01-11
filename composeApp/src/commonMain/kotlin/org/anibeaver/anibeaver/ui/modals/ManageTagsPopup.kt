@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.core.EntriesController
 import org.anibeaver.anibeaver.core.TagsController
 import org.anibeaver.anibeaver.core.datastructures.TagType
+import org.anibeaver.anibeaver.ui.AnimeViewModel
 import org.anibeaver.anibeaver.ui.components.showConfirmation
 import org.anibeaver.anibeaver.ui.components.tag_chips.TagRow
 
@@ -19,7 +20,8 @@ fun ManageTagsModal(
     show: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    onCreateTag: (TagType) -> Unit
+    onCreateTag: (TagType) -> Unit,
+    viewModel: AnimeViewModel
 ) {
     if (!show) return
 
@@ -32,12 +34,15 @@ fun ManageTagsModal(
         confirmButton = { Button(onClick = onConfirm) { Text("Close") } },
         title = { Text("Manage Tags") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.widthIn(min = 900.dp)
+            ) {
                 Button(onClick = { onCreateTag(tagTypes[selectedTab]) }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Text("Create new tag")
                 }
                 TagTabRow(tabTitles, selectedTab) { selectedTab = it }
-                TagList(tagType = tagTypes[selectedTab])
+                TagList(tagType = tagTypes[selectedTab], viewModel = viewModel)
             }
         }
     )
@@ -69,8 +74,21 @@ private fun TagTabRow(tabTitles: List<String>, selectedTab: Int, onTabSelected: 
 }
 
 @Composable
-private fun TagList(tagType: TagType) {
+private fun TagList(tagType: TagType, viewModel: AnimeViewModel) {
     val tags = TagsController.tags.filter { it.type == tagType }
+
+    val tagsWithUsageCount = tags.map { tag ->
+        val usageCount = EntriesController.entries.count { entry ->
+            when (tagType) {
+                TagType.CUSTOM -> tag.id in entry.entryData.tagIds
+                TagType.GENRE -> tag.id in entry.entryData.genreIds
+                TagType.STUDIO -> tag.id in entry.entryData.studioIds
+                TagType.AUTHOR -> tag.id in entry.entryData.authorIds
+            }
+        }
+        tag to usageCount
+    }.sortedByDescending { it.second }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,15 +96,7 @@ private fun TagList(tagType: TagType) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        tags.forEach { tag ->
-            val usageCount = EntriesController.entries.count { entry ->
-                when (tagType) {
-                    TagType.CUSTOM -> tag.id in entry.entryData.tagIds
-                    TagType.GENRE -> tag.id in entry.entryData.genreIds
-                    TagType.STUDIO -> tag.id in entry.entryData.studioIds
-                    TagType.AUTHOR -> tag.id in entry.entryData.authorIds
-                }
-            }
+        tagsWithUsageCount.forEach { (tag, usageCount) ->
             TagRow(
                 tagId = tag.id,
                 tagName = tag.name,
@@ -96,6 +106,13 @@ private fun TagList(tagType: TagType) {
                 tagHex = tag.color,
                 onTagHexChange = { hex ->
                     TagsController.updateTag(tag.id, tag.name, hex, tag.type)
+                },
+                tagType = tag.type,
+                onTagTypeChange = { newType ->
+                    val oldType = tag.type
+                    TagsController.updateTag(tag.id, tag.name, tag.color, newType)
+                    EntriesController.moveTagBetweenCategories(tag.id, oldType, newType)
+                    viewModel.updateTagType(tag.id, oldType, newType)
                 },
                 onDelete = { id ->
                     if (usageCount > 0) {
