@@ -25,14 +25,14 @@ fun ColorPreview(
 
 fun parseHexColor(hex: String): Color {
     return try {
-        val cleanHex = hex.removePrefix("#")
+        var cleanHex = hex.removePrefix("#")
+
+        // Normalize 3-digit to 6-digit hex codes
+        if (cleanHex.length == 3) {
+            cleanHex = cleanHex.map { "$it$it" }.joinToString("")
+        }
+
         when (cleanHex.length) {
-            3 -> {
-                val r = cleanHex[0].toString().repeat(2).toLong(16).toInt()
-                val g = cleanHex[1].toString().repeat(2).toLong(16).toInt()
-                val b = cleanHex[2].toString().repeat(2).toLong(16).toInt()
-                Color(red = r / 255f, green = g / 255f, blue = b / 255f)
-            }
             6 -> {
                 val intColor = cleanHex.toLong(16).toInt()
                 Color(

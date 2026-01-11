@@ -40,7 +40,24 @@ fun NewTagPopup(
     val isHexValid = cleanHex.matches(Regex("^[A-Fa-f0-9]{3}$")) ||
                      cleanHex.matches(Regex("^[A-Fa-f0-9]{6}$")) ||
                      cleanHex.matches(Regex("^[A-Fa-f0-9]{8}$"))
-    val normalizedHex = if (tagHex.startsWith("#")) tagHex else "#$tagHex"
+
+    // Normalize to 6-digit hex code
+    val normalizedHex = if (tagHex.startsWith("#")) {
+        val hex = tagHex.removePrefix("#")
+        if (hex.length == 3) {
+            "#${hex.map { "$it$it" }.joinToString("")}"
+        } else {
+            tagHex
+        }
+    } else {
+        val hex = tagHex
+        if (hex.length == 3) {
+            "#${hex.map { "$it$it" }.joinToString("")}"
+        } else {
+            "#$tagHex"
+        }
+    }
+
     val isNameValid = tagName.isNotBlank()
     val isConfirmEnabled = isHexValid && isNameValid
 

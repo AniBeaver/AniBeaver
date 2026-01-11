@@ -239,7 +239,7 @@ fun SettingsScreen(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                modifier = Modifier.width(290.dp)
+                                modifier = Modifier.width(170.dp)
                             ) {
                                 Text(label, modifier = Modifier.width(60.dp))
                                 ColorPicker(
@@ -249,7 +249,7 @@ fun SettingsScreen(
                                         ratingColors = ratingColors + (rating to cleanHex)
                                         updateSettings()
                                     },
-                                    modifier = Modifier.width(220.dp)
+                                    modifier = Modifier.width(100.dp)
                                 )
                             }
                         }
@@ -269,7 +269,7 @@ fun SettingsScreen(
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                modifier = Modifier.width(290.dp)
+                                modifier = Modifier.width(170.dp)
                             ) {
                                 Text(label, modifier = Modifier.width(60.dp))
                                 ColorPicker(
@@ -279,7 +279,7 @@ fun SettingsScreen(
                                         ratingColors = ratingColors + (rating to cleanHex)
                                         updateSettings()
                                     },
-                                    modifier = Modifier.width(220.dp)
+                                    modifier = Modifier.width(100.dp)
                                 )
                             }
                         }
