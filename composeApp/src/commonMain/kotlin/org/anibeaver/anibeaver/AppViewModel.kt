@@ -71,22 +71,14 @@ class AppViewModel(
                 EntryData(
                     title = entry.animeName,
                     releaseYear = entry.releaseYear,
-                    studioIds = relation?.tagsByType(TagType.STUDIO)
-                        ?.map { it.id }
-                        ?: entry.studioTagIds,
-                    authorIds = relation?.tagsByType(TagType.AUTHOR)
-                        ?.map { it.id }
-                        ?: entry.authorTagIds,
-                    genreIds = relation?.tagsByType(TagType.GENRE)
-                        ?.map { it.id }
-                        ?: entry.genreTagIds,
+                    studioIds = relation?.tagsByType(TagType.STUDIO)?.map { it.id } ?: emptyList(),
+                    authorIds = relation?.tagsByType(TagType.AUTHOR)?.map { it.id } ?: emptyList(),
+                    genreIds = relation?.tagsByType(TagType.GENRE)?.map { it.id } ?: emptyList(),
                     description = entry.description,
                     rating = entry.rating,
                     status = Status.fromId(entry.status) ?: EntryData().status,
                     releasingEvery = ReleaseSchedule.fromId(entry.releasingEvery) ?: EntryData().releasingEvery,
-                    tagIds = relation?.tagsByType(TagType.CUSTOM)
-                        ?.map { it.id }
-                        ?: entry.customTagIds,
+                    tagIds = relation?.tagsByType(TagType.CUSTOM)?.map { it.id } ?: emptyList(),
                     coverArt = Art(source = entry.coverArtSource, localPath = entry.coverArtLocalPath),
                     bannerArt = Art(source = entry.bannerArtSource, localPath = entry.bannerArtLocalPath),
                     episodesTotal = entry.episodesTotal,

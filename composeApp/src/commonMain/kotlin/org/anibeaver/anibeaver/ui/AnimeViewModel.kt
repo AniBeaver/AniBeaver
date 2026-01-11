@@ -163,6 +163,15 @@ class AnimeViewModel(
         }
     }
 
+    fun deleteTag(tagId: Int) {
+        viewModelScope.launch {
+            val tag = tagDao.getTagById(tagId)
+            if (tag != null) {
+                tagDao.deleteTag(tag)
+            }
+        }
+    }
+
     fun updateTagType(tagId: Int, oldType: TagType, newType: TagType) {
         viewModelScope.launch {
             tagDao.upsertTag(TagEntity(
@@ -309,22 +318,18 @@ class AnimeViewModel(
                     title = entry.animeName,
                     releaseYear = entry.releaseYear,
                     studioIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.STUDIO)
-                        ?.map { it.id }
-                        ?: entry.studioTagIds,
+                        ?.map { it.id } ?: emptyList(),
                     authorIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.AUTHOR)
-                        ?.map { it.id }
-                        ?: entry.authorTagIds,
+                        ?.map { it.id } ?: emptyList(),
                     genreIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.GENRE)
-                        ?.map { it.id }
-                        ?: entry.genreTagIds,
+                        ?.map { it.id } ?: emptyList(),
                     description = entry.description,
                     rating = entry.rating,
                     status = Status.fromId(entry.status) ?: EntryData().status,
                     releasingEvery = org.anibeaver.anibeaver.core.datastructures.ReleaseSchedule.fromId(entry.releasingEvery)
                         ?: EntryData().releasingEvery,
                     tagIds = relation?.tagsByType(org.anibeaver.anibeaver.core.datastructures.TagType.CUSTOM)
-                        ?.map { it.id }
-                        ?: entry.customTagIds,
+                        ?.map { it.id } ?: emptyList(),
                     coverArt = org.anibeaver.anibeaver.core.datastructures.Art(
                         source = entry.coverArtSource,
                         localPath = entry.coverArtLocalPath

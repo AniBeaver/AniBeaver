@@ -120,10 +120,12 @@ private fun TagList(tagType: TagType, viewModel: AnimeViewModel) {
                             message = "Delete tag \"${tag.name}\"? This will remove it from $usageCount ${if (usageCount == 1) "entry" else "entries"}.",
                             onAccept = {
                                 TagsController.removeTagById(id)
+                                viewModel.deleteTag(id)
                             }
                         )
                     } else {
                         TagsController.removeTagById(id)
+                        viewModel.deleteTag(id)
                     }
                 },
                 usageCount = usageCount
