@@ -52,7 +52,9 @@ fun SpinBox(
             colors = if (shouldHighlight) {
                 OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                    focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                 )
             } else {
                 OutlinedTextFieldDefaults.colors()

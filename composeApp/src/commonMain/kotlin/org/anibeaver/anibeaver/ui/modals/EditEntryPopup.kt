@@ -48,6 +48,7 @@ fun EditEntryPopup(
     var description by remember(show) { mutableStateOf(initialValues?.description ?: "") }
     var rating by remember(show) { mutableStateOf<Float?>(initialValues?.rating?.takeIf { it > 0f }) }
     var status by remember(show) { mutableStateOf(initialValues?.status ?: Status.Planning) }
+    var statusHasBeenChanged by remember(show) { mutableStateOf(initialValues?.status != null && initialValues.status != Status.Planning) }
     var releasingEvery by remember(show) { mutableStateOf(initialValues?.releasingEvery ?: ReleaseSchedule.Monday) }
     var tagsIds by remember(show) { mutableStateOf(initialValues?.tagIds ?: emptyList()) }
     var references by remember(show) { mutableStateOf(initialValues?.references ?: emptyList()) }
@@ -73,6 +74,7 @@ fun EditEntryPopup(
         description = initialValues?.description ?: ""
         rating = initialValues?.rating?.takeIf { it > 0f }
         status = initialValues?.status ?: Status.Planning
+        statusHasBeenChanged = initialValues?.status != null && initialValues.status != Status.Planning
         releasingEvery = initialValues?.releasingEvery ?: ReleaseSchedule.Monday
         tagsIds = initialValues?.tagIds ?: emptyList()
         references = initialValues?.references ?: emptyList()
@@ -303,8 +305,21 @@ fun EditEntryPopup(
                     ) {
                         IntPicker(
                             value = episodesProgress,
-                            onValueChange = { episodesProgress = it },
-                            onIncrement = { episodesProgress += 1 },
+                            onValueChange = { newProgress ->
+                                episodesProgress = newProgress
+                                if (episodesTotal > 0 && newProgress >= episodesTotal && status != Status.Completed) {
+                                    status = Status.Completed
+                                    statusHasBeenChanged = true
+                                }
+                            },
+                            onIncrement = {
+                                val newProgress = episodesProgress + 1
+                                episodesProgress = newProgress
+                                if (episodesTotal > 0 && newProgress >= episodesTotal && status != Status.Completed) {
+                                    status = Status.Completed
+                                    statusHasBeenChanged = true
+                                }
+                            },
                             onDecrement = { episodesProgress = (episodesProgress - 1).coerceAtLeast(0) },
                             label = if (forManga) "Ch. Progress" else "Ep. Progress",
                             modifier = Modifier.weight(1f)
@@ -331,12 +346,18 @@ fun EditEntryPopup(
                         SimpleDropdown(
                             options = Status.entries.toList(),
                             selectedOption = status,
-                            onOptionSelected = {
-                                status = it
+                            onOptionSelected = { newStatus ->
+                                status = newStatus
+                                statusHasBeenChanged = true
+                                if (newStatus == Status.Completed && episodesTotal > 0 && episodesProgress < episodesTotal) {
+                                    episodesProgress = episodesTotal
+                                }
                             },
                             label = "Status",
                             modifier = Modifier.weight(1f).focusRequester(statusRequester)
-                                .focusProperties { next = releasingEveryRequester })
+                                .focusProperties { next = releasingEveryRequester },
+                            highlightIfEmpty = !statusHasBeenChanged
+                        )
                         SimpleDropdown(
                             options = ReleaseSchedule.entries.toList(),
                             selectedOption = releasingEvery,

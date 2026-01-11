@@ -11,9 +11,13 @@ fun <T> SimpleDropdown(
     selectedOption: T?,
     onOptionSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
-    label: String = "Select"
+    label: String = "Select",
+    highlightIfEmpty: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
+
+    val shouldHighlight = highlightIfEmpty
+
     ExposedDropdownMenuBox(
         expanded = expanded, onExpandedChange = { expanded = !expanded }, modifier = modifier
     ) {
@@ -23,7 +27,17 @@ fun <T> SimpleDropdown(
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor()
+            modifier = Modifier.menuAnchor(),
+            colors = if (shouldHighlight) {
+                OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                    focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                )
+            } else {
+                OutlinedTextFieldDefaults.colors()
+            }
         )
         ExposedDropdownMenu(
             expanded = expanded, onDismissRequest = { expanded = false }) {
