@@ -3,15 +3,23 @@ package org.anibeaver.anibeaver.ui.components.references
 import ReorderButtons
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.anibeaver.anibeaver.api.ApiHandler
 import org.anibeaver.anibeaver.api.RequestType
@@ -42,6 +50,7 @@ fun ReferenceRow(
     var selectedName by remember(alId, cachedName) { mutableStateOf(cachedName) }
     var hasFetchedName by remember(alId, cachedName) { mutableStateOf(cachedName.isNotEmpty()) }
     val apiHandler: ApiHandler = GlobalContext.get().get()
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(alId, cachedName) {
         if (cachedName.isNotEmpty()) {
@@ -88,7 +97,18 @@ fun ReferenceRow(
             singleLine = true,
             label = { Text("Note") },
             placeholder = { Text("(optional)") },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.Tab) {
+                        focusManager.moveFocus(FocusDirection.Down)
+                        true
+                    } else false
+                },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
         )
         val uriHandler = LocalUriHandler.current
 

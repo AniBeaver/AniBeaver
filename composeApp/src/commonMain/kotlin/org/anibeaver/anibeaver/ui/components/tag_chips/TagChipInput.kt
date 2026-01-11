@@ -3,6 +3,7 @@ package org.anibeaver.anibeaver.ui.components.tag_chips
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,8 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -52,6 +55,13 @@ fun TagChipInput(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(1f)) {
                 val focusRequester = remember { FocusRequester() }
+
+                val suggestions = if (input.isNotBlank() && TagsController.tags.any { it.type == tagType && it.id !in tags }) {
+                    TagsController.tags
+                        .filter { it.type == tagType && it.id !in tags }
+                        .filter { it.name.contains(input, ignoreCase = true) }
+                } else emptyList()
+
                 OutlinedTextField(
                     value = input,
                     onValueChange = {
@@ -66,14 +76,39 @@ fun TagChipInput(
                         .onGloballyPositioned { coordinates ->
                             textFieldWidth = coordinates.size.width
                         }
-                        .focusRequester(focusRequester),
-                    keyboardOptions = KeyboardOptions.Default,
+                        .focusRequester(focusRequester)
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.Tab -> {
+                                        if (suggestions.isNotEmpty()) {
+                                            onTagsChange(tags + suggestions.first().id)
+                                            input = ""
+                                            true
+                                        } else false
+                                    }
+                                    Key.Enter -> {
+                                        if (input.isNotBlank() && onCreateTagClick != null) {
+                                            onCreateTagClick(input)
+                                            input = ""
+                                            true
+                                        } else false
+                                    }
+                                    else -> false
+                                }
+                            } else false
+                        },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            if (input.isNotBlank() && onCreateTagClick != null) {
+                                onCreateTagClick(input)
+                                input = ""
+                            }
+                        }
+                    )
                 )
-                if (input.isNotBlank() && TagsController.tags.any { it.type == tagType && it.id !in tags }) {
-                    val suggestions = TagsController.tags
-                        .filter { it.type == tagType && it.id !in tags }
-                        .filter { it.name.contains(input, ignoreCase = true) }
-                    if (suggestions.isNotEmpty()) {
+                if (suggestions.isNotEmpty()) {
                         Popup(
                             alignment = Alignment.TopStart,
                             offset = IntOffset(0, 100),
@@ -108,7 +143,6 @@ fun TagChipInput(
                         }
                     }
                 }
-            }
             if (onCreateTagClick != null) {
                 Button(
                     onClick = {
@@ -121,16 +155,17 @@ fun TagChipInput(
                 }
             }
         }
-    }
-    LaunchedEffect(input) {
-        val trimmed = input.trimEnd()
-        if ((trimmed.endsWith(",") || trimmed.endsWith(" ")) && trimmed.dropLast(1).isNotBlank()) {
-            val newTag = trimmed.dropLast(1).trim()
-            val matchedTag = TagsController.tags.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
-            if (matchedTag != null && matchedTag.id !in tags) {
-                onTagsChange(tags + matchedTag.id)
+
+        LaunchedEffect(input) {
+            val trimmed = input.trimEnd()
+            if ((trimmed.endsWith(",") || trimmed.endsWith(" ")) && trimmed.dropLast(1).isNotBlank()) {
+                val newTag = trimmed.dropLast(1).trim()
+                val matchedTag = TagsController.tags.firstOrNull { it.name.equals(newTag, ignoreCase = true) }
+                if (matchedTag != null && matchedTag.id !in tags) {
+                    onTagsChange(tags + matchedTag.id)
+                }
+                input = ""
             }
-            input = ""
         }
     }
 }

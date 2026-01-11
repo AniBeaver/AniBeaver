@@ -85,7 +85,7 @@ fun FilterPopup(
 
     AlertDialog(
         modifier = Modifier.width(700.dp).height(800.dp),
-        onDismissRequest = onDismiss, confirmButton = {
+        onDismissRequest = {}, confirmButton = {
             Button(
                 onClick = {
                     onConfirm(

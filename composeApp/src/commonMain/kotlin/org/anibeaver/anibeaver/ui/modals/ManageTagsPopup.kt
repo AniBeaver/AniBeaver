@@ -28,7 +28,7 @@ fun ManageTagsModal(
     val tagTypes = listOf(TagType.CUSTOM, TagType.GENRE, TagType.STUDIO, TagType.AUTHOR)
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {},
         confirmButton = { Button(onClick = onConfirm) { Text("Close") } },
         title = { Text("Manage Tags") },
         text = {

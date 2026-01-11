@@ -17,7 +17,7 @@ fun DialoguePopup(
     if (!show) return
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {},
         confirmButton = confirmButton,
         dismissButton = dismissButton,
         text = { Text(message) },

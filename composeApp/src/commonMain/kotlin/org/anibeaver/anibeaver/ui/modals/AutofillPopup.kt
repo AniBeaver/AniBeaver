@@ -112,7 +112,7 @@ fun AutofillPopup(
 
     AlertDialog(
         modifier = Modifier.width(600.dp),
-        onDismissRequest = onDismiss,
+        onDismissRequest = {},
         confirmButton = {
 
             if (autofillData != null) {
@@ -417,10 +417,7 @@ private fun AutofillSelectorUI(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = airingChecked, onCheckedChange = { checked -> onAiringCheckedChange(checked) })
-                    Text("Releasing ${autofill.airingScheduleWeekday}")
-                }
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = coverChecked, onCheckedChange = { checked -> onCoverCheckedChange(checked) })
                     Text("Cover")
@@ -431,6 +428,10 @@ private fun AutofillSelectorUI(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = epsChecked, onCheckedChange = { checked -> onEpsCheckedChange(checked) })
                     Text((if (forManga) "Ch. Total:" else "Eps. Total:") + " $totalEpisodes")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = airingChecked, onCheckedChange = { checked -> onAiringCheckedChange(checked) })
+                    Text("Releasing ${autofill.airingScheduleWeekday}")
                 }
             }
             if (!forManga) {

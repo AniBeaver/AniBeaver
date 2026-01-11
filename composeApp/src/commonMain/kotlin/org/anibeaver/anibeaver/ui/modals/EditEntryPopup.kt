@@ -192,7 +192,7 @@ fun EditEntryPopup(
             },
             forManga = forManga
         )
-        AlertDialog(onDismissRequest = onDismiss, confirmButton = {
+        AlertDialog(onDismissRequest = {}, confirmButton = {
             Button(
                 onClick = {
 

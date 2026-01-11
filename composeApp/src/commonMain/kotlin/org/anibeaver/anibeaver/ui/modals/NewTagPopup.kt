@@ -43,7 +43,7 @@ fun NewTagPopup(
     if (!show) return
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {},
         title = { Text("New Tag") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
