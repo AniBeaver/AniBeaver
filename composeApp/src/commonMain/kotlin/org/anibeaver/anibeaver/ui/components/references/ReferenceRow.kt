@@ -12,8 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
@@ -69,7 +67,7 @@ fun ReferenceRow(
                     },
                     requestType = RequestType.MEDIA
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 selectedName = ""
                 hasFetchedName = true
             }
@@ -101,7 +99,11 @@ fun ReferenceRow(
                 .weight(1f)
                 .onKeyEvent { keyEvent ->
                     if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.Tab) {
-                        focusManager.moveFocus(FocusDirection.Down)
+                        if (keyEvent.isShiftPressed) {
+                            focusManager.moveFocus(FocusDirection.Up)
+                        } else {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
                         true
                     } else false
                 },

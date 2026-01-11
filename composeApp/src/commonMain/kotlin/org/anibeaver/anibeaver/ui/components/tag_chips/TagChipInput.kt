@@ -81,7 +81,9 @@ fun TagChipInput(
                             if (keyEvent.type == KeyEventType.KeyDown) {
                                 when (keyEvent.key) {
                                     Key.Tab -> {
-                                        if (suggestions.isNotEmpty()) {
+                                        if (keyEvent.isShiftPressed) {
+                                            false // Let default behavior handle Shift+Tab
+                                        } else if (suggestions.isNotEmpty()) {
                                             onTagsChange(tags + suggestions.first().id)
                                             input = ""
                                             true

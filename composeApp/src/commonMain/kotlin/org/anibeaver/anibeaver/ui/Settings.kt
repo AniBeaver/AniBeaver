@@ -222,39 +222,66 @@ fun SettingsScreen(
             ) {
                 Text("Rating Colors", style = Typography.titleMedium)
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    maxItemsInEachRow = 3
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    listOf(
-                        10 to "9.1-10",
-                        9 to "8.1-9",
-                        8 to "7.1-8",
-                        7 to "6.1-7",
-                        6 to "5.1-6",
-                        5 to "4.1-5",
-                        4 to "3.1-4",
-                        3 to "2.1-3",
-                        2 to "1.1-2",
-                        1 to "0.1-1",
-                        0 to "No rating"
-                    ).forEach { (rating, label) ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            modifier = Modifier.width(290.dp)
-                        ) {
-                            Text(label, modifier = Modifier.width(60.dp))
-                            ColorPicker(
-                                hex = "#${ratingColors[rating] ?: "FFFFFF"}",
-                                onHexChange = { newHex ->
-                                    val cleanHex = newHex.removePrefix("#")
-                                    ratingColors = ratingColors + (rating to cleanHex)
-                                    updateSettings()
-                                },
-                                modifier = Modifier.width(220.dp)
-                            )
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        listOf(
+                            10 to "10",
+                            9 to "9.1-10",
+                            8 to "8.1-9",
+                            7 to "7.1-8",
+                            6 to "6.1-7",
+                            5 to "5.1-6"
+                        ).forEach { (rating, label) ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier.width(290.dp)
+                            ) {
+                                Text(label, modifier = Modifier.width(60.dp))
+                                ColorPicker(
+                                    hex = "#${ratingColors[rating] ?: "FFFFFF"}",
+                                    onHexChange = { newHex ->
+                                        val cleanHex = newHex.removePrefix("#")
+                                        ratingColors = ratingColors + (rating to cleanHex)
+                                        updateSettings()
+                                    },
+                                    modifier = Modifier.width(220.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        listOf(
+                            4 to "4.1-5",
+                            3 to "3.1-4",
+                            2 to "2.1-3",
+                            1 to "1.1-2",
+                            0 to "0.1-1",
+                            -1 to "No rating"
+                        ).forEach { (rating, label) ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier.width(290.dp)
+                            ) {
+                                Text(label, modifier = Modifier.width(60.dp))
+                                ColorPicker(
+                                    hex = "#${ratingColors[rating] ?: "FFFFFF"}",
+                                    onHexChange = { newHex ->
+                                        val cleanHex = newHex.removePrefix("#")
+                                        ratingColors = ratingColors + (rating to cleanHex)
+                                        updateSettings()
+                                    },
+                                    modifier = Modifier.width(220.dp)
+                                )
+                            }
                         }
                     }
                 }

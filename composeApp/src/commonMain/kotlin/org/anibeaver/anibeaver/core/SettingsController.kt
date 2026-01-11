@@ -15,17 +15,18 @@ data class Settings(
     val backupIntervalMinutes: Int = 8,
     val maxBackupsToKeep: Int = 6,
     val ratingColors: Map<Int, String> = mapOf(
-        10 to "FFD700", // yellow
-        9 to "FFA500",  // orange
-        8 to "CDFF00",  // lime
-        7 to "7FFF00",  // chartreuse
-        6 to "00FF00",  // green
-        5 to "32CD32",  // lime green
-        4 to "228B22",  // forest green
-        3 to "006400",  // dark green
-        2 to "008B8B",  // dark cyan
-        1 to "4682B4",  // steel blue
-        0 to "FFFFFF"   // white (no rating)
+        10 to "ffff00",
+        9 to "e6bb00",
+        8 to "99ff33",
+        7 to "3bdb3b",
+        6 to "069c06",
+        5 to "008B8B",
+        4 to "4682B4",
+        3 to "4169E1",
+        2 to "1E90FF",
+        1 to "87CEEB",
+        0 to "660066",
+        -1 to "FFFFFF"
     )
 )
 
@@ -55,7 +56,13 @@ object SettingsController {
             }
 
             val jsonString = settingsFile.readBytes().decodeToString()
-            settings = json.decodeFromString(Settings.serializer(), jsonString)
+            val loadedSettings = json.decodeFromString(Settings.serializer(), jsonString)
+
+            // Merge loaded settings with defaults to ensure all keys are present
+            val defaultRatingColors = Settings().ratingColors
+            val mergedRatingColors = defaultRatingColors + loadedSettings.ratingColors
+
+            settings = loadedSettings.copy(ratingColors = mergedRatingColors)
             println("[SettingsController] Settings loaded successfully")
         } catch (e: Exception) {
             println("[SettingsController] Failed to load settings: ${e.message}")

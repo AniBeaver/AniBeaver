@@ -156,67 +156,78 @@ fun AutofillPopup(
             ) {
                 Text("Add any number of references here (e.g a single series or all seasons of a series) to automatically extract (common) data and fill in the selected entry inputs. The radio button selects the priority series.")
 
-                references.forEachIndexed { idx, ref ->
-                    key(idx) {
-                        ReferenceRow(
-                            alId = ref.alId,
-                            refNote = ref.note,
-                            cachedName = ref.name,
-                            onAlIdChange = { newAlIdStr ->
-                                val newList = references.toMutableList()
-                                val current = newList[idx]
-                                newList[idx] = Reference(current.note, newAlIdStr, current.name, current.isPriority)
-                                onConfirmReorder(newList)
-                            },
-                            onRefNoteChange = { newNote ->
-                                val newList = references.toMutableList()
-                                val current = newList[idx]
-                                newList[idx] = Reference(newNote, current.alId, current.name, current.isPriority)
-                                onConfirmReorder(newList)
-                            },
-                            onNameChange = { newName ->
-                                val newList = references.toMutableList()
-                                val current = newList[idx]
-                                newList[idx] = Reference(current.note, current.alId, newName, current.isPriority)
-                                onConfirmReorder(newList)
-                            },
-                            onAlIdAndNameChange = { newAlId, newName ->
-                                val newList = references.toMutableList()
-                                val current = newList[idx]
-                                newList[idx] = Reference(current.note, newAlId, newName, current.isPriority)
-                                onConfirmReorder(newList)
-                            },
-                            onDelete = {
-                                val newList = references.toMutableList()
-                                newList.removeAt(idx)
-                                onConfirmReorder(newList)
-                            },
-                            onMoveUp = if (idx > 0) {
-                                {
+                val referenceRowsModifier = if (references.size >= 5) {
+                    Modifier.fillMaxWidth().heightIn(max = 300.dp).verticalScroll(rememberScrollState())
+                } else {
+                    Modifier.fillMaxWidth()
+                }
+
+                Column(
+                    modifier = referenceRowsModifier,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    references.forEachIndexed { idx, ref ->
+                        key(idx) {
+                            ReferenceRow(
+                                alId = ref.alId,
+                                refNote = ref.note,
+                                cachedName = ref.name,
+                                onAlIdChange = { newAlIdStr ->
                                     val newList = references.toMutableList()
-                                    val item = newList.removeAt(idx)
-                                    newList.add(idx - 1, item)
+                                    val current = newList[idx]
+                                    newList[idx] = Reference(current.note, newAlIdStr, current.name, current.isPriority)
                                     onConfirmReorder(newList)
-                                }
-                            } else null,
-                            onMoveDown = if (idx < references.lastIndex) {
-                                {
+                                },
+                                onRefNoteChange = { newNote ->
                                     val newList = references.toMutableList()
-                                    val item = newList.removeAt(idx)
-                                    newList.add(idx + 1, item)
+                                    val current = newList[idx]
+                                    newList[idx] = Reference(newNote, current.alId, current.name, current.isPriority)
                                     onConfirmReorder(newList)
-                                }
-                            } else null,
-                            isPriority = idx == priorityIndex,
-                            onPrioritySelected = {
-                                priorityIndex = idx
-                                val updatedList = references.mapIndexed { i, ref ->
-                                    ref.copy(isPriority = i == idx)
-                                }
-                                onConfirmReorder(updatedList)
-                            },
-                            forManga = forManga
-                        )
+                                },
+                                onNameChange = { newName ->
+                                    val newList = references.toMutableList()
+                                    val current = newList[idx]
+                                    newList[idx] = Reference(current.note, current.alId, newName, current.isPriority)
+                                    onConfirmReorder(newList)
+                                },
+                                onAlIdAndNameChange = { newAlId, newName ->
+                                    val newList = references.toMutableList()
+                                    val current = newList[idx]
+                                    newList[idx] = Reference(current.note, newAlId, newName, current.isPriority)
+                                    onConfirmReorder(newList)
+                                },
+                                onDelete = {
+                                    val newList = references.toMutableList()
+                                    newList.removeAt(idx)
+                                    onConfirmReorder(newList)
+                                },
+                                onMoveUp = if (idx > 0) {
+                                    {
+                                        val newList = references.toMutableList()
+                                        val item = newList.removeAt(idx)
+                                        newList.add(idx - 1, item)
+                                        onConfirmReorder(newList)
+                                    }
+                                } else null,
+                                onMoveDown = if (idx < references.lastIndex) {
+                                    {
+                                        val newList = references.toMutableList()
+                                        val item = newList.removeAt(idx)
+                                        newList.add(idx + 1, item)
+                                        onConfirmReorder(newList)
+                                    }
+                                } else null,
+                                isPriority = idx == priorityIndex,
+                                onPrioritySelected = {
+                                    priorityIndex = idx
+                                    val updatedList = references.mapIndexed { i, ref ->
+                                        ref.copy(isPriority = i == idx)
+                                    }
+                                    onConfirmReorder(updatedList)
+                                },
+                                forManga = forManga
+                            )
+                        }
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

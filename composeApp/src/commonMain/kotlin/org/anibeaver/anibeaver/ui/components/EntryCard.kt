@@ -43,18 +43,18 @@ fun RatingText(
     val ratingColors = SettingsController.settings.ratingColors
 
     val ratingColor = when {
-        rating >= 10f -> parseHexColor(ratingColors[10] ?: "FFD700")
-        rating >= 9f -> parseHexColor(ratingColors[9] ?: "FFA500")
-        rating >= 8f -> parseHexColor(ratingColors[8] ?: "CDFF00")
-        rating >= 7f -> parseHexColor(ratingColors[7] ?: "7FFF00")
-        rating >= 6f -> parseHexColor(ratingColors[6] ?: "00FF00")
-        rating >= 5f -> parseHexColor(ratingColors[5] ?: "32CD32")
-        rating >= 4f -> parseHexColor(ratingColors[4] ?: "228B22")
-        rating >= 3f -> parseHexColor(ratingColors[3] ?: "006400")
-        rating >= 2f -> parseHexColor(ratingColors[2] ?: "008B8B")
-        rating >= 1f -> parseHexColor(ratingColors[1] ?: "4682B4")
-        rating > 0f -> parseHexColor(ratingColors[1] ?: "4682B4")
-        else -> parseHexColor(ratingColors[0] ?: "FFFFFF")
+        rating >= 10f -> parseHexColor(ratingColors[10] ?: "ffff00")
+        rating >= 9f -> parseHexColor(ratingColors[9] ?: "e6bb00")
+        rating >= 8f -> parseHexColor(ratingColors[8] ?: "99ff33")
+        rating >= 7f -> parseHexColor(ratingColors[7] ?: "3bdb3b")
+        rating >= 6f -> parseHexColor(ratingColors[6] ?: "069c06")
+        rating >= 5f -> parseHexColor(ratingColors[5] ?: "008B8B")
+        rating >= 4f -> parseHexColor(ratingColors[4] ?: "4682B4")
+        rating >= 3f -> parseHexColor(ratingColors[3] ?: "4169E1")
+        rating >= 2f -> parseHexColor(ratingColors[2] ?: "1E90FF")
+        rating >= 1f -> parseHexColor(ratingColors[1] ?: "87CEEB")
+        rating > 0f -> parseHexColor(ratingColors[0] ?: "660066")
+        else -> parseHexColor(ratingColors[-1] ?: "FFFFFF")
     }
 
     Text(
