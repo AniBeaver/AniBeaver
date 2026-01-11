@@ -75,8 +75,8 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.compose.material3:material3-window-size-class:1.7.3")
-            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3") // Material Icons Core
-            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3") // Material Icons Extended
+            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
 
             implementation("io.insert-koin:koin-core:4.1.0")
 
@@ -98,14 +98,7 @@ kotlin {
             implementation("org.netbeans.api:org-openide-util-lookup:RELEASE260")
             implementation("net.java.dev.jna:jna:5.14.0")
             implementation("net.java.dev.jna:jna-platform:5.14.0")
-
         }
-        /*
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-            implementation("com.liftric:kvault:1.12.0")
-        }
-         */
     }
 }
 
@@ -145,11 +138,6 @@ dependencies {
 
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
-
-    //add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    // FIXME: add back when re-enabling iOS target
-    // add("kspIosX64", libs.androidx.room.compiler)
-    // add("kspIosArm64", libs.androidx.room.compiler)
 }
 
 room {
@@ -161,7 +149,17 @@ compose.desktop {
         mainClass = "org.anibeaver.anibeaver.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
+            val os = System.getProperty("os.name").lowercase()
+
+            val formats = when {
+                os.contains("mac") -> listOf(TargetFormat.Dmg)
+                os.contains("win") -> listOf(TargetFormat.Msi, TargetFormat.Exe)
+                else -> listOf(TargetFormat.AppImage)
+            }
+
+            targetFormats(*formats.toTypedArray())
+
+
             packageName = "AniBeaver"
             packageVersion = "0.2.0"
 
@@ -175,9 +173,10 @@ compose.desktop {
 
             macOS {
                 bundleID = "org.anibeaver.anibeaver"
-                packageVersion = "1.0.0"  // macOS requires MAJOR version > 0
-                iconFile.set(project.file("src/desktopMain/resources/abvr_icon.png"))
+                packageVersion = "1.0.0"
+                iconFile.set(project.file("src/desktopMain/resources/abvr_icon.icns"))
             }
+
 
             linux {
                 packageName = "anibeaver"

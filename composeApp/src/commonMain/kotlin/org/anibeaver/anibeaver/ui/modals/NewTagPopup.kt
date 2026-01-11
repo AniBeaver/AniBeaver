@@ -38,8 +38,8 @@ fun NewTagPopup(
 
     val cleanHex = tagHex.removePrefix("#")
     val isHexValid = cleanHex.matches(Regex("^[A-Fa-f0-9]{3}$")) ||
-                     cleanHex.matches(Regex("^[A-Fa-f0-9]{6}$")) ||
-                     cleanHex.matches(Regex("^[A-Fa-f0-9]{8}$"))
+            cleanHex.matches(Regex("^[A-Fa-f0-9]{6}$")) ||
+            cleanHex.matches(Regex("^[A-Fa-f0-9]{8}$"))
 
     // Normalize to 6-digit hex code
     val normalizedHex = if (tagHex.startsWith("#")) {

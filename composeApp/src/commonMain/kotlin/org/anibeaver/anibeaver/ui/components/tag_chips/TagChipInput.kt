@@ -56,11 +56,12 @@ fun TagChipInput(
             Box(modifier = Modifier.weight(1f)) {
                 val focusRequester = remember { FocusRequester() }
 
-                val suggestions = if (input.isNotBlank() && TagsController.tags.any { it.type == tagType && it.id !in tags }) {
-                    TagsController.tags
-                        .filter { it.type == tagType && it.id !in tags }
-                        .filter { it.name.contains(input, ignoreCase = true) }
-                } else emptyList()
+                val suggestions =
+                    if (input.isNotBlank() && TagsController.tags.any { it.type == tagType && it.id !in tags }) {
+                        TagsController.tags
+                            .filter { it.type == tagType && it.id !in tags }
+                            .filter { it.name.contains(input, ignoreCase = true) }
+                    } else emptyList()
 
                 OutlinedTextField(
                     value = input,
@@ -89,6 +90,7 @@ fun TagChipInput(
                                             true
                                         } else false
                                     }
+
                                     Key.Enter -> {
                                         if (input.isNotBlank() && onCreateTagClick != null) {
                                             onCreateTagClick(input)
@@ -96,6 +98,7 @@ fun TagChipInput(
                                             true
                                         } else false
                                     }
+
                                     else -> false
                                 }
                             } else false
@@ -111,40 +114,40 @@ fun TagChipInput(
                     )
                 )
                 if (suggestions.isNotEmpty()) {
-                        Popup(
-                            alignment = Alignment.TopStart,
-                            offset = IntOffset(0, 100),
-                            onDismissRequest = {}
+                    Popup(
+                        alignment = Alignment.TopStart,
+                        offset = IntOffset(0, 100),
+                        onDismissRequest = {}
+                    ) {
+                        Surface(
+                            tonalElevation = 4.dp,
+                            shape = MaterialTheme.shapes.medium,
+                            color = Color(0xFF181818),
+                            modifier = Modifier
+                                .width(with(density) { textFieldWidth.toDp() })
                         ) {
-                            Surface(
-                                tonalElevation = 4.dp,
-                                shape = MaterialTheme.shapes.medium,
-                                color = Color(0xFF181818),
-                                modifier = Modifier
-                                    .width(with(density) { textFieldWidth.toDp() })
-                            ) {
-                                Column {
-                                    suggestions.forEach { suggestion ->
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .clickable {
-                                                    onTagsChange(tags + suggestion.id)
-                                                    input = ""
-                                                }
-                                                .padding(12.dp)
-                                        ) {
-                                            Text(
-                                                suggestion.name,
-                                                color = parseHexColor(suggestion.color)
-                                            )
-                                        }
+                            Column {
+                                suggestions.forEach { suggestion ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onTagsChange(tags + suggestion.id)
+                                                input = ""
+                                            }
+                                            .padding(12.dp)
+                                    ) {
+                                        Text(
+                                            suggestion.name,
+                                            color = parseHexColor(suggestion.color)
+                                        )
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
             if (onCreateTagClick != null) {
                 Button(
                     onClick = {

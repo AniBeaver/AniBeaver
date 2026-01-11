@@ -13,8 +13,13 @@ actual fun tokenStore(service: String, account: String, platformContext: Any?): 
     val kv = KVault(platformContext as Context, service)
     val key = "$account.token"
     return object : TokenStore {
-        override fun save(token: String) { kv.set(key, token) }
+        override fun save(token: String) {
+            kv.set(key, token)
+        }
+
         override fun load(): String? = kv.string(key)
-        override fun clear() { kv.deleteObject(key) }
+        override fun clear() {
+            kv.deleteObject(key)
+        }
     }
 }

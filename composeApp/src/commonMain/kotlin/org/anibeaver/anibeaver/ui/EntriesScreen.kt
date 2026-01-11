@@ -192,7 +192,8 @@ fun EntriesScreen(
                     TagsController.addTag(name, color, type)
                     showNewTagPopupFromManage = false
                 },
-                initialType = newTagTypeFromManage)
+                initialType = newTagTypeFromManage
+            )
 
             val allEntries = EntriesController.entries
             EntriesController.entriesVersion // trigger recomposition on version change

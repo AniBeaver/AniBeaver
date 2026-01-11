@@ -174,12 +174,14 @@ class AnimeViewModel(
 
     fun updateTagType(tagId: Int, oldType: TagType, newType: TagType) {
         viewModelScope.launch {
-            tagDao.upsertTag(TagEntity(
-                id = tagId,
-                name = TagsController.tags.first { it.id == tagId }.name,
-                color = TagsController.tags.first { it.id == tagId }.color,
-                type = newType
-            ))
+            tagDao.upsertTag(
+                TagEntity(
+                    id = tagId,
+                    name = TagsController.tags.first { it.id == tagId }.name,
+                    color = TagsController.tags.first { it.id == tagId }.color,
+                    type = newType
+                )
+            )
 
             val allEntries = animeDao.getAll()
             allEntries.forEach { entry ->

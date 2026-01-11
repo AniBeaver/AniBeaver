@@ -41,6 +41,7 @@ fun parseHexColor(hex: String): Color {
                     blue = (intColor and 0xFF) / 255f
                 )
             }
+
             8 -> {
                 val intColor = cleanHex.toLong(16)
                 Color(
@@ -50,6 +51,7 @@ fun parseHexColor(hex: String): Color {
                     alpha = (intColor and 0xFF) / 255f
                 )
             }
+
             else -> Color.Gray
         }
     } catch (_: Exception) {

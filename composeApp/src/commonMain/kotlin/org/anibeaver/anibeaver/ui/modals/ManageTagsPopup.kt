@@ -38,7 +38,10 @@ fun ManageTagsModal(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.widthIn(min = 900.dp)
             ) {
-                Button(onClick = { onCreateTag(tagTypes[selectedTab]) }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Button(
+                    onClick = { onCreateTag(tagTypes[selectedTab]) },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
                     Text("Create new tag")
                 }
                 TagTabRow(tabTitles, selectedTab) { selectedTab = it }
