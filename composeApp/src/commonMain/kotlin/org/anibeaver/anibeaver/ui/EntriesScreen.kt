@@ -40,6 +40,7 @@ fun EntriesScreen(
     var showManageTags by remember { mutableStateOf(false) }
     var showFilter by remember { mutableStateOf(false) }
     var showNewTagPopupFromManage by remember { mutableStateOf(false) }
+    var newTagTypeFromManage by remember { mutableStateOf(TagType.CUSTOM) }
     var sortBy by remember { mutableStateOf(SortingBy.Rating) }
     var sortOrder by remember { mutableStateOf(SortingType.Ascending) }
     var groupByStatus by remember { mutableStateOf(true) }
@@ -171,7 +172,10 @@ fun EntriesScreen(
                 show = showManageTags,
                 onDismiss = { showManageTags = false },
                 onConfirm = { showManageTags = false },
-                onCreateTag = { showNewTagPopupFromManage = true })
+                onCreateTag = { tagType ->
+                    newTagTypeFromManage = tagType
+                    showNewTagPopupFromManage = true
+                })
 
             FilterPopup(
                 show = showFilter, onDismiss = { showFilter = false }, onConfirm = { data ->
@@ -185,7 +189,8 @@ fun EntriesScreen(
                 onConfirm = { name, color, type ->
                     TagsController.addTag(name, color, type)
                     showNewTagPopupFromManage = false
-                })
+                },
+                initialType = newTagTypeFromManage)
 
             val allEntries = EntriesController.entries
             EntriesController.entriesVersion // trigger recomposition on version change

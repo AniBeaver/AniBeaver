@@ -19,7 +19,7 @@ fun ManageTagsModal(
     show: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    onCreateTag: () -> Unit
+    onCreateTag: (TagType) -> Unit
 ) {
     if (!show) return
 
@@ -33,7 +33,7 @@ fun ManageTagsModal(
         title = { Text("Manage Tags") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(onClick = onCreateTag, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Button(onClick = { onCreateTag(tagTypes[selectedTab]) }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Text("Create new tag")
                 }
                 TagTabRow(tabTitles, selectedTab) { selectedTab = it }
@@ -98,12 +98,16 @@ private fun TagList(tagType: TagType) {
                     TagsController.updateTag(tag.id, tag.name, hex, tag.type)
                 },
                 onDelete = { id ->
-                    showConfirmation(
-                        message = "Delete tag \"${tag.name}\"? This will remove it from all entries.",
-                        onAccept = {
-                            TagsController.removeTagById(id)
-                        }
-                    )
+                    if (usageCount > 0) {
+                        showConfirmation(
+                            message = "Delete tag \"${tag.name}\"? This will remove it from $usageCount ${if (usageCount == 1) "entry" else "entries"}.",
+                            onAccept = {
+                                TagsController.removeTagById(id)
+                            }
+                        )
+                    } else {
+                        TagsController.removeTagById(id)
+                    }
                 },
                 usageCount = usageCount
             )

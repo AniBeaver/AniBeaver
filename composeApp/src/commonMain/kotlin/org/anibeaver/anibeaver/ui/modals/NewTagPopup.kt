@@ -36,7 +36,11 @@ fun NewTagPopup(
         }
     }
 
-    val isHexValid = tagHex.matches(Regex("^#([A-Fa-f0-9]{6})$"))
+    val cleanHex = tagHex.removePrefix("#")
+    val isHexValid = cleanHex.matches(Regex("^[A-Fa-f0-9]{3}$")) ||
+                     cleanHex.matches(Regex("^[A-Fa-f0-9]{6}$")) ||
+                     cleanHex.matches(Regex("^[A-Fa-f0-9]{8}$"))
+    val normalizedHex = if (tagHex.startsWith("#")) tagHex else "#$tagHex"
     val isNameValid = tagName.isNotBlank()
     val isConfirmEnabled = isHexValid && isNameValid
 
@@ -76,7 +80,7 @@ fun NewTagPopup(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(tagName, tagHex, tagType) }, enabled = isConfirmEnabled) {
+            Button(onClick = { onConfirm(tagName, normalizedHex, tagType) }, enabled = isConfirmEnabled) {
                 Text("Confirm/Create/Apply")
             }
         },
